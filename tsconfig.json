@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "jsx": "react-native",  // Đảm bảo rằng cấu hình jsx được set là react-native
+    "moduleResolution": "node",
+    "allowJs": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "target": "es5",
+    "lib": ["es6", "dom"]
+  },
+  "include": ["src/**/*", "node_modules/@types"],
+  "exclude": ["node_modules"]
+}

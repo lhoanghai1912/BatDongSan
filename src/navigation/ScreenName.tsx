@@ -5,11 +5,8 @@ export const Screen_Name = {
 
   //AppStack
   Home_Screen: 'Home_Screen',
-  Menu_Screen: 'Menu_Screen',
-  Report_Screen: 'Report_Screen',
-  Transaction_Screen: 'Transaction_Screen',
-  Setting_Screen: 'Setting_Screen',
-  UserInfo_Screen: 'UserInfo_Screen',
+  Hear_Screen: 'Heart_Screen',
+  User_Screen: 'User_Screen',
 
   //Menu_Item
   CoCauToChuc_Screen: 'CoCauToChuc_Screen',
@@ -20,7 +17,6 @@ export const Screen_Name = {
   NhomDonViTinh_Screen: 'NhomDonViTinh_Screen',
   NhomVatTu_Screen: 'NhomVatTu_Screen',
   PhanQuyen_Screen: 'PhanQuyen_Screen',
-  User_Screen: 'User_Screen',
   VatTu_Screen: 'VatTu_Screen',
 
   //Transaction_Item

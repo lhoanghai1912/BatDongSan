@@ -3,8 +3,8 @@ import App from '../../App';
 import { Screen_Name } from './ScreenName';
 import { useState } from 'react';
 import LoadingScreen from '../components/Loading';
-import RegisterScreen from '../screens/AuthStack/Register';
-import LoginScreen from '../screens/AuthStack/Login';
+import RegisterScreen from '../screens/AuthStack/Register/Register';
+import LoginScreen from '../screens/AuthStack';
 
 const Stack = createNativeStackNavigator();
 

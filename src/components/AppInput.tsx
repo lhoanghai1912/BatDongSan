@@ -34,25 +34,39 @@ const AppInput: React.FC<AppInputProps> = ({
   editable = true,
   ...props
 }) => {
+  const [isFocused, setIsFocused] = useState(false); // Trạng thái focus
   const [isShow, setIsShow] = useState(false);
   const handleShowHide = async () => {
     setIsShow(!isShow);
   };
+  const handleFocus = () => {
+    setIsFocused(true); // Đặt trạng thái khi trường được chọn
+  };
   const handleClear = async () => {
     onChangeText?.('');
+  };
+  const handleBlur = () => {
+    setIsFocused(false); // Đặt trạng thái khi trường không còn được chọn
   };
   return (
     <View style={styles.wrapper}>
       {label && <Text style={styles.label}>{label}</Text>}
       <View>
         <TextInput
+          onFocus={handleFocus} // Khi trường được chọn
+          onBlur={handleBlur} // Khi trường mất focus
           editable={editable}
           placeholder={placeholder}
           value={value}
           onChangeText={onChangeText}
           secureTextEntry={secureTextEntry && !isShow}
           keyboardType={keyboardType}
-          style={[styles.input, style, error && styles.errorBorder]}
+          style={[
+            styles.input,
+            style,
+            error && styles.errorBorder,
+            isFocused && styles.focusedInput,
+          ]}
           placeholderTextColor="#999"
           {...props}
         />
@@ -117,6 +131,17 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: Spacing.medium,
     color: '#000',
+    borderColor: Colors.Gray,
+    borderWidth: 1,
+  },
+  focusedInput: {
+    height: 50,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderRadius: 20,
+    paddingHorizontal: Spacing.medium,
+    color: '#000',
+    borderColor: Colors.black,
+    borderWidth: 1,
   },
   errorBorder: {
     borderColor: '#ff5a5f',

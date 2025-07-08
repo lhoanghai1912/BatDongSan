@@ -13,7 +13,7 @@ const AppStyles = StyleSheet.create({
     color: Colors.black,
     textAlign: 'center',
     fontWeight: 500,
-    marginBottom: Spacing.medium,
+    marginBottom: Spacing.xlarge,
   },
   label: {
     fontSize: Fonts.large,

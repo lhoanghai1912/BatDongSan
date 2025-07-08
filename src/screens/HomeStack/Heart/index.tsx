@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const LoginScreen = () => {
+const HeartScreen = () => {
   return (
     <View style={styles.container}>
-      <Text>LoginScreen</Text>
+      <Text>HeartScreen</Text>
     </View>
   );
 };
@@ -17,4 +17,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default HeartScreen;

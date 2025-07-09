@@ -127,9 +127,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   label: {
-    fontSize: Fonts.large,
+    fontSize: Fonts.normal,
     marginBottom: Spacing.small,
-    color: Colors.white,
+    color: Colors.black,
     alignItems: 'center',
   },
   inputContainer: {

@@ -15,7 +15,7 @@ export const TITLES = {
   cancel: 'Hủy bỏ',
   logout: 'Logout',
   menu: 'Menu',
-  register: 'Đăng kí',
+  register: 'Đăng kí tài khoản',
   transaction: 'Transaction',
   report: 'Report',
   user: 'User',
@@ -37,6 +37,9 @@ export const ICONS = {
   password: require('../assets/icons/password.png'),
   google: require('../assets/icons/google.png'),
   apple: require('../assets/icons/apple.png'),
+  valid: require('../assets/icons/valid.png'),
+  dot: require('../assets/icons/dot.png'),
+  back: require('../assets/icons/back.png'),
 };
 
 export const IMAGES = {

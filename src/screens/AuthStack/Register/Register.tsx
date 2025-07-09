@@ -9,20 +9,28 @@ import { navigate } from '../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../navigation/ScreenName';
 import { Colors } from '../../../utils/color';
 import { Fonts } from '../../../utils/fontSize';
+import NavBar from '../../../components/Navbar';
+import EnterOtpModal from '../../../components/Modal/EnterOtpModal';
+interface Props {
+  navigation: any;
+}
+const RegisterScreen: React.FC<Props> = ({ navigation }) => {
+  const [username, setUserName] = useState('123456789123');
 
-const RegisterScreen = () => {
-  const [username, setUserName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isEnterOtpModalVisible, setIsEnterOtpModalVisible] = useState(false);
+  const [resetEmail, setResetEmail] = useState(''); // giữ email từ OTPModal
+  const [resetOtp, setResetOtp] = useState('');
 
   const handleRegister = () => {
+    setIsEnterOtpModalVisible(true);
     console.log('register pressed');
-    navigate(Screen_Name.SetPassword_Screen);
+    // navigate(Screen_Name.SetPassword_Screen);
+    setResetEmail(username);
   };
 
   return (
     <View style={styles.container}>
+      <NavBar title={TITLES.register} onPress={() => navigation.goBack()} />
       <View style={{ marginBottom: Spacing.xlarge }}>
         <Image
           source={IMAGES.logo}
@@ -33,9 +41,7 @@ const RegisterScreen = () => {
             alignSelf: 'center',
           }}
         />
-        <Text style={[AppStyles.title, { marginBottom: Spacing.small }]}>
-          {TITLES.register}
-        </Text>
+
         <Text style={[AppStyles.text, { textAlign: 'center' }]}>
           Tạo tài khoản mới
         </Text>
@@ -53,7 +59,7 @@ const RegisterScreen = () => {
       <View style={{ marginBottom: Spacing.xlarge }}>
         <AppButton
           title="Tiếp tục"
-          onPress={handleRegister}
+          onPress={() => handleRegister()}
           disabled={username.length <= 10}
         />
       </View>
@@ -189,6 +195,16 @@ const RegisterScreen = () => {
           của chúng tôi.
         </Text>
       </View>
+      <EnterOtpModal
+        visible={isEnterOtpModalVisible}
+        onClose={() => setIsEnterOtpModalVisible(false)}
+        email={resetEmail}
+        onSuccess={otp => {
+          setResetOtp(otp);
+          setIsEnterOtpModalVisible(false);
+          navigate(Screen_Name.SetPassword_Screen);
+        }}
+      />
     </View>
   );
 };
@@ -196,7 +212,6 @@ const RegisterScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 100,
     paddingHorizontal: Spacing.medium,
     backgroundColor: Colors.white,
   },

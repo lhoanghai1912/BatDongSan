@@ -9,16 +9,15 @@ import { Colors } from '../../utils/color';
 import AppButton from '../../components/AppButton';
 import { Screen_Name } from '../../navigation/ScreenName';
 import { navigate } from '../../navigation/RootNavigator';
+import Toast from 'react-native-toast-message';
 
 const LoginScreen = () => {
-  const [username, setUserName] = useState('');
-  const [password, setPassWord] = useState('');
+  const [username, setUserName] = useState('lhoanghai');
+  const [password, setPassWord] = useState('1234Ab@');
   const [checked, setchecked] = useState(false);
-  console.log('checked', checked);
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    console.log('login pressed');
-  };
+  const handleLogin = async () => {};
   return (
     <View style={styles.container}>
       <View style={{ marginBottom: Spacing.xlarge }}>
@@ -88,7 +87,7 @@ const LoginScreen = () => {
       <View style={{ marginBottom: Spacing.xlarge }}>
         <AppButton
           title={TITLES.login}
-          onPress={() => handleLogin}
+          onPress={() => handleLogin()}
           disabled={!username || !password}
         />
       </View>

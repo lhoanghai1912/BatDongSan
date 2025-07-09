@@ -15,9 +15,11 @@ export const TITLES = {
   cancel: 'Hủy bỏ',
   logout: 'Logout',
   menu: 'Menu',
+  register: 'Đăng kí',
   transaction: 'Transaction',
   report: 'Report',
   user: 'User',
+  welcome: 'Chào mừng quay trở lại',
 };
 export const ICONS = {
   search: require('../assets/icons/search.png'),
@@ -31,6 +33,10 @@ export const ICONS = {
   clear: require('../assets/icons/clear.png'),
   checked: require('../assets/icons/checked.png'),
   unchecked: require('../assets/icons/unchecked.png'),
+  username: require('../assets/icons/username.png'),
+  password: require('../assets/icons/password.png'),
+  google: require('../assets/icons/google.png'),
+  apple: require('../assets/icons/apple.png'),
 };
 
 export const IMAGES = {

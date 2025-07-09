@@ -9,6 +9,7 @@ import {
   TextStyle,
   Image,
   TouchableOpacity,
+  ImageSourcePropType,
 } from 'react-native';
 import AppStyles from './AppStyle';
 import { ICONS } from '../utils/constants';
@@ -20,6 +21,7 @@ interface AppInputProps extends TextInputProps {
   label?: string;
   error?: string;
   style?: StyleProp<TextStyle>;
+  leftIcon?: ImageSourcePropType;
 }
 
 const AppInput: React.FC<AppInputProps> = ({
@@ -31,6 +33,7 @@ const AppInput: React.FC<AppInputProps> = ({
   style,
   label,
   error,
+  leftIcon,
   editable = true,
   ...props
 }) => {
@@ -51,7 +54,8 @@ const AppInput: React.FC<AppInputProps> = ({
   return (
     <View style={styles.wrapper}>
       {label && <Text style={styles.label}>{label}</Text>}
-      <View>
+      <View style={styles.inputContainer}>
+        {leftIcon && <Image source={leftIcon} style={styles.leftIcon} />}
         <TextInput
           onFocus={handleFocus} // Khi trường được chọn
           onBlur={handleBlur} // Khi trường mất focus
@@ -66,6 +70,9 @@ const AppInput: React.FC<AppInputProps> = ({
             style,
             error && styles.errorBorder,
             isFocused && styles.focusedInput,
+            {
+              paddingLeft: leftIcon ? Spacing.xxlarge : Spacing.small, // 🔥 padding động
+            },
           ]}
           placeholderTextColor="#999"
           {...props}
@@ -108,7 +115,6 @@ const AppInput: React.FC<AppInputProps> = ({
             )}
           </>
         )}
-
         {error && <Text style={styles.errorText}>{error}</Text>}
       </View>
     </View>
@@ -124,15 +130,28 @@ const styles = StyleSheet.create({
     fontSize: Fonts.large,
     marginBottom: Spacing.small,
     color: Colors.white,
+    alignItems: 'center',
+  },
+  inputContainer: {
+    position: 'relative',
+    justifyContent: 'center',
   },
   input: {
     height: 50,
     backgroundColor: 'rgba(255,255,255,0.9)',
-    borderRadius: 20,
-    paddingHorizontal: Spacing.medium,
+    borderRadius: 30,
+    paddingHorizontal: Spacing.xxlarge,
     color: '#000',
     borderColor: Colors.Gray,
     borderWidth: 1,
+  },
+  leftIcon: {
+    position: 'absolute',
+    left: 12,
+    width: 25,
+    height: 25,
+    resizeMode: 'contain',
+    zIndex: 1,
   },
   focusedInput: {
     height: 50,

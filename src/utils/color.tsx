@@ -13,4 +13,6 @@ export const Colors = {
   darkGray: '#333333',
   blue: '#5DB3E9',
   red: '#E4080A',
+  button: '#095286',
+  buttonDisable: '#F0EFF4',
 };

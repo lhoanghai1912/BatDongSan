@@ -5,6 +5,7 @@ import { useState } from 'react';
 import LoadingScreen from '../components/Loading';
 import RegisterScreen from '../screens/AuthStack/Register/Register';
 import LoginScreen from '../screens/AuthStack';
+import TokenVerifyScreen from '../screens/AuthStack/Register/SetPassword';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +18,10 @@ const AuthNavigator = () => {
       <Stack.Screen
         name={Screen_Name.Register_Screen}
         component={RegisterScreen}
+      />
+      <Stack.Screen
+        name={Screen_Name.SetPassword_Screen}
+        component={TokenVerifyScreen}
       />
     </Stack.Navigator>
   );

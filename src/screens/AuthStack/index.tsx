@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Linking,
+} from 'react-native';
 import { ICONS, IMAGES, TITLES } from '../../utils/constants';
 import AppStyles from '../../components/AppStyle';
 import AppInput from '../../components/AppInput';
@@ -10,14 +17,21 @@ import AppButton from '../../components/AppButton';
 import { Screen_Name } from '../../navigation/ScreenName';
 import { navigate } from '../../navigation/RootNavigator';
 import Toast from 'react-native-toast-message';
+import { useDispatch } from 'react-redux';
+import { setToken } from '../../store/reducers/userSlice';
 
 const LoginScreen = () => {
+  const dispatch = useDispatch();
+
   const [username, setUserName] = useState('lhoanghai');
   const [password, setPassWord] = useState('1234Ab@');
   const [checked, setchecked] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {};
+  const handleLogin = async () => {
+    const token = '123';
+    dispatch(setToken({ token }));
+  };
   return (
     <View style={styles.container}>
       <View style={{ marginBottom: Spacing.xlarge }}>
@@ -177,7 +191,11 @@ const LoginScreen = () => {
         >
           Bằng việc tiếp tục, bạn đồng ý với{' '}
           <Text
-            onPress={() => console.log('Điều khoản sử dụng')}
+            onPress={() =>
+              Linking.openURL(
+                'https://trogiup.batdongsan.com.vn/docs/dieu-khoan-thoa-thuan',
+              )
+            }
             style={{
               color: Colors.black,
               fontWeight: '500',
@@ -189,7 +207,11 @@ const LoginScreen = () => {
           </Text>
           ,{' '}
           <Text
-            onPress={() => console.log('Chính sách bảo mật')}
+            onPress={() =>
+              Linking.openURL(
+                'https://trogiup.batdongsan.com.vn/docs/chinh-sach-bao-mat',
+              )
+            }
             style={{
               color: Colors.black,
               fontWeight: '500',
@@ -201,7 +223,11 @@ const LoginScreen = () => {
           </Text>
           ,{' '}
           <Text
-            onPress={() => console.log('Quy chế')}
+            onPress={() =>
+              Linking.openURL(
+                'https://trogiup.batdongsan.com.vn/docs/quy-che-hoat-dong',
+              )
+            }
             style={{
               color: Colors.black,
               fontWeight: '500',
@@ -213,7 +239,9 @@ const LoginScreen = () => {
           </Text>
           ,{' '}
           <Text
-            onPress={() => console.log('Chính sách')}
+            onPress={() =>
+              Linking.openURL('https://trogiup.batdongsan.com.vn/')
+            }
             style={{
               color: Colors.black,
               fontWeight: '500',

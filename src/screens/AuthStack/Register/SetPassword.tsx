@@ -16,14 +16,16 @@ import AppButton from '../../../components/AppButton';
 import { Colors } from '../../../utils/color';
 import Toast from 'react-native-toast-message';
 import { useRoute } from '@react-navigation/native';
-import { navigate } from '../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../navigation/ScreenName';
 import NavBar from '../../../components/Navbar';
+import { useDispatch } from 'react-redux';
+import { setToken, setUserData } from '../../../store/reducers/userSlice';
 interface Props {
   navigation: any;
 }
 const SetPasswordScreen: React.FC<Props> = ({ navigation }) => {
   const route = useRoute();
+  const dispatch = useDispatch();
   const username = route.params || {};
   console.log('route', username);
 
@@ -38,6 +40,7 @@ const SetPasswordScreen: React.FC<Props> = ({ navigation }) => {
   const isValid = hasMinLength && hasUpperCase && hasNumber;
 
   const handleRegister = async () => {
+    const token = '123';
     if (!isMatch) {
       Toast.show({
         type: 'error',
@@ -59,7 +62,7 @@ const SetPasswordScreen: React.FC<Props> = ({ navigation }) => {
           text2: 'Tài khoản đã được tạo và đăng nhập thành công',
         });
 
-        navigate(Screen_Name.Home_Screen);
+        dispatch(setToken({ token }));
       } catch (error) {
         console.log(error);
       }

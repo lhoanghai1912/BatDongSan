@@ -40,6 +40,8 @@ export const ICONS = {
   valid: require('../assets/icons/valid.png'),
   dot: require('../assets/icons/dot.png'),
   back: require('../assets/icons/back.png'),
+  down: require('../assets/icons/down.png'),
+  sort_down: require('../assets/icons/sort_down.png'),
 };
 
 export const IMAGES = {

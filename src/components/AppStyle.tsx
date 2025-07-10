@@ -60,6 +60,7 @@ const AppStyles = StyleSheet.create({
   },
   text: {
     fontSize: Fonts.normal,
+    color: Colors.Gray,
   },
   whitetext: {
     fontSize: Fonts.normal,

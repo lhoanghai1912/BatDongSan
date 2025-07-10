@@ -24,7 +24,6 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   const handleRegister = () => {
     setIsEnterOtpModalVisible(true);
     console.log('register pressed');
-    // navigate(Screen_Name.SetPassword_Screen);
     setResetEmail(username);
   };
 

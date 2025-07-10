@@ -10,7 +10,7 @@ export const Colors = {
   border: '#e1e1e1',
   Gray: '#abb8c3',
   lightGray: '#EAEFEF',
-  darkGray: '#333333',
+  darkGray: '#707573',
   blue: '#5DB3E9',
   red: '#E4080A',
   button: '#095286',

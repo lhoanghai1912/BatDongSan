@@ -9,6 +9,7 @@ import AppStyles from '../components/AppStyle';
 import HeartScreen from '../screens/HomeStack/Heart';
 import UserScreen from '../screens/HomeStack/User';
 import HomeScreen from '../screens/HomeStack/HomeScreen';
+import { Screen_Name } from './ScreenName';
 
 const Tab = createBottomTabNavigator();
 
@@ -17,62 +18,34 @@ const BottomTabNavigator = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarShowLabel: false, // Tắt nhãn label của tab
+        tabBarShowLabel: false,
         tabBarStyle: {
-          height: 70,
           backgroundColor: '#fff',
           borderTopColor: '#ddd',
+          paddingTop: 10,
         },
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconSource;
-
-          // Chọn icon dựa trên tên route
-          switch (route.name) {
-            case 'Home':
-              iconSource = !focused ? ICONS.search : ICONS.search_focus;
-              break;
-            case 'Heart':
-              iconSource = !focused ? ICONS.heart : ICONS.heart_focus;
-              break;
-
-            case 'Notification':
-              iconSource = !focused ? ICONS.user : ICONS.user_focus;
-              break;
-          }
+        tabBarIcon: ({ focused }) => {
+          const iconMap = {
+            Home_Screen: focused ? ICONS.search_focus : ICONS.search,
+            Heart_Screen: focused ? ICONS.heart_focus : ICONS.heart,
+            User_Screen: focused ? ICONS.user_focus : ICONS.user,
+          };
 
           return (
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <Image
-                source={iconSource}
-                style={[AppStyles.icon, { width: 30, height: 30 }]}
-              />
-              {focused && (
-                <View
-                  style={{
-                    width: 30,
-                    height: 2,
-                    backgroundColor: '#820201',
-                    marginTop: 3,
-                    borderRadius: 5,
-                  }}
-                />
-              )}
-            </View>
+            <Image
+              source={iconMap[route.name]}
+              style={{ width: 24, height: 24 }}
+              resizeMode="contain"
+            />
           );
         },
         tabBarActiveTintColor: '#820201',
         tabBarInactiveTintColor: '#888',
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Heart" component={HeartScreen} />
-      <Tab.Screen name="Cart" component={UserScreen} />
+      <Tab.Screen name={Screen_Name.Home_Screen} component={HomeScreen} />
+      <Tab.Screen name={Screen_Name.Heart_Screen} component={HeartScreen} />
+      <Tab.Screen name={Screen_Name.User_Screen} component={UserScreen} />
     </Tab.Navigator>
   );
 };

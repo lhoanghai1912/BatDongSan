@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Vibration,
   Animated,
+  ActivityIndicator,
 } from 'react-native';
 import AppInput from '../../../components/AppInput';
 import { ICONS, IMAGES, TITLES } from '../../../utils/constants';
@@ -18,19 +19,20 @@ import Toast from 'react-native-toast-message';
 import { useRoute } from '@react-navigation/native';
 import { Screen_Name } from '../../../navigation/ScreenName';
 import NavBar from '../../../components/Navbar';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setToken, setUserData } from '../../../store/reducers/userSlice';
+import { create_password } from '../../../service';
 interface Props {
   navigation: any;
 }
 const SetPasswordScreen: React.FC<Props> = ({ navigation }) => {
-  const route = useRoute();
   const dispatch = useDispatch();
-  const username = route.params || {};
-  console.log('route', username);
+  const { token } = useSelector((state: any) => state.user);
 
+  const { verificationToken } = useSelector((state: any) => state.user);
   const [password, SetPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const hasMinLength = password.length >= 8;
   const hasUpperCase = /[A-Z]/.test(password);
@@ -40,7 +42,6 @@ const SetPasswordScreen: React.FC<Props> = ({ navigation }) => {
   const isValid = hasMinLength && hasUpperCase && hasNumber;
 
   const handleRegister = async () => {
-    const token = '123';
     if (!isMatch) {
       Toast.show({
         type: 'error',
@@ -49,25 +50,30 @@ const SetPasswordScreen: React.FC<Props> = ({ navigation }) => {
       });
     } else {
       try {
+        setLoading(true);
         // Giả định bạn có username/email ở biến tạm, ví dụ hardcoded hoặc truyền props
-        const username = 'user@example.com';
+        const res = await create_password(
+          verificationToken,
+          password,
+          confirmPassword,
+        );
+        console.log('output', res);
 
-        // await AuthService.register(username, username, password);
-        // const loginResult = await AuthService.login('lhoanghai', '1234Ab@');
-        // console.log('kqua tra ve', loginResult);
+        dispatch(setToken({ token: res.user.token }));
 
         Toast.show({
           type: 'success',
           text1: 'Thành công',
           text2: 'Tài khoản đã được tạo và đăng nhập thành công',
         });
-
-        dispatch(setToken({ token }));
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     }
   };
+  console.log('token', token);
 
   return (
     <View style={[styles.container]}>
@@ -172,9 +178,23 @@ const SetPasswordScreen: React.FC<Props> = ({ navigation }) => {
           disabled={!password || !confirmPassword || !isValid}
         />
       </View>
+      {loading && (
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: 'rgba(0,0,0,0.3)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 10,
+          }}
+        >
+          <ActivityIndicator size="large" color="#E53935" />
+        </View>
+      )}
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

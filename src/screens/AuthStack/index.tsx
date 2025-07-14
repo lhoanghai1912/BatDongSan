@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   Linking,
+  ActivityIndicator,
 } from 'react-native';
 import { ICONS, IMAGES, TITLES } from '../../utils/constants';
 import AppStyles from '../../components/AppStyle';
@@ -17,25 +18,42 @@ import AppButton from '../../components/AppButton';
 import { Screen_Name } from '../../navigation/ScreenName';
 import { navigate } from '../../navigation/RootNavigator';
 import Toast from 'react-native-toast-message';
-import { useDispatch } from 'react-redux';
-import { setToken } from '../../store/reducers/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { setToken, setUserData } from '../../store/reducers/userSlice';
+import { login } from '../../service';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
 
-  const [username, setUserName] = useState('lhoanghai');
-  const [password, setPassWord] = useState('1234Ab@');
+  const [email, setEmail] = useState('hoanghai281zzz@gmail.com');
+  const [password, setPassWord] = useState('12345678Ab@');
   const [checked, setchecked] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const handleForgotPassword = async () => {};
+
   const handleLogin = async () => {
-    const token = '123';
-    dispatch(setToken({ token }));
+    try {
+      setLoading(true);
+
+      const loginData = await login(email, password);
+
+      dispatch(setToken({ token: loginData.token }));
+      dispatch(setUserData({ userData: loginData.profile }));
+      if (checked) {
+        await AsyncStorage.setItem('accessToken', loginData.token);
+      }
+      console.log('Login success', loginData);
+    } catch (error) {
+      console.log('error', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleLoginWithGoogle = async ()=> {
-    
-  }
+  const handleLoginWithGoogle = async () => {};
   return (
     <View style={styles.container}>
       <View style={{ marginBottom: Spacing.xlarge }}>
@@ -59,8 +77,8 @@ const LoginScreen = () => {
         <AppInput
           leftIcon={ICONS.username}
           placeholder="Nhập SDT chính hoặc email"
-          onChangeText={setUserName}
-          value={username}
+          onChangeText={setEmail}
+          value={email}
         ></AppInput>
         <AppInput
           leftIcon={ICONS.password}
@@ -89,7 +107,7 @@ const LoginScreen = () => {
             Nhớ tài khoản
           </Text>
         </View>
-        <View>
+        <TouchableOpacity onPress={() => handleForgotPassword}>
           <Text
             style={{
               fontSize: Fonts.small,
@@ -100,13 +118,13 @@ const LoginScreen = () => {
           >
             Quên mật khẩu
           </Text>
-        </View>
+        </TouchableOpacity>
       </View>
       <View style={{ marginBottom: Spacing.xlarge }}>
         <AppButton
           title={TITLES.login}
           onPress={() => handleLogin()}
-          disabled={!username || !password}
+          disabled={!email || !password}
         />
       </View>
       <View
@@ -149,7 +167,7 @@ const LoginScreen = () => {
           marginBottom: Spacing.large,
         }}
       >
-        <TouchableOpacity onPress={()=>handleLoginWithGoogle()}>
+        <TouchableOpacity onPress={() => handleLoginWithGoogle()}>
           <Image source={ICONS.google} style={{ width: 40, height: 40 }} />
         </TouchableOpacity>
         <TouchableOpacity>
@@ -258,6 +276,19 @@ const LoginScreen = () => {
           của chúng tôi.
         </Text>
       </View>
+      {loading && (
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: 'rgba(0,0,0,0.3)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 10,
+          }}
+        >
+          <ActivityIndicator size="large" color="#E53935" />
+        </View>
+      )}
     </View>
   );
 };

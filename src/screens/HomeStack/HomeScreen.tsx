@@ -16,7 +16,7 @@ import { Colors } from '../../utils/color';
 import { Fonts } from '../../utils/fontSize';
 import ImageCard from './ImageCard';
 import { getAllPosts } from '../../service';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/reducers/userSlice';
 import AppButton from '../../components/AppButton';
 
@@ -44,6 +44,8 @@ type PostType = {
 
 const HomeScreen: React.FC = ({}) => {
   const dispatch = useDispatch();
+  const { userData, token } = useSelector((state: any) => state.user);
+
   const [postData, setPostsData] = useState<PostType[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [modalType, setModalType] = useState<
@@ -65,19 +67,19 @@ const HomeScreen: React.FC = ({}) => {
     return () => clearInterval(interval); // clear khi unmount
   }, []);
 
-  useEffect(() => {
-    const loadNews = async () => {
-      try {
-        const data = await getAllPosts(); // Gọi API bài viết
-        console.log('data', data);
+  // useEffect(() => {
+  //   const loadNews = async () => {
+  //     try {
+  //       const data = await getAllPosts(); // Gọi API bài viết
+  //       console.log('data', data);
 
-        setPostsData(data.metadata.docs);
-      } catch (error) {
-        console.log('Lỗi khi tải bài viết:', error);
-      }
-    };
-    loadNews();
-  }, []);
+  //       setPostsData(data.metadata.docs);
+  //     } catch (error) {
+  //       console.log('Lỗi khi tải bài viết:', error);
+  //     }
+  //   };
+  //   loadNews();
+  // }, []);
 
   const handleLogout = async () => {
     dispatch(logout());

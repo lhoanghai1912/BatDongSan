@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import { Spacing } from '../../../utils/spacing';
 import { ICONS, IMAGES, TITLES } from '../../../utils/constants';
 import AppStyles from '../../../components/AppStyle';
@@ -11,20 +18,34 @@ import { Colors } from '../../../utils/color';
 import { Fonts } from '../../../utils/fontSize';
 import NavBar from '../../../components/Navbar';
 import EnterOtpModal from '../../../components/Modal/EnterOtpModal';
+import { register } from '../../../service';
+import { useDispatch } from 'react-redux';
+import { setLoading } from '../../../store/reducers/loadingSlice';
 interface Props {
   navigation: any;
 }
 const RegisterScreen: React.FC<Props> = ({ navigation }) => {
-  const [username, setUserName] = useState('123456789123');
+  const [contact, setContact] = useState('@gmail.com');
 
   const [isEnterOtpModalVisible, setIsEnterOtpModalVisible] = useState(false);
-  const [resetEmail, setResetEmail] = useState(''); // giữ email từ OTPModal
+  const [resetcontact, setResetcontact] = useState(''); // giữ contact từ OTPModal
   const [resetOtp, setResetOtp] = useState('');
 
-  const handleRegister = () => {
-    setIsEnterOtpModalVisible(true);
-    console.log('register pressed');
-    setResetEmail(username);
+  const [Loading, setLoading] = useState(false);
+  const handleRegister = async () => {
+    try {
+      setLoading(true);
+      const registerData = await register(contact);
+      console.log('resgisterData', registerData);
+
+      setIsEnterOtpModalVisible(true);
+      console.log('register pressed');
+      setResetcontact(contact);
+    } catch (error) {
+      console.log('error', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -49,9 +70,9 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       <View>
         <AppInput
           leftIcon={ICONS.username}
-          placeholder="Nhập số điện thoại hoặc email"
-          onChangeText={setUserName}
-          value={username}
+          placeholder="Nhập số điện thoại hoặc contact"
+          onChangeText={setContact}
+          value={contact}
         />
       </View>
 
@@ -59,7 +80,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         <AppButton
           title="Tiếp tục"
           onPress={() => handleRegister()}
-          disabled={username.length <= 10}
+          disabled={contact.length <= 10}
         />
       </View>
       <View
@@ -197,13 +218,26 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       <EnterOtpModal
         visible={isEnterOtpModalVisible}
         onClose={() => setIsEnterOtpModalVisible(false)}
-        email={resetEmail}
+        contact={resetcontact}
         onSuccess={otp => {
           setResetOtp(otp);
           setIsEnterOtpModalVisible(false);
           navigate(Screen_Name.SetPassword_Screen);
         }}
       />
+      {Loading && (
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: 'rgba(0,0,0,0.3)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 10,
+          }}
+        >
+          <ActivityIndicator size="large" color="#E53935" />
+        </View>
+      )}
     </View>
   );
 };

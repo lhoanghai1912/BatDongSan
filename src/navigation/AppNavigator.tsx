@@ -4,15 +4,47 @@ import { Text, View } from 'react-native';
 import { navigationRef } from './RootNavigator';
 import AuthNavigator from './AuthNavigator';
 import HomeNavigator from './HomeNavigator';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import SplashScreen from '../screens/Splash';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setToken } from '../store/reducers/userSlice';
+// const AppNavigator = () => {
+//   const [showSplash, setShowSplash] = useState(true);
+//   const { token } = useSelector((state: any) => state.user);
+
+//   useEffect(() => {
+//     // delay splash 1.5s để hiển thị logo
+//     const timeout = setTimeout(() => {
+//       setShowSplash(false);
+//     }, 1500);
+//     return () => clearTimeout(timeout);
+//   }, []);
+
+//   if (showSplash) {
+//     return <SplashScreen onAnimationEnd={() => setShowSplash(false)} />;
+//   }
+
+//   return (
+//     <NavigationContainer ref={navigationRef}>
+//       {token ? <HomeNavigator /> : <AuthNavigator />}
+//     </NavigationContainer>
+//   );
+// };
+
 const AppNavigator = () => {
   const [showSplash, setShowSplash] = useState(true);
+  const dispatch = useDispatch();
   const { token } = useSelector((state: any) => state.user);
-  console.log(token, 'token in AppNavigator');
 
   useEffect(() => {
+    const bootstrap = async () => {
+      const StorageToken = await AsyncStorage.getItem('accessToken');
+
+      if (StorageToken) {
+        dispatch(setToken({ token: StorageToken }));
+      }
+    };
+    bootstrap();
     // delay splash 1.5s để hiển thị logo
     const timeout = setTimeout(() => {
       setShowSplash(false);
@@ -30,5 +62,4 @@ const AppNavigator = () => {
     </NavigationContainer>
   );
 };
-
 export default AppNavigator;

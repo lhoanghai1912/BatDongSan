@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Modal,
+  NativeSyntheticEvent,
   StyleSheet,
   Text,
   TextInput,
+  TextInputKeyPressEventData,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -12,23 +14,27 @@ import AppButton from '../AppButton';
 import Toast from 'react-native-toast-message';
 import { navigate } from '../../navigation/RootNavigator';
 import { Screen_Name } from '../../navigation/ScreenName';
+import { enterOtp } from '../../service';
+import { useDispatch } from 'react-redux';
+import { setVerificationToken } from '../../store/reducers/userSlice';
 
 interface EnterOtpProp {
   visible: boolean;
   onClose: () => void;
   onSuccess: (otpString: string) => void;
-  email: string;
+  contact: string;
 }
 
 const EnterOtpModal: React.FC<EnterOtpProp> = ({
   visible,
   onClose,
   onSuccess,
-  email,
+  contact,
 }) => {
+  const dispatch = useDispatch();
+
   const [otp, setOtp] = useState(['', '', '', '', '', '']); // Lưu trữ 6 ký tự OTP
   const [error, setError] = useState(false); // Lỗi nếu mã OTP không hợp lệ
-  const [isLoading, setIsLoading] = useState(false); // Thêm state cho Loading
   const lastValueRef = useRef(['', '', '', '', '', '']);
 
   // Tạo refs cho từng ô nhập OTP
@@ -40,36 +46,45 @@ const EnterOtpModal: React.FC<EnterOtpProp> = ({
     }
   }, [visible]);
   const handleOtpChange = (text: string, index: number) => {
+    if (text.length > 1) return;
+
     const newOtp = [...otp];
+    newOtp[index] = text;
+    setOtp(newOtp);
 
-    // if (text === '') {
-    //   // Người dùng đang xóa → xử lý trong onKeyPress riêng
-    //   return;
-    // }
-
-    if (newOtp[index] === '') {
-      // Nếu ô đang trống → ghi vào
-      newOtp[index] = text;
-      setOtp(newOtp);
-      if (index < 5) inputRefs.current[index + 1]?.focus();
-    } else {
-      // Nếu ô đang có → tìm ô trống phía sau
-      const nextEmpty = newOtp.findIndex(
-        (val, idx) => val === '' && idx > index,
-      );
-      if (nextEmpty !== -1) {
-        newOtp[nextEmpty] = text;
-        setOtp(newOtp);
-        inputRefs.current[nextEmpty]?.focus();
-      }
+    // Auto-focus tiếp theo nếu nhập xong
+    if (text && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+  const handleKeyPress = (
+    e: NativeSyntheticEvent<TextInputKeyPressEventData>,
+    index: number,
+  ) => {
+    if (e.nativeEvent.key === 'Backspace') {
+      setOtp(['', '', '', '', '', '']);
+      inputRefs.current[0]?.focus();
     }
   };
 
   const handleSubmit = async () => {
     const otpString = otp.join('');
     if (otpString.length === 6) {
-      setIsLoading(true);
-      navigate(Screen_Name.SetPassword_Screen);
+      try {
+        console.log('📤 Gửi OTP verify:', {
+          contact,
+          otp: otpString,
+        });
+        const otpRes = await enterOtp(contact, otpString);
+        dispatch(
+          setVerificationToken({ verificationToken: otpRes.verificationToken }),
+        );
+        console.log('otpRes', otpRes);
+
+        onSuccess(otpString);
+      } catch (error) {
+        console.log('error', error);
+      }
     } else {
       setError(true); // Nếu mã OTP không hợp lệ, hiển thị lỗi
     }
@@ -100,18 +115,19 @@ const EnterOtpModal: React.FC<EnterOtpProp> = ({
                 style={[styles.otpInput, error && styles.errorInput]}
                 value={digit}
                 onChangeText={text => handleOtpChange(text, index)}
-                onKeyPress={({ nativeEvent }) => {
-                  if (nativeEvent.key === 'Backspace') {
-                    const newOtp = [...otp];
+                // onKeyPress={({ nativeEvent }) => {
+                //   if (nativeEvent.key === 'Backspace') {
+                //     const newOtp = [...otp];
 
-                    if (otp[index] !== '') {
-                      newOtp[index] = '';
-                      setOtp(newOtp);
-                    } else if (index > 0) {
-                      inputRefs.current[index - 1]?.focus();
-                    }
-                  }
-                }}
+                //     if (otp[index] !== '') {
+                //       newOtp[index] = '';
+                //       setOtp(newOtp);
+                //     } else if (index > 0) {
+                //       inputRefs.current[index - 1]?.focus();
+                //     }
+                //   }
+                // }}
+                onKeyPress={e => handleKeyPress(e, index)}
                 keyboardType="numeric"
                 maxLength={1}
                 ref={ref => {

@@ -7,17 +7,22 @@ import {
   ViewStyle,
   TextStyle,
   StyleSheet,
+  Image,
+  View,
+  ImageSourcePropType,
 } from 'react-native';
 import { Colors } from '../utils/color';
 import { Spacing } from '../utils/spacing';
 import { Fonts } from '../utils/fontSize';
+import { ICONS } from '../utils/constants';
 
 interface AppButtonProps {
   // key?: number;
   onPress: () => void; // Hàm khi nhấn nút
-  title: string; // Tiêu đề nút
+  title?: string; // Tiêu đề nút
   customStyle?: ViewStyle[]; // Custom style cho nút
   disabled?: boolean;
+  leftIcon?: ImageSourcePropType; // icon key trong ICONS
 }
 
 const AppButton: React.FC<AppButtonProps> = ({
@@ -26,6 +31,7 @@ const AppButton: React.FC<AppButtonProps> = ({
   title,
   customStyle = [],
   disabled,
+  leftIcon,
 }) => {
   return (
     <TouchableOpacity
@@ -38,20 +44,30 @@ const AppButton: React.FC<AppButtonProps> = ({
         { opacity: disabled ? 0.5 : 1 },
       ]}
     >
-      <Text
-        style={[
-          styles.buttonText,
-          { color: disabled ? Colors.black : Colors.white },
-        ]}
-      >
-        {title}
-      </Text>
+      <View style={leftIcon ? styles.contentWrapper : ''}>
+        {leftIcon && (
+          <Image source={leftIcon} style={styles.icon} resizeMode="contain" />
+        )}
+
+        <Text
+          style={[
+            styles.buttonText,
+            { color: disabled ? Colors.black : Colors.white },
+          ]}
+        >
+          {title}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   //Button
+  contentWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   button: {
     backgroundColor: Colors.button,
     borderRadius: 30,
@@ -79,6 +95,13 @@ const styles = StyleSheet.create({
     fontSize: Fonts.normal,
     fontWeight: 500,
     textAlign: 'center',
+  },
+
+  icon: {
+    width: 20,
+    height: 20,
+    marginRight: Spacing.small,
+    tintColor: Colors.white,
   },
 });
 

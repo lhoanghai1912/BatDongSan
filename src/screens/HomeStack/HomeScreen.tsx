@@ -14,11 +14,8 @@ import { Spacing } from '../../utils/spacing';
 import AppStyles from '../../components/AppStyle';
 import { Colors } from '../../utils/color';
 import { Fonts } from '../../utils/fontSize';
-import { navigate } from '../../navigation/RootNavigator';
-import { Screen_Name } from '../../navigation/ScreenName';
 import ImageCard from './ImageCard';
-import { PROPERTY_IMAGES } from './User/images.data';
-import { getAllImages, getAllPosts } from '../../service';
+import { getAllPosts } from '../../service';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../store/reducers/userSlice';
 import AppButton from '../../components/AppButton';
@@ -32,6 +29,12 @@ const dataFilter = [
   'Hướng ban công',
   'Tin có ảnh / video',
 ];
+const placeholderTexts = [
+  'Tìm dự án',
+  'Tìm quận/huyện',
+  'Tìm phường/xã',
+  'Tìm đường phố',
+];
 
 type PostType = {
   _id: string;
@@ -40,10 +43,27 @@ type PostType = {
 };
 
 const HomeScreen: React.FC = ({}) => {
-  const numberResults = '99999';
   const dispatch = useDispatch();
-
   const [postData, setPostsData] = useState<PostType[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [modalType, setModalType] = useState<
+    'checkBoxModal' | 'radioButtonModal' | 'buttonModal' | null
+  >(null);
+
+  const [modalData, setModalData] = useState<any[]>([]);
+  const [modalTitle, setModalTitle] = useState<string>('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedValue, setSelectedValue] = useState<string[] | string>([]);
+
+  const numberResults = postData.length.toString();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex(prev => (prev + 1) % placeholderTexts.length);
+    }, 1000); // đổi text mỗi 1s
+
+    return () => clearInterval(interval); // clear khi unmount
+  }, []);
 
   useEffect(() => {
     const loadNews = async () => {
@@ -56,26 +76,62 @@ const HomeScreen: React.FC = ({}) => {
         console.log('Lỗi khi tải bài viết:', error);
       }
     };
-
     loadNews();
   }, []);
 
   const handleLogout = async () => {
     dispatch(logout());
   };
+
+  const openFilterModal = (type: string) => {
+    switch (type) {
+      case 'loaiNha':
+        setModalType('checkBoxModal');
+        setModalData(['Chung cư', 'Nhà riêng', 'Biệt thự']);
+        setModalTitle('Chọn loại nhà');
+        break;
+      case 'huongNha':
+        setModalType('checkBoxModal');
+        setModalData(['Đông', 'Tây', 'Nam', 'Bắc']);
+        setModalTitle('Chọn hướng nhà');
+        break;
+      case 'dienTich':
+        setModalType('radioButtonModal');
+        setModalData([
+          { label: 'Dưới 30m²', value: '0-30' },
+          { label: '30-50m²', value: '30-50' },
+          { label: 'Trên 80m²', value: '80+' },
+        ]);
+        setModalTitle('Chọn diện tích');
+        break;
+      case 'soPhongNgu':
+        setModalType('buttonModal');
+        setModalData(['1', '2', '3', '4', '5+']);
+        setModalTitle('Chọn số phòng ngủ');
+        break;
+    }
+    setModalVisible(true);
+  };
+
+  const renderPost = ({ item }: { item: PostType }) => {
+    return (
+      <>
+        <ImageCard post={item} />
+        <View style={styles.underLine} />
+      </>
+    );
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        {/* 🔍 Thanh tìm kiếm */}
         <View style={styles.searchBox}>
           <Image source={ICONS.search} style={styles.searchIcon} />
-          <View>
-            <Text style={styles.searchLabel}>Tìm kiếm</Text>
-            <TextInput
-              style={styles.searchPlaceholder}
-              placeholder="Tìm phường, xã"
-            ></TextInput>
-          </View>
+          <TouchableOpacity style={{ width: '100%' }}>
+            <Text style={[styles.searchLabel]}>Tìm kiếm</Text>
+            <Text style={[AppStyles.text]}>
+              {placeholderTexts[currentIndex]}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* 🔽 Bộ lọc */}
@@ -100,6 +156,8 @@ const HomeScreen: React.FC = ({}) => {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
+            marginBottom: Spacing.xxlarge,
+            paddingHorizontal: Spacing.medium,
           }}
         >
           <View style={{ flexDirection: 'row' }}>
@@ -134,9 +192,15 @@ const HomeScreen: React.FC = ({}) => {
           </TouchableOpacity>
         </View>
         <FlatList
-          data={postData || []}
+          data={postData}
+          ListEmptyComponent={
+            <Text style={[AppStyles.label, { flex: 1, textAlign: 'center' }]}>
+              Không có dữ liệu phù hợp
+            </Text>
+          }
           keyExtractor={item => item._id}
-          renderItem={({ item }) => <ImageCard post={item} />}
+          // renderItem={({ item }) => <ImageCard post={item} />}
+          renderItem={renderPost}
         />
       </View>
       <AppButton title="Logout" onPress={() => handleLogout()}></AppButton>
@@ -157,7 +221,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.white,
     paddingTop: Spacing.medium,
-    paddingHorizontal: Spacing.medium,
   },
   searchBox: {
     flexDirection: 'row',
@@ -169,8 +232,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
   },
   searchIcon: {
-    width: 20,
-    height: 20,
+    width: 40,
+    height: 40,
     tintColor: '#000',
     marginHorizontal: Spacing.small,
     marginRight: 12,
@@ -202,6 +265,12 @@ const styles = StyleSheet.create({
   filterText: {
     fontSize: 14,
     color: '#333',
+  },
+  underLine: {
+    borderWidth: 1,
+    borderColor: Colors.Gray,
+    marginVertical: Spacing.medium,
+    width: '100%',
   },
 });
 

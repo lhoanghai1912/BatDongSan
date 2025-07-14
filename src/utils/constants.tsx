@@ -42,8 +42,13 @@ export const ICONS = {
   back: require('../assets/icons/back.png'),
   down: require('../assets/icons/down.png'),
   sort_down: require('../assets/icons/sort_down.png'),
+  bath: require('../assets/icons/bath.png'),
+  bed: require('../assets/icons/bed.png'),
+  location: require('../assets/icons/location.png'),
+  phone: require('../assets/icons/phone.png'),
 };
 
 export const IMAGES = {
   logo: require('../assets/images/company-logo.png'),
+  avartar: require('../assets/icons/avt_male.jpg'),
 };

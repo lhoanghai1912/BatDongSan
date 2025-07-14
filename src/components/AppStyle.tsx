@@ -57,6 +57,13 @@ const AppStyles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 500,
+    resizeMode: 'contain',
+  },
+  avartar_item: {
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+    resizeMode: 'contain',
   },
   text: {
     fontSize: Fonts.normal,

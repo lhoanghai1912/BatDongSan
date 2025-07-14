@@ -32,6 +32,10 @@ const LoginScreen = () => {
     const token = '123';
     dispatch(setToken({ token }));
   };
+
+  const handleLoginWithGoogle = async ()=> {
+    
+  }
   return (
     <View style={styles.container}>
       <View style={{ marginBottom: Spacing.xlarge }}>
@@ -145,7 +149,7 @@ const LoginScreen = () => {
           marginBottom: Spacing.large,
         }}
       >
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=>handleLoginWithGoogle()}>
           <Image source={ICONS.google} style={{ width: 40, height: 40 }} />
         </TouchableOpacity>
         <TouchableOpacity>

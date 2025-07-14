@@ -8,6 +8,7 @@ import {
   TextInput,
   ScrollView,
   FlatList,
+  ActivityIndicator,
 } from 'react-native';
 import { ICONS } from '../../utils/constants';
 import { Spacing } from '../../utils/spacing';
@@ -19,6 +20,7 @@ import { getAllPosts } from '../../service';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/reducers/userSlice';
 import AppButton from '../../components/AppButton';
+import { setLoading } from '../../store/reducers/loadingSlice';
 
 const dataFilter = [
   'Loại nhà đất',
@@ -56,7 +58,7 @@ const HomeScreen: React.FC = ({}) => {
   const [modalTitle, setModalTitle] = useState<string>('');
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedValue, setSelectedValue] = useState<string[] | string>([]);
-
+  const [loading, setLoading] = useState(false);
   const numberResults = postData.length.toString();
 
   useEffect(() => {
@@ -67,19 +69,22 @@ const HomeScreen: React.FC = ({}) => {
     return () => clearInterval(interval); // clear khi unmount
   }, []);
 
-  // useEffect(() => {
-  //   const loadNews = async () => {
-  //     try {
-  //       const data = await getAllPosts(); // Gọi API bài viết
-  //       console.log('data', data);
+  useEffect(() => {
+    const loadNews = async () => {
+      setLoading(true);
+      try {
+        const data = await getAllPosts(); // Gọi API bài viết
+        console.log('data', data);
 
-  //       setPostsData(data.metadata.docs);
-  //     } catch (error) {
-  //       console.log('Lỗi khi tải bài viết:', error);
-  //     }
-  //   };
-  //   loadNews();
-  // }, []);
+        setPostsData(data.metadata.docs);
+      } catch (error) {
+        console.log('Lỗi khi tải bài viết:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadNews();
+  }, []);
 
   const handleLogout = async () => {
     dispatch(logout());
@@ -206,6 +211,19 @@ const HomeScreen: React.FC = ({}) => {
         />
       </View>
       <AppButton title="Logout" onPress={() => handleLogout()}></AppButton>
+      {loading && (
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: 'rgba(0,0,0,0.3)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 10,
+          }}
+        >
+          <ActivityIndicator size="large" color="#E53935" />
+        </View>
+      )}
     </View>
   );
 };

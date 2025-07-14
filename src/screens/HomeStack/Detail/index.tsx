@@ -14,21 +14,32 @@ const { width } = Dimensions.get('window');
 const DetailScreen = ({ route }) => {
   const { post } = route.params; // mảng các URL ảnh
   console.log('route', route);
+  console.log('data', post);
 
-  console.log('imagessssssssssssssssssssssssssssssssssssssss', post);
+  console.log(
+    'imagessssssssssssssssssssssssssssssssssssssss',
+    post.images.map(item => item.link),
+  );
 
   return (
     <View style={styles.container}>
-      {/* <FlatList
-        data={images}
+      <FlatList
+        data={post.images.map(item => item.link)}
         keyExtractor={(_, i) => i.toString()}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
-          <Image source={{ uri: item }} style={styles.image} />
+          <>
+            <View style={{ flex: 1, height: 300, backgroundColor: 'red' }}>
+              <Image
+                source={{ uri: item }}
+                style={[styles.image, { flex: 1 }]}
+              />
+            </View>
+          </>
         )}
-      /> */}
+      />
       <Text style={AppStyles.text}>abc</Text>
     </View>
   );

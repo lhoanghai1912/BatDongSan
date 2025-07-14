@@ -46,6 +46,7 @@ export const ICONS = {
   bed: require('../assets/icons/bed.png'),
   location: require('../assets/icons/location.png'),
   phone: require('../assets/icons/phone.png'),
+  noti: require('../assets/icons/noti.png'),
 };
 
 export const IMAGES = {

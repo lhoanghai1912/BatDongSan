@@ -10,6 +10,7 @@ import HeartScreen from '../screens/HomeStack/Heart';
 import UserScreen from '../screens/HomeStack/User';
 import HomeScreen from '../screens/HomeStack/HomeScreen';
 import { Screen_Name } from './ScreenName';
+import SettingScreen from '../screens/HomeStack/Setting';
 
 const Tab = createBottomTabNavigator();
 
@@ -45,7 +46,7 @@ const BottomTabNavigator = () => {
     >
       <Tab.Screen name={Screen_Name.Home_Screen} component={HomeScreen} />
       <Tab.Screen name={Screen_Name.Heart_Screen} component={HeartScreen} />
-      <Tab.Screen name={Screen_Name.User_Screen} component={UserScreen} />
+      <Tab.Screen name={Screen_Name.Setting_Screen} component={SettingScreen} />
     </Tab.Navigator>
   );
 };

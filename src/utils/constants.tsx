@@ -47,9 +47,19 @@ export const ICONS = {
   location: require('../assets/icons/location.png'),
   phone: require('../assets/icons/phone.png'),
   noti: require('../assets/icons/noti.png'),
+  question: require('../assets/icons/question.png'),
+  issue: require('../assets/icons/issue.png'),
+  about: require('../assets/icons/about.png'),
+  clause: require('../assets/icons/clause.png'),
+  privacy: require('../assets/icons/privacy.png'),
+  remove_user: require('../assets/icons/remove_user.png'),
+  logout: require('../assets/icons/logout.png'),
+  radio_checked: require('../assets/icons/radio_checked.png'),
+  radio_unchecked: require('../assets/icons/radio_unchecked.png'),
 };
 
 export const IMAGES = {
   logo: require('../assets/images/company-logo.png'),
-  avartar: require('../assets/icons/avt_male.jpg'),
+  avartar: require('../assets/images/avt_male.jpg'),
+  bocongthuong: require('../assets/images/bocongthuong.png'),
 };

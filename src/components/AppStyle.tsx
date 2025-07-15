@@ -137,6 +137,11 @@ const AppStyles = StyleSheet.create({
     textDecorationLine: 'underline',
     textDecorationColor: Colors.blue,
   },
+  line: {
+    borderColor: Colors.Gray,
+    borderWidth: 0.5,
+    marginBottom: Spacing.medium,
+  },
 });
 
 export default AppStyles;

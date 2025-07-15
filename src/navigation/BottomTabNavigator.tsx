@@ -7,7 +7,6 @@ import { View, Text, Image } from 'react-native';
 import { ICONS } from '../utils/constants'; // Assuming ICONS is the path where you store your icons
 import AppStyles from '../components/AppStyle';
 import HeartScreen from '../screens/HomeStack/Heart';
-import UserScreen from '../screens/HomeStack/User';
 import HomeScreen from '../screens/HomeStack/HomeScreen';
 import { Screen_Name } from './ScreenName';
 import SettingScreen from '../screens/HomeStack/Setting';
@@ -29,7 +28,7 @@ const BottomTabNavigator = () => {
           const iconMap = {
             Home_Screen: focused ? ICONS.search_focus : ICONS.search,
             Heart_Screen: focused ? ICONS.heart_focus : ICONS.heart,
-            User_Screen: focused ? ICONS.user_focus : ICONS.user,
+            Setting_Screen: focused ? ICONS.user_focus : ICONS.user,
           };
 
           return (

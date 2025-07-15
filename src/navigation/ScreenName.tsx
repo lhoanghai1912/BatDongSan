@@ -14,5 +14,5 @@ export const Screen_Name = {
   //Other
   Splash_Screen: 'Splash_Screen',
   Loading_Screen: 'Splash_Screen',
-  Bottom_Navigator: 'Bottom_Navigator',
+  BottomTab_Navigator: 'BottomTab_Navigator',
 };

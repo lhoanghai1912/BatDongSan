@@ -45,7 +45,14 @@ const LoginScreen = () => {
       if (checked) {
         await AsyncStorage.setItem('accessToken', loginData.token);
       }
-      console.log('Login success', loginData);
+      navigate(Screen_Name.BottomTab_Navigator, {
+        screen: Screen_Name.Setting_Screen,
+      });
+      Toast.show({
+        type: 'success',
+        text1: 'Welcome',
+        text2: `${loginData.profile.fullName}`,
+      });
     } catch (error) {
       console.log('error', error);
     } finally {

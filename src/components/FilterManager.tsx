@@ -1,10 +1,9 @@
 import React from 'react';
 import CheckBoxModal from './Modal/CheckBoxModal';
 import RadioButtonModal from './Modal/RadioButtonModal';
-import ButtonModal from './Modal/ButtonModal';
 
 // Kiểu dữ liệu input
-type FilterModalType = 'checkBoxModal' | 'radioButtonModal' | 'buttonModal';
+type FilterModalType = 'checkBoxModal' | 'radioButtonModal';
 
 interface FilterManagerProps {
   visible: boolean;
@@ -46,19 +45,6 @@ const FilterManager: React.FC<FilterManagerProps> = ({
         visible={visible}
         title={title}
         data={data as { label: string; value: string }[]}
-        selected={selected as string}
-        onClose={onClose}
-        onSubmit={onApplyFilter}
-      />
-    );
-  }
-
-  if (type === 'buttonModal') {
-    return (
-      <ButtonModal
-        visible={visible}
-        title={title}
-        data={data as string[]}
         selected={selected as string}
         onClose={onClose}
         onSubmit={onApplyFilter}

@@ -2,12 +2,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { navigationRef } from './RootNavigator';
-import AuthNavigator from './AuthNavigator';
 import HomeNavigator from './HomeNavigator';
 import { useDispatch, useSelector } from 'react-redux';
 import SplashScreen from '../screens/Splash';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setToken } from '../store/reducers/userSlice';
+import HomeScreen from '../screens/HomeStack/HomeScreen';
 // const AppNavigator = () => {
 //   const [showSplash, setShowSplash] = useState(true);
 //   const { token } = useSelector((state: any) => state.user);
@@ -58,7 +58,8 @@ const AppNavigator = () => {
 
   return (
     <NavigationContainer ref={navigationRef}>
-      {token ? <HomeNavigator /> : <AuthNavigator />}
+      {/* {token ? <HomeNavigator /> : <AuthNavigator />} */}
+      <HomeNavigator />
     </NavigationContainer>
   );
 };

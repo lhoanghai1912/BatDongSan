@@ -22,6 +22,7 @@ interface CheckBoxModalProps {
   data: string[];
   selected: string[];
   onClose: () => void;
+  onReset: () => void;
   onSubmit: (selected: string[]) => void;
 }
 
@@ -31,6 +32,7 @@ const CheckBoxModal: React.FC<CheckBoxModalProps> = ({
   data,
   selected,
   onClose,
+  onReset,
   onSubmit,
 }) => {
   const [localSelected, setLocalSelected] = useState<string[]>(selected);
@@ -47,7 +49,8 @@ const CheckBoxModal: React.FC<CheckBoxModalProps> = ({
     );
   };
   const clearValue = () => {
-    setLocalSelected([]);
+    setLocalSelected(['']);
+    onReset();
   };
 
   return (

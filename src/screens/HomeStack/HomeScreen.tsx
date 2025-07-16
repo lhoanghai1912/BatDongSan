@@ -55,12 +55,16 @@ const HomeScreen: React.FC = ({}) => {
     'checkBoxModal' | 'radioButtonModal' | null
   >(null);
 
+  const [modalTitleKey, setModalTitleKey] = useState<string>('');
   const [modalData, setModalData] = useState<any[]>([]);
   const [modalTitle, setModalTitle] = useState<string>('');
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedValue, setSelectedValue] = useState<string[] | string>([]);
+  const [selectedValue, setSelectedValue] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(false);
-  const numberResults = postData.length.toString();
+  const [isSingleValue, setIsSingleValue] = useState(false);
+  const [filteredData, setFilteredData] = useState<PostType[]>([]);
+
+  const numberResults = filteredData.length.toString();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -87,7 +91,71 @@ const HomeScreen: React.FC = ({}) => {
     loadNews();
   }, []);
 
+  useEffect(() => {
+    const applyFilters = () => {
+      let filtered = [...postData];
+
+      // Lọc theo loại nhà
+      if (selectedValue.loaiNha?.length) {
+        console.log('loai nha', selectedValue.loaiNha);
+        console.log(
+          ' data loai nha',
+          filtered.filter(post =>
+            selectedValue.loaiNha.includes(post.info_main.type_property),
+          ),
+        );
+
+        filtered = filtered.filter(post =>
+          selectedValue.loaiNha.includes(post.info_main.type_property),
+        );
+      }
+
+      // Lọc theo khoảng giá (giá trong post.price, tính theo tỷ)
+      if (selectedValue.khoangGia) {
+        const [min, max] = selectedValue.khoangGia
+          .split('-')
+          .map(val => Number(val) * 1_000_000_000);
+        console.log(min, ' min   ; ', max, '  max');
+
+        filtered = filtered.filter(
+          post => post.info_main.price >= min && post.info_main.price <= max,
+        );
+      }
+
+      // Lọc theo diện tích (diện tích trong post.acreage, đơn vị m²)
+      if (selectedValue.dienTich) {
+        const [min, max] = selectedValue.dienTich.split('-').map(Number);
+        console.log('dien tich', min, max);
+
+        filtered = filtered.filter(
+          post =>
+            post.info_main.acreage >= min && post.info_main.acreage <= max,
+        );
+      }
+
+      // Lọc theo số phòng ngủ (post.bedrooms là số)
+      if (selectedValue.soPhongNgu) {
+        const val = parseInt(selectedValue.soPhongNgu);
+
+        if (!isNaN(val)) {
+          if (val < 5) {
+            filtered = filtered.filter(
+              post => post.info_other.bedrooms === val,
+            );
+          } else {
+            filtered = filtered.filter(post => post.info_other.bedrooms >= val);
+          }
+        }
+      }
+
+      setFilteredData(filtered);
+    };
+
+    applyFilters();
+  }, [selectedValue, postData]);
+
   const openFilterModal = (type: string) => {
+    setModalTitleKey(type);
     switch (type) {
       case 'loaiNha':
         setModalType('checkBoxModal');
@@ -95,7 +163,7 @@ const HomeScreen: React.FC = ({}) => {
           'Chung cư',
           'Nhà riêng',
           'Biệt thự',
-          'Chung cư mini, căn hộ dịch vụ',
+          'Căn hộ chung cư',
           'Nhà biệt thự, liền kề',
           'Nhà mặt phố',
           'Nhà trọ, phòng trọ',
@@ -136,8 +204,7 @@ const HomeScreen: React.FC = ({}) => {
           { label: '20 - 30 tỷ', value: '20-30' },
           { label: '30 - 40 tỷ', value: '30-40' },
           { label: '40 - 60 tỷ', value: '40-60' },
-          { label: 'trên 60 tỷ', value: '100' },
-          { label: 'Thỏa thuận', value: 'deal' },
+          { label: 'trên 60 tỷ', value: '60-100' },
         ]);
         setModalTitle('Chọn khoảng giá');
         break;
@@ -146,20 +213,30 @@ const HomeScreen: React.FC = ({}) => {
         setModalData([
           { label: 'Dưới 30m²', value: '0-30' },
           { label: '30-50m²', value: '30-50' },
-          { label: 'Trên 80m²', value: '80+' },
+          { label: '50-80m²', value: '50-80' },
+          { label: '80-100m²', value: '80-100' },
+          { label: '100-150m²', value: '100-150' },
+          { label: '150-200m²', value: '150-200' },
+          { label: '200-250m²', value: '200-250' },
+          { label: '250-300m²', value: '250-300' },
+          { label: '300-500m²', value: '300-500' },
+          { label: '500-800m²', value: '500-800' },
+          { label: 'trên 800m²', value: '800-999999999999' },
         ]);
         setModalTitle('Chọn diện tích');
         break;
       case 'soPhongNgu':
         setModalType('radioButtonModal');
         setModalData([
-          { label: '1', value: '0-1' },
-          { label: '2', value: '1-2' },
-          { label: '3', value: '2-3' },
-          { label: '4', value: '3-4' },
+          { label: '1', value: '1' },
+          { label: '2', value: '2' },
+          { label: '3', value: '3' },
+          { label: '4', value: '4' },
           { label: '5+', value: '5' },
         ]);
         setModalTitle('Chọn số phòng ngủ');
+        setIsSingleValue(true); // ✅ thêm biến flag
+
         break;
     }
     setModalVisible(true);
@@ -172,6 +249,14 @@ const HomeScreen: React.FC = ({}) => {
         <View style={styles.underLine} />
       </>
     );
+  };
+  const handleReset = () => {
+    setSelectedValue(prev => {
+      const updated = { ...prev };
+      delete updated[modalTitleKey]; // Xoá giá trị filter hiện tại
+      return updated;
+    });
+    setModalVisible(false);
   };
   return (
     <View style={styles.container}>
@@ -193,16 +278,45 @@ const HomeScreen: React.FC = ({}) => {
             showsHorizontalScrollIndicator={false}
             style={styles.filterRow}
           >
-            {dataFilter.map((item, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.filterInput}
-                onPress={() => openFilterModal(item.key)}
-              >
-                <Text style={AppStyles.text}>{item.label}</Text>
-                <Image source={ICONS.down} style={AppStyles.icon} />
-              </TouchableOpacity>
-            ))}
+            {dataFilter.map((item, index) => {
+              const selected = selectedValue[item.key];
+
+              let label = item.label;
+              if (selected) {
+                if (Array.isArray(selected)) {
+                  label = `${selected.join(', ')}`;
+                } else {
+                  if (item.key === 'khoangGia') {
+                    label = `${selected} tỷ`;
+                  } else if (item.key === 'dienTich') {
+                    {
+                      label = `${selected} m²`;
+                    }
+                  } else if (item.key === 'soPhongNgu') {
+                    {
+                      label = `${selected} ngủ`;
+                    }
+                  }
+                }
+              }
+
+              return (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.filterInput}
+                  onPress={() => openFilterModal(item.key)}
+                >
+                  <Text
+                    style={[AppStyles.text, { flexShrink: 1 }]}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {label}
+                  </Text>
+                  <Image source={ICONS.down} style={AppStyles.icon} />
+                </TouchableOpacity>
+              );
+            })}
           </ScrollView>
         </View>
       </View>
@@ -248,7 +362,7 @@ const HomeScreen: React.FC = ({}) => {
           </TouchableOpacity>
         </View>
         <FlatList
-          data={postData}
+          data={filteredData}
           ListEmptyComponent={
             <Text style={[AppStyles.label, { flex: 1, textAlign: 'center' }]}>
               Không có dữ liệu phù hợp
@@ -279,12 +393,16 @@ const HomeScreen: React.FC = ({}) => {
           type={modalType}
           title={modalTitle}
           data={modalData}
-          selected={selectedValue}
+          isSingleValue={isSingleValue} // ✅ Thêm dòng này
+          selected={selectedValue[modalTitleKey] || ''} // ✅ fix đúng kiểu
           onClose={() => setModalVisible(false)}
+          onReset={() => handleReset()}
           onApplyFilter={value => {
-            setSelectedValue(value);
+            setSelectedValue(prev => ({
+              ...prev,
+              [modalTitleKey]: value,
+            }));
             setModalVisible(false);
-            // TODO: lọc dữ liệu theo `value`
           }}
         />
       )}
@@ -345,6 +463,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.small,
     marginRight: Spacing.small,
     marginBottom: Spacing.small,
+    maxWidth: 300,
   },
   filterText: {
     fontSize: 14,

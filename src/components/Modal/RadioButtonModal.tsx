@@ -29,7 +29,9 @@ interface RadioButtonModalProps {
   data: Option[];
   selected: string;
   onClose: () => void;
+  onReset: () => void;
   onSubmit: (selected: string) => void;
+  isSingleValue?: boolean;
 }
 
 const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
@@ -38,62 +40,120 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
   data,
   selected,
   onClose,
+  onReset,
   onSubmit,
+  isSingleValue = false,
 }) => {
+  const extractMaxValue = (): number => {
+    if (data) {
+      const parts = data[data.length - 1].value.split('-').map(Number);
+      return parts[1] || 100;
+    }
+    return 0;
+  };
+
+  const maxValue = extractMaxValue();
+
+  const parseRangeFromString = (value: string): [number, number] => {
+    const parts = value.split('-').map(Number);
+    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+      const [min, max] = parts;
+
+      return [
+        Math.round((min / maxValue) * 10), // phần trăm * 10 (vd 30m² → 3)
+        Math.round((max / maxValue) * 10),
+      ];
+    }
+    return [0, 0];
+  };
+
+  const initialRange = parseRangeFromString(selected);
+
   const [selectedValue, setSelectedValue] = useState<string>(selected);
-  const [minInput, setMinInput] = useState('0');
-  const [maxInput, setMaxInput] = useState(data?.[data.length - 2]?.value);
-  const [sliderValue, setSliderValue] = useState(0);
-  const max = Number(data?.[data.length - 2]?.value ?? 100); // fallback nếu không đủ data
-  const [range, setRange] = useState<[number, number]>([0, max]);
+  const [range, setRange] = useState<[number, number]>(initialRange);
+  const [minInput, setMinInput] = useState(
+    initialRange[0].toFixed(2).toString(),
+  );
+  const [sliderValue, setSliderValue] = useState<number>(
+    parseInt(selected) || 1,
+  );
+  const [maxInput, setMaxInput] = useState(
+    initialRange[1].toFixed(2).toString(),
+  );
 
   useEffect(() => {
     setSelectedValue(selected);
   }, [selected]);
 
-  const formatPriceToTy = (price: number): string => {
-    if (!price || isNaN(price)) return '0 triệu';
-
-    // if (price >= 1_000_000_000) {
-    //   return `${(price / 1_000_000_000).toFixed(2)} tỷ`;
-    // }
-
-    // if (price >= 1_000_000) {
-    //   return `${(price / 1_000_000).toFixed(0)} triệu`;
-    // }
-
-    if (price >= 1_000) {
-      return `${(price / 1_000).toFixed(0)} tỷ`;
+  const handleSubmit = () => {
+    if (isSingleValue) {
+      onSubmit(sliderValue.toString());
+    } else {
+      if (range[0] === 0 && range[1] === 0) {
+        onSubmit('');
+        onClose();
+        return;
+      }
+      const resultValue = `${minInput}-${maxInput}`;
+      onSubmit(resultValue);
     }
 
-    return `${price.toFixed(0)} triệu`;
-  };
-
-  const handleSubmit = () => {
-    onSubmit(selectedValue);
     onClose();
   };
 
   const handleReset = () => {
-    setSelectedValue('');
+    setRange([0, 0]);
+    setMinInput('0');
+    setMaxInput('0');
+    onReset(); // ✅ GỌI RA NGOÀI
   };
 
   // Khi slider thay đổi -> cập nhật input và range
   const handleSliderChange = (values: number[]) => {
-    setRange([values[0], values[1]]);
-    setMinInput(values[0].toString());
-    setMaxInput(values[1].toString());
+    if (isSingleValue) {
+      setSliderValue(values[0]); // chỉ cần 1 giá trị
+      setSelectedValue(values[0].toString());
+    } else {
+      setRange([values[0], values[1]]);
+
+      const realMin = ((values[0] / 100) * maxValue).toFixed(2);
+      const realMax = ((values[1] / 100) * maxValue).toFixed(2);
+
+      setMinInput(realMin);
+      setMaxInput(realMax);
+      setSelectedValue('');
+    }
   };
 
   // Khi input thay đổi -> cập nhật slider (sau debounce)
   useEffect(() => {
-    const min = parseInt(minInput) || 0;
-    const max = parseInt(maxInput) || 0;
-
-    if (min < max && max <= 10000) {
-      setRange([min, max]);
+    if (!isSingleValue) {
+      const min = parseFloat(minInput);
+      const max = parseFloat(maxInput);
+      if (!isNaN(min) && !isNaN(max) && min < max && max <= maxValue) {
+        setRange([(min / maxValue) * 100, (max / maxValue) * 100]);
+        setSelectedValue('');
+      }
     }
   }, [minInput, maxInput]);
+
+  const handleRadioSelected = (value: string) => {
+    setSelectedValue(value);
+
+    if (isSingleValue) {
+      const val = parseInt(value);
+      if (!isNaN(val)) setSliderValue(val);
+    } else {
+      const [min, max] = value.split('-').map(Number);
+      if (!isNaN(min) && !isNaN(max)) {
+        const minPercent = (min / maxValue) * 100;
+        const maxPercent = (max / maxValue) * 100;
+        setRange([minPercent, maxPercent]);
+        setMinInput(min.toString());
+        setMaxInput(max.toString());
+      }
+    }
+  };
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
@@ -124,42 +184,51 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
           >
             {/* Text hiển thị giá trị */}
             <View style={styles.valueRow}>
-              <Text style={styles.valueText}>
-                Từ: {formatPriceToTy(range[0])} đồng
-              </Text>
-              <Text style={styles.valueText}>
-                Đến: {formatPriceToTy(range[1])} đồng
-              </Text>
+              {/* Giá trị hiển thị */}
+              {isSingleValue ? (
+                <Text style={styles.valueText}>Số phòng: {sliderValue}</Text>
+              ) : (
+                <View style={styles.valueRow}>
+                  <Text style={styles.valueText}>
+                    Từ: {minInput} {title.includes('giá') ? 'tỷ đồng' : 'm²'}
+                  </Text>
+                  <Text style={styles.valueText}>
+                    Đến: {maxInput} {title.includes('giá') ? 'tỷ đồng' : 'm²'}
+                  </Text>
+                </View>
+              )}
             </View>
-
-            {/* Nhập giá trị thủ công */}
-            <View style={[styles.inputRow]}>
-              <TextInput
-                style={styles.input}
-                keyboardType="numeric"
-                value={minInput}
-                onChangeText={setMinInput}
-                placeholder="Tối thiểu"
-              />
-              <Text style={{ marginHorizontal: 8 }}>-</Text>
-              <TextInput
-                style={styles.input}
-                keyboardType="numeric"
-                value={maxInput}
-                onChangeText={setMaxInput}
-                placeholder="Tối đa"
-              />
-            </View>
+            {!isSingleValue && (
+              <View style={styles.inputRow}>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="numeric"
+                  value={minInput}
+                  onChangeText={setMinInput}
+                  placeholder="Tối thiểu"
+                />
+                <Text style={{ marginHorizontal: 8 }}>-</Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="numeric"
+                  value={maxInput}
+                  onChangeText={setMaxInput}
+                  placeholder="Tối đa"
+                />
+              </View>
+            )}
 
             {/* Thanh kéo */}
             <View style={{}}>
               <MultiSlider
-                values={range}
+                values={isSingleValue ? [sliderValue] : range} // ✅ fix
                 onValuesChange={handleSliderChange}
-                min={0}
-                max={60000}
-                step={500}
+                min={isSingleValue ? 1 : 0}
+                max={isSingleValue ? 5 : 100}
+                step={isSingleValue ? 1 : 0.1}
                 sliderLength={300}
+                allowOverlap={false}
+                snapped
                 selectedStyle={{ backgroundColor: Colors.primary }}
                 unselectedStyle={{ backgroundColor: Colors.lightGray }}
                 markerStyle={{
@@ -176,7 +245,7 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
               <>
                 <TouchableOpacity
                   key={idx}
-                  onPress={() => setSelectedValue(item.value)}
+                  onPress={() => handleRadioSelected(item.value)}
                   style={styles.option}
                 >
                   <Text style={[AppStyles.text, { color: Colors.black }]}>
@@ -184,9 +253,21 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
                   </Text>
                   <Image
                     source={
-                      selectedValue === item.value
-                        ? ICONS.radio_checked
-                        : ICONS.radio_unchecked
+                      isSingleValue
+                        ? sliderValue.toString() === item.value
+                          ? ICONS.radio_checked
+                          : ICONS.radio_unchecked
+                        : (() => {
+                            const [min, max] = item.value
+                              .split('-')
+                              .map(Number);
+                            const [curMin, curMax] = range.map(val =>
+                              Math.round((val / 100) * maxValue),
+                            );
+                            return min === curMin && max === curMax
+                              ? ICONS.radio_checked
+                              : ICONS.radio_unchecked;
+                          })()
                     }
                     style={AppStyles.icon}
                   />

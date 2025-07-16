@@ -12,7 +12,9 @@ interface FilterManagerProps {
   data: any[]; // string[] cho checkbox, button — { label, value }[] cho radio
   selected: string[] | string;
   onClose: () => void;
+  onReset: () => void;
   onApplyFilter: (value: string[] | string) => void;
+  isSingleValue?: boolean; // 👈 THÊM DÒNG NÀY
 }
 
 const FilterManager: React.FC<FilterManagerProps> = ({
@@ -22,7 +24,9 @@ const FilterManager: React.FC<FilterManagerProps> = ({
   data,
   selected,
   onClose,
+  onReset,
   onApplyFilter,
+  isSingleValue,
 }) => {
   if (!visible) return null;
 
@@ -34,6 +38,7 @@ const FilterManager: React.FC<FilterManagerProps> = ({
         data={data as string[]}
         selected={selected as string[]}
         onClose={onClose}
+        onReset={onReset}
         onSubmit={onApplyFilter}
       />
     );
@@ -47,6 +52,8 @@ const FilterManager: React.FC<FilterManagerProps> = ({
         data={data as { label: string; value: string }[]}
         selected={selected as string}
         onClose={onClose}
+        onReset={onReset}
+        isSingleValue={title.toLowerCase().includes('phòng ngủ')} // ✅ chỉ true với "Số phòng ngủ"
         onSubmit={onApplyFilter}
       />
     );

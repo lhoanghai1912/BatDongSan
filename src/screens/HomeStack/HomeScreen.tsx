@@ -22,6 +22,9 @@ import { logout } from '../../store/reducers/userSlice';
 import AppButton from '../../components/AppButton';
 import { setLoading } from '../../store/reducers/loadingSlice';
 import FilterManager from '../../components/FilterManager';
+import SearchModal from '../../components/Modal/SearchModal';
+import { menu } from '../../service/menu';
+import LanguageSelector from '../../components/LanguageSelector';
 
 const dataFilter = [
   { label: 'Loại nhà đất', key: 'loaiNha' },
@@ -59,12 +62,16 @@ const HomeScreen: React.FC = ({}) => {
   const [modalData, setModalData] = useState<any[]>([]);
   const [modalTitle, setModalTitle] = useState<string>('');
   const [modalVisible, setModalVisible] = useState(false);
+  const [searchModalVisible, setSearchModalVisible] = useState(false);
   const [selectedValue, setSelectedValue] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(false);
   const [isSingleValue, setIsSingleValue] = useState(false);
   const [filteredData, setFilteredData] = useState<PostType[]>([]);
-
+  const [seachValue, setSearchValue] = useState('');
+  const [houseType, setHouseType] = useState([]);
   const numberResults = filteredData.length.toString();
+  const [langModalVisible, setLangModalVisible] = useState(false);
+  const [selectedLang, setSelectedLang] = useState('vi');
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -153,6 +160,18 @@ const HomeScreen: React.FC = ({}) => {
 
     applyFilters();
   }, [selectedValue, postData]);
+
+  useEffect(() => {
+    const loadMenu = async () => {
+      const data = await menu(selectedLang);
+      setHouseType(data.forSale);
+    };
+    loadMenu();
+  }, [selectedLang]);
+
+  useEffect(() => {
+    console.log('✅ houseType updated:', houseType);
+  }, [houseType]);
 
   const openFilterModal = (type: string) => {
     setModalTitleKey(type);
@@ -263,7 +282,10 @@ const HomeScreen: React.FC = ({}) => {
       <View style={styles.header}>
         <View style={styles.searchBox}>
           <Image source={ICONS.search} style={styles.searchIcon} />
-          <TouchableOpacity style={{ width: '100%' }}>
+          <TouchableOpacity
+            onPress={() => setSearchModalVisible(true)}
+            style={{ width: '100%' }}
+          >
             <Text style={[styles.searchLabel]}>Tìm kiếm</Text>
             <Text style={[AppStyles.text]}>
               {placeholderTexts[currentIndex]}
@@ -330,6 +352,12 @@ const HomeScreen: React.FC = ({}) => {
             paddingHorizontal: Spacing.medium,
           }}
         >
+          <TouchableOpacity
+            style={{ padding: 10, alignSelf: 'flex-end' }}
+            onPress={() => setLangModalVisible(true)}
+          >
+            <Text style={{ color: Colors.primary }}>🌐 Ngôn ngữ</Text>
+          </TouchableOpacity>
           <View style={{ flexDirection: 'row' }}>
             <Text
               style={[
@@ -406,6 +434,19 @@ const HomeScreen: React.FC = ({}) => {
           }}
         />
       )}
+      <LanguageSelector
+        visible={langModalVisible}
+        selectedLang={selectedLang}
+        onSelect={lang => {
+          setSelectedLang(lang);
+        }}
+        onClose={() => setLangModalVisible(false)}
+      />
+      <SearchModal
+        visible={searchModalVisible}
+        onClose={() => setSearchModalVisible(false)}
+        onSearch={value => setSearchValue(value)}
+      />
     </View>
   );
 };

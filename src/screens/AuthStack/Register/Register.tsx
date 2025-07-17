@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Spacing } from '../../../utils/spacing';
-import { ICONS, IMAGES, TITLES } from '../../../utils/constants';
+import { ICONS, IMAGES, text } from '../../../utils/constants';
 import AppStyles from '../../../components/AppStyle';
 import AppInput from '../../../components/AppInput';
 import AppButton from '../../../components/AppButton';
@@ -50,7 +50,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <NavBar title={TITLES.register} onPress={() => navigation.goBack()} />
+      <NavBar title={text.register} onPress={() => navigation.goBack()} />
       <View style={{ marginBottom: Spacing.xlarge }}>
         <Image
           source={IMAGES.logo}

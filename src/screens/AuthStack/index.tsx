@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useTransition } from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   Linking,
   ActivityIndicator,
 } from 'react-native';
-import { ICONS, IMAGES, TITLES } from '../../utils/constants';
+import { ICONS, IMAGES, text } from '../../utils/constants';
 import AppStyles from '../../components/AppStyle';
 import AppInput from '../../components/AppInput';
 import { Spacing } from '../../utils/spacing';
@@ -23,10 +23,11 @@ import { setToken, setUserData } from '../../store/reducers/userSlice';
 import { login } from '../../service';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
-
+  const { t } = useTranslation();
   const [email, setEmail] = useState('hoanghai281zzz@gmail.com');
   const [password, setPassWord] = useState('12345678Ab@');
   const [checked, setchecked] = useState(false);
@@ -50,7 +51,7 @@ const LoginScreen = () => {
       });
       Toast.show({
         type: 'success',
-        text1: 'Welcome',
+        text1: `${t(text.welcome)}`,
         text2: `${loginData.profile.fullName}`,
       });
     } catch (error) {
@@ -74,10 +75,10 @@ const LoginScreen = () => {
           }}
         />
         <Text style={[AppStyles.title, { marginBottom: Spacing.small }]}>
-          {TITLES.login}
+          {text.login}
         </Text>
         <Text style={[AppStyles.text, { textAlign: 'center' }]}>
-          {TITLES.welcome}
+          {text.welcome}
         </Text>
       </View>
       <View>
@@ -129,7 +130,7 @@ const LoginScreen = () => {
       </View>
       <View style={{ marginBottom: Spacing.xlarge }}>
         <AppButton
-          title={TITLES.login}
+          title={text.login}
           onPress={() => handleLogin()}
           disabled={!email || !password}
         />

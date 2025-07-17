@@ -9,17 +9,21 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  ImageSourcePropType,
 } from 'react-native';
 import { Colors } from '../../utils/color';
 import { Spacing } from '../../utils/spacing';
 import { ICONS, IMAGES } from '../../utils/constants';
 import AppStyles from '../AppStyle';
 import AppButton from '../AppButton';
-
+interface Option {
+  label: string;
+  icon: string;
+}
 interface CheckBoxModalProps {
   visible: boolean;
   title: string;
-  data: string[];
+  data: Option[];
   selected: string[];
   onClose: () => void;
   onReset: () => void;
@@ -76,19 +80,22 @@ const CheckBoxModal: React.FC<CheckBoxModalProps> = ({
           {/* <View style={styles.body}> */}
           <ScrollView style={styles.body}>
             {data.map((item, idx) => {
-              const isChecked = localSelected.includes(item);
+              const isChecked = localSelected.includes(item.label);
               return (
                 <TouchableOpacity
                   key={idx}
-                  onPress={() => toggleValue(item)}
+                  onPress={() => toggleValue(item.label)}
                   style={styles.option}
                 >
                   <View style={styles.optionContent}>
                     {/* Left side: icon + label */}
                     <View style={styles.labelContainer}>
                       {/* Nếu có icon bạn thêm vào đây: */}
-                      <Image source={ICONS.apple} style={AppStyles.icon} />
-                      <Text style={styles.optionLabel}>{item}</Text>
+                      <Image
+                        source={item.icon as ImageSourcePropType}
+                        style={AppStyles.icon}
+                      />
+                      <Text style={styles.optionLabel}>{item.label}</Text>
                     </View>
 
                     {/* Right side: checkbox */}

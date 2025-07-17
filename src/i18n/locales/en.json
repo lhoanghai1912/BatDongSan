@@ -1,0 +1,67 @@
+{
+  "login":"Login",
+  "welcome":"",
+  "input_email":"",
+  "input_password":"",
+  "remember_me":"",
+  "search": "Search",
+  "find_project": "Find project",
+  "find_district": "Find district",
+  "find_ward": "Find ward",
+  "find_street": "Find street",
+  "property_type": "Property type",
+  "price_range": "Price range",
+  "acreage": "Acreage",
+  "bedrooms": "Bedrooms",
+  "language": "Language",
+  "no_data": "No matching data",
+  "property": "Property",
+  "arrange":"Arrange",
+  "guide": "Guide",
+  "faq": "Frequently Asked Questions",
+  "report_issue": "Report an Issue",
+  "about_us": "About Us",
+  "terms_and_conditions": "Terms and Conditions",
+  "privacy_policy": "Privacy Policy",
+  "account_management": "Account Management",
+  "notification_settings": "Notification Settings",
+  "delete_account_request": "Request Account Deletion",
+  "logout": "Logout",
+  "login_to_view": "Log in to view seller contact and information",
+  "business_registration": "Business Registration No. 1209312 issued by Hanoi DPI on 01/01/2025",
+  "responsible_person": "Responsible for the e-commerce platform: Mr. ...",
+  "company_name": "JOINT STOCK COMPANY ...",
+  "company_address": "3rd Floor, N03-T3 Ngoai Giao Doan, Bac Tu Liem, Hanoi",
+  "version": "Version 1.0",
+
+
+  "modal": {
+    "chooseHouseType": "Choose house type",
+    "chooseDirection": "Choose direction",
+    "houseType": {
+      "apartment": "Apartment",
+      "mini_apartment": "Mini apartment, serviced apartment",
+      "house": "Private house",
+      "villa": "Villa, townhouse",
+      "roadhouse": "Street house",
+      "shophouse": "Shophouse, commercial townhouse",
+      "projectLand": "Project land",
+      "land": "Land",
+      "farm": "Farm, resort",
+      "condotel": "Condotel",
+      "warehouse": "Warehouse, factory",
+      "other": "Other real estate"
+    },
+    "direction": {
+      "Đông": "East",
+      "Tây": "West",
+      "Nam": "South",
+      "Bắc": "North",
+      "Đông Bắc": "Northeast",
+      "Đông Nam": "Southeast",
+      "Tây Bắc": "Northwest",
+      "Tây Nam": "Southwest"
+    }
+  }
+
+}

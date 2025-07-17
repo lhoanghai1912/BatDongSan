@@ -10,53 +10,56 @@ import {
   FlatList,
   ActivityIndicator,
 } from 'react-native';
-import { ICONS } from '../../utils/constants';
-import { Spacing } from '../../utils/spacing';
-import AppStyles from '../../components/AppStyle';
-import { Colors } from '../../utils/color';
-import { Fonts } from '../../utils/fontSize';
-import ImageCard from './ImageCard';
-import { getAllPosts } from '../../service';
+import { ICONS, text } from '../../../utils/constants';
+import { Spacing } from '../../../utils/spacing';
+import AppStyles from '../../../components/AppStyle';
+import { Colors } from '../../../utils/color';
+import { Fonts } from '../../../utils/fontSize';
+import ImageCard from '../ImageCard';
+import { getAllPosts } from '../../../service';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../../store/reducers/userSlice';
-import AppButton from '../../components/AppButton';
-import { setLoading } from '../../store/reducers/loadingSlice';
-import FilterManager from '../../components/FilterManager';
-import SearchModal from '../../components/Modal/SearchModal';
-import { menu } from '../../service/menu';
-import LanguageSelector from '../../components/LanguageSelector';
-
-const dataFilter = [
-  { label: 'Loại nhà đất', key: 'loaiNha' },
-  { label: 'Khoảng giá', key: 'khoangGia' },
-  { label: 'Diện tích', key: 'dienTich' },
-  { label: 'Số phòng ngủ', key: 'soPhongNgu' },
-  // 'Hướng nhà',
-  // 'Hướng ban công',
-  // 'Tin có ảnh / video',
-];
-const placeholderTexts = [
-  'Tìm dự án',
-  'Tìm quận/huyện',
-  'Tìm phường/xã',
-  'Tìm đường phố',
-];
-
-type PostType = {
-  _id: string;
-  // add other properties as needed
-  [key: string]: any;
-};
+import { logout } from '../../../store/reducers/userSlice';
+import AppButton from '../../../components/AppButton';
+import { setLoading } from '../../../store/reducers/loadingSlice';
+import FilterManager from '../../../components/FilterManager';
+import SearchModal from '../../../components/Modal/SearchModal';
+import { menu } from '../../../service/menu';
+import LanguageSelector from '../../../components/LanguageSelector';
+import { useTranslation } from 'react-i18next';
+import i18n from '../../../i18n/i18n';
 
 const HomeScreen: React.FC = ({}) => {
   const dispatch = useDispatch();
   const { userData, token } = useSelector((state: any) => state.user);
+  const { t } = useTranslation();
 
   const [postData, setPostsData] = useState<PostType[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [modalType, setModalType] = useState<
     'checkBoxModal' | 'radioButtonModal' | null
   >(null);
+
+  const dataFilter = [
+    { label: t(text.property_type), key: 'loaiNha' },
+    { label: t(text.price_range), key: 'khoangGia' },
+    { label: t(text.acreage), key: 'dienTich' },
+    { label: t(text.bedrooms), key: 'soPhongNgu' },
+    // 'Hướng nhà',
+    // 'Hướng ban công',
+    // 'Tin có ảnh / video',
+  ];
+  const placeholderTexts = [
+    t(text.find_project),
+    t(text.find_district),
+    t(text.find_ward),
+    t(text.find_street),
+  ];
+
+  type PostType = {
+    _id: string;
+    // add other properties as needed
+    [key: string]: any;
+  };
 
   const [modalTitleKey, setModalTitleKey] = useState<string>('');
   const [modalData, setModalData] = useState<any[]>([]);
@@ -179,20 +182,26 @@ const HomeScreen: React.FC = ({}) => {
       case 'loaiNha':
         setModalType('checkBoxModal');
         setModalData([
-          'Chung cư',
-          'Nhà riêng',
-          'Biệt thự',
-          'Căn hộ chung cư',
-          'Nhà biệt thự, liền kề',
-          'Nhà mặt phố',
-          'Nhà trọ, phòng trọ',
-          'Shophouse, nhà phố thương mại',
-          'Văn phòng',
-          'Cửa hàng, kiot',
-          'Kho, nhà xưởng, đất',
-          'Bất động sản khác',
+          { icon: ICONS.apartment, label: t(text.modal.houseType.apartment) },
+          {
+            icon: ICONS.mini_apartment,
+            label: t(text.modal.houseType.mini_apartment),
+          },
+          { icon: ICONS.house, label: t(text.modal.houseType.house) },
+          { icon: ICONS.villa, label: t(text.modal.houseType.villa) },
+          { icon: ICONS.roadhouse, label: t(text.modal.houseType.roadhouse) },
+          { icon: ICONS.shophouse, label: t(text.modal.houseType.shophouse) },
+          {
+            icon: ICONS.projectLand,
+            label: t(text.modal.houseType.projectLand),
+          },
+          { icon: ICONS.land, label: t(text.modal.houseType.land) },
+          { icon: ICONS.farm, label: t(text.modal.houseType.farm) },
+          { icon: ICONS.condotel, label: t(text.modal.houseType.condotel) },
+          { icon: ICONS.warehouse, label: t(text.modal.houseType.warehouse) },
+          { icon: ICONS.other, label: t(text.modal.houseType.other) },
         ]);
-        setModalTitle('Chọn loại nhà');
+        setModalTitle(t(text.modal.chooseHouseType));
         break;
       case 'huongNha':
         setModalType('checkBoxModal');
@@ -277,6 +286,13 @@ const HomeScreen: React.FC = ({}) => {
     });
     setModalVisible(false);
   };
+
+  const handleLanguageChange = async (newLang: string) => {
+    console.log('newlang', newLang);
+
+    await i18n.changeLanguage(newLang);
+    setSelectedLang(newLang);
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -286,7 +302,7 @@ const HomeScreen: React.FC = ({}) => {
             onPress={() => setSearchModalVisible(true)}
             style={{ width: '100%' }}
           >
-            <Text style={[styles.searchLabel]}>Tìm kiếm</Text>
+            <Text style={[styles.searchLabel]}>{t(text.search)}</Text>
             <Text style={[AppStyles.text]}>
               {placeholderTexts[currentIndex]}
             </Text>
@@ -352,12 +368,6 @@ const HomeScreen: React.FC = ({}) => {
             paddingHorizontal: Spacing.medium,
           }}
         >
-          <TouchableOpacity
-            style={{ padding: 10, alignSelf: 'flex-end' }}
-            onPress={() => setLangModalVisible(true)}
-          >
-            <Text style={{ color: Colors.primary }}>🌐 Ngôn ngữ</Text>
-          </TouchableOpacity>
           <View style={{ flexDirection: 'row' }}>
             <Text
               style={[
@@ -365,12 +375,20 @@ const HomeScreen: React.FC = ({}) => {
                 { color: Colors.darkGray, fontWeight: 'bold' },
               ]}
             >
-              {numberResults}
+              {`${numberResults} `}
             </Text>
             <Text style={[AppStyles.text, { color: Colors.darkGray }]}>
-              {` bất động sản`}
+              {t('property')}
             </Text>
           </View>
+          <TouchableOpacity
+            style={{ padding: 10, alignSelf: 'flex-end' }}
+            onPress={() => setLangModalVisible(true)}
+          >
+            <Text style={[AppStyles.text, { color: Colors.primary }]}>{`🌐 ${t(
+              text.language,
+            )}`}</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={{
               borderColor: Colors.Gray,
@@ -382,7 +400,7 @@ const HomeScreen: React.FC = ({}) => {
               alignItems: 'center',
             }}
           >
-            <Text style={AppStyles.text}>Sắp xếp</Text>
+            <Text style={AppStyles.text}>{t(text.arrange)}</Text>
             <Image
               source={ICONS.sort_down}
               style={{ width: 20, height: 20, marginLeft: Spacing.small }}
@@ -438,7 +456,7 @@ const HomeScreen: React.FC = ({}) => {
         visible={langModalVisible}
         selectedLang={selectedLang}
         onSelect={lang => {
-          setSelectedLang(lang);
+          handleLanguageChange(lang);
         }}
         onClose={() => setLangModalVisible(false)}
       />

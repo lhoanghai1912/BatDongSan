@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import SplashScreen from '../screens/Splash';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setToken } from '../store/reducers/userSlice';
-import HomeScreen from '../screens/HomeStack/HomeScreen';
+import HomeScreen from '../screens/HomeStack/Home/HomeScreen';
 // const AppNavigator = () => {
 //   const [showSplash, setShowSplash] = useState(true);
 //   const { token } = useSelector((state: any) => state.user);

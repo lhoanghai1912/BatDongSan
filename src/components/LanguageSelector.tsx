@@ -38,6 +38,8 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
               ]}
               onPress={() => {
                 onSelect(item.value);
+                console.log(item.value);
+
                 onClose();
               }}
             >

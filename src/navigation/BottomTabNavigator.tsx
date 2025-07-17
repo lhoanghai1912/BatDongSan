@@ -7,7 +7,7 @@ import { View, Text, Image } from 'react-native';
 import { ICONS } from '../utils/constants'; // Assuming ICONS is the path where you store your icons
 import AppStyles from '../components/AppStyle';
 import HeartScreen from '../screens/HomeStack/Heart';
-import HomeScreen from '../screens/HomeStack/HomeScreen';
+import HomeScreen from '../screens/HomeStack/Home/HomeScreen';
 import { Screen_Name } from './ScreenName';
 import SettingScreen from '../screens/HomeStack/Setting';
 

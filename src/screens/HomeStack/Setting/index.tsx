@@ -7,19 +7,21 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import NavBar from '../../../components/Navbar';
 import { useDispatch, useSelector } from 'react-redux';
 import { Spacing } from '../../../utils/spacing';
 import { Colors } from '../../../utils/color';
-import { ICONS, IMAGES, TITLES } from '../../../utils/constants';
+import { ICONS, IMAGES, text } from '../../../utils/constants';
 import AppStyles from '../../../components/AppStyle';
 import { navigate } from '../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../navigation/ScreenName';
 import { Fonts } from '../../../utils/fontSize';
 import { logout } from '../../../store/reducers/userSlice';
 import AppButton from '../../../components/AppButton';
+import { useTranslation } from 'react-i18next';
 
 const SettingScreen = () => {
+  const { t } = useTranslation();
+
   const dispactch = useDispatch();
   const { userData, token } = useSelector((state: any) => state.user);
   console.log('token11111111', token);
@@ -42,7 +44,11 @@ const SettingScreen = () => {
               <Text
                 style={[
                   AppStyles.title,
-                  { marginBottom: 0, marginLeft: Spacing.medium },
+                  {
+                    marginBottom: 0,
+                    marginLeft: Spacing.medium,
+                    color: Colors.black,
+                  },
                 ]}
               >
                 {userData?.fullName || ''}
@@ -99,7 +105,7 @@ const SettingScreen = () => {
               </Text>
             </View>
             <AppButton
-              title={TITLES.login}
+              title={text.login}
               onPress={() => navigate(Screen_Name.Login_Screen)}
             />
           </View>
@@ -123,7 +129,7 @@ const SettingScreen = () => {
                 marginBottom: Spacing.medium,
               }}
             >
-              Hướng dẫn
+              {t(text.guide)}
             </Text>
             <TouchableOpacity
               style={{
@@ -136,7 +142,7 @@ const SettingScreen = () => {
                 source={ICONS.question}
                 style={{ width: 20, height: 20, marginRight: Spacing.medium }}
               />
-              <Text style={AppStyles.text}>Câu hỏi thường gặp</Text>
+              <Text style={AppStyles.text}>{t('faq')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={{
@@ -149,7 +155,7 @@ const SettingScreen = () => {
                 source={ICONS.issue}
                 style={{ width: 20, height: 20, marginRight: Spacing.medium }}
               />
-              <Text style={AppStyles.text}>Góp ý báo lỗi</Text>
+              <Text style={AppStyles.text}>{t('report_issue')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={{
@@ -162,7 +168,7 @@ const SettingScreen = () => {
                 source={ICONS.about}
                 style={{ width: 20, height: 20, marginRight: Spacing.medium }}
               />
-              <Text style={AppStyles.text}>Về chúng tôi</Text>
+              <Text style={AppStyles.text}> {t(text.about_us)}</Text>
             </TouchableOpacity>
             <View
               style={{
@@ -194,7 +200,10 @@ const SettingScreen = () => {
                 source={ICONS.clause}
                 style={{ width: 20, height: 20, marginRight: Spacing.medium }}
               />
-              <Text style={AppStyles.text}>Điều khoản thỏa thuận</Text>
+              <Text style={AppStyles.text}>
+                {' '}
+                {t(text.terms_and_conditions)}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={{
@@ -207,7 +216,7 @@ const SettingScreen = () => {
                 source={ICONS.privacy}
                 style={{ width: 20, height: 20, marginRight: Spacing.medium }}
               />
-              <Text style={AppStyles.text}>Chính sách bảo mật</Text>
+              <Text style={AppStyles.text}> {t(text.privacy_policy)}</Text>
             </TouchableOpacity>
 
             <View
@@ -227,7 +236,7 @@ const SettingScreen = () => {
                 marginBottom: Spacing.medium,
               }}
             >
-              Quản lý tài khoản
+              {t(text.account_management)}
             </Text>
             <TouchableOpacity
               style={{
@@ -240,7 +249,10 @@ const SettingScreen = () => {
                 source={ICONS.noti}
                 style={{ width: 20, height: 20, marginRight: Spacing.medium }}
               />
-              <Text style={AppStyles.text}>Cài đặt thông báo</Text>
+              <Text style={AppStyles.text}>
+                {' '}
+                {t(text.notification_settings)}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={{
@@ -253,7 +265,9 @@ const SettingScreen = () => {
                 source={ICONS.remove_user}
                 style={{ width: 20, height: 20, marginRight: Spacing.medium }}
               />
-              <Text style={AppStyles.text}>Yêu cầu xóa tài khoản</Text>
+              <Text style={AppStyles.text}>
+                {t(text.delete_account_request)}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => dispactch(logout())}
@@ -267,7 +281,7 @@ const SettingScreen = () => {
                 source={ICONS.logout}
                 style={{ width: 20, height: 20, marginRight: Spacing.medium }}
               />
-              <Text style={AppStyles.text}>Đăng xuất</Text>
+              <Text style={AppStyles.text}>{t(text.logout)}</Text>
             </TouchableOpacity>
             <View
               style={{
@@ -278,21 +292,14 @@ const SettingScreen = () => {
             />
           </View>
           <View>
-            <Text style={AppStyles.text}>
-              Giấy ĐKKD số 1209312 do Sở KHĐT TP Hà Nội cấp lần đầu ngày
-              01/01/2025
-            </Text>
-            <Text style={AppStyles.text}>
-              Chịu trách nghiệm sàn GDTMĐT: Ông ...
-            </Text>
+            <Text style={AppStyles.text}>{t(text.business_registration)}</Text>
+            <Text style={AppStyles.text}>{t(text.responsible_person)}</Text>
           </View>
           <View style={{ marginTop: Spacing.medium }}>
             <Text style={[AppStyles.label, { marginBottom: 0 }]}>
-              CÔNG TY CỔ PHẦN ...
+              {t(text.company_name)}
             </Text>
-            <Text style={AppStyles.text}>
-              Tầng 3, Chung cư N03-T3 Ngoại Giao Đoàn, Bắc Từ Liêm, Hà Nội
-            </Text>
+            <Text style={AppStyles.text}>{t(text.company_address)}</Text>
           </View>
           <TouchableOpacity
             onPress={() => console.log('logo')}
@@ -309,7 +316,7 @@ const SettingScreen = () => {
             />
           </TouchableOpacity>
           <Text style={[AppStyles.text, { textAlign: 'center' }]}>
-            Phiên bản 1.0
+            {t(text.version)}
           </Text>
         </ScrollView>
       </View>

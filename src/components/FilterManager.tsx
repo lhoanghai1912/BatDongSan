@@ -35,7 +35,7 @@ const FilterManager: React.FC<FilterManagerProps> = ({
       <CheckBoxModal
         visible={visible}
         title={title}
-        data={data as string[]}
+        data={data as { label: string; icon: string }[]}
         selected={selected as string[]}
         onClose={onClose}
         onReset={onReset}

@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import AppInput from '../../../components/AppInput';
-import { ICONS, IMAGES, TITLES } from '../../../utils/constants';
+import { ICONS, IMAGES, text } from '../../../utils/constants';
 import AppStyles from '../../../components/AppStyle';
 import { Spacing } from '../../../utils/spacing';
 import AppButton from '../../../components/AppButton';

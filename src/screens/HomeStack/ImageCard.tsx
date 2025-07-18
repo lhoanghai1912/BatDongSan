@@ -13,15 +13,15 @@ import { Spacing } from '../../utils/spacing';
 import AppStyles from '../../components/AppStyle';
 import { Colors } from '../../utils/color';
 import { Fonts } from '../../utils/fontSize';
-import { ICONS, IMAGES } from '../../utils/constants';
-import moment from 'moment';
+import { ICONS, IMAGES, text } from '../../utils/constants';
 import AppButton from '../../components/AppButton';
+import moment from 'moment';
 
-const screenWidth = Dimensions.get('window').width;
 const ImageCard = ({ post }) => {
-  const images = post.images?.map(img => img.link).slice(0, 4) || [];
+  const images = post.images?.map(img => img).slice(0, 4) || [];
+  const imageslink = post.images?.map(img => img.imageUrl).slice(0, 4) || [];
 
-  if (images.length === 0) return null;
+  if (imageslink.length === 0) return null;
   const formatPriceToTy = (price: number): string => {
     if (!price || isNaN(price)) return '0 đồng';
 
@@ -52,7 +52,10 @@ const ImageCard = ({ post }) => {
     >
       <View style={{ marginBottom: Spacing.medium }}>
         {images.length === 1 && (
-          <Image source={{ uri: images[0] }} style={styles.fullImage} />
+          <Image
+            source={{ uri: `${text.url}${imageslink[0]}` }}
+            style={styles.fullImage}
+          />
         )}
 
         {images.length > 1 && (
@@ -60,7 +63,7 @@ const ImageCard = ({ post }) => {
             {/* Ảnh đầu tiên (full width) */}
             <View style={styles.imageWrap}>
               <Image
-                source={{ uri: images[0] }}
+                source={{ uri: `${text.url}${imageslink[0]}` }}
                 style={[
                   styles.topImage,
                   { borderTopLeftRadius: 20, borderTopRightRadius: 20 },
@@ -71,15 +74,12 @@ const ImageCard = ({ post }) => {
             {/* Ảnh còn lại chia đều */}
             <View style={styles.bottomRow}>
               {images.slice(1).map((img, idx) => {
-                const imageCount = images.length - 1;
+                const imageCount = img.length - 2;
 
                 return (
-                  <View
-                    key={`img_${idx}`}
-                    style={[styles.imageWrap, { flex: 1 }]}
-                  >
+                  <View key={img.id} style={[styles.imageWrap, { flex: 1 }]}>
                     <Image
-                      source={{ uri: img }}
+                      source={{ uri: `${text.url}${img.imageUrl}` }}
                       style={[
                         styles.bottomImage,
                         {
@@ -109,7 +109,7 @@ const ImageCard = ({ post }) => {
         </View>
         <View style={styles.descriptionRow}>
           <Text style={[AppStyles.text, { color: Colors.red }]}>
-            {formatPriceToTy(post.info_main.price)}
+            {formatPriceToTy(post.price)}
           </Text>
           <Text
             style={{
@@ -119,9 +119,9 @@ const ImageCard = ({ post }) => {
           >
             •
           </Text>
-          <Text style={[AppStyles.text, { color: Colors.red }]}>
-            {`${post.info_main.acreage} m²`}
-          </Text>
+          <Text
+            style={[AppStyles.text, { color: Colors.red }]}
+          >{`${post.area} m²`}</Text>
           <Text
             style={{
               marginHorizontal: Spacing.small,
@@ -131,9 +131,7 @@ const ImageCard = ({ post }) => {
             •
           </Text>
           <Text style={[AppStyles.text, { color: Colors.darkGray }]}>
-            {`${formatPriceToTy(
-              post.info_main.price / post.info_main.acreage,
-            )}/m²`}
+            {`${formatPriceToTy(post.price / post.area)}/m²`}
           </Text>
           <Text
             style={{
@@ -145,9 +143,15 @@ const ImageCard = ({ post }) => {
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={[AppStyles.text, { color: Colors.darkGray }]}>
-              {`${post.info_other.bedrooms} `}
+              {`${post.bedrooms === 0 ? '' : post.bedrooms} `}
             </Text>
-            <Image source={ICONS.bed} style={styles.icon} />
+            <Image
+              source={ICONS.bed}
+              style={[
+                styles.icon,
+                { display: post.bedrooms === 0 ? 'none' : 'flex' },
+              ]}
+            />
           </View>
           <Text
             style={{
@@ -159,15 +163,21 @@ const ImageCard = ({ post }) => {
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={[AppStyles.text, { color: Colors.darkGray }]}>
-              {`${post.info_other.bathrooms} `}
+              {`${post.bathrooms === 0 ? '' : post.bathrooms} `}
             </Text>
-            <Image source={ICONS.bath} style={styles.icon} />
+            <Image
+              source={ICONS.bath}
+              style={[
+                styles.icon,
+                { display: post.bedrooms === 0 ? 'none' : 'flex' },
+              ]}
+            />
           </View>
         </View>
         <View style={[styles.descriptionItem]}>
           <Image source={ICONS.location} style={styles.icon} />
           <Text style={[AppStyles.text, { color: Colors.darkGray }]}>
-            {`${post.address.district}, ${[post.address.province]}`}
+            {`${post.street}, ${[post.communeName]}`}
           </Text>
         </View>
       </View>
@@ -192,7 +202,7 @@ const ImageCard = ({ post }) => {
           <Image source={IMAGES.avartar} style={AppStyles.avartar_item} />
           <View style={{ marginLeft: Spacing.small }}>
             <Text style={[AppStyles.text, { color: Colors.black }]}>
-              {post.contact.name}
+              {post.contactName}
             </Text>
             <Text
               style={[
@@ -215,7 +225,7 @@ const ImageCard = ({ post }) => {
         >
           <AppButton
             leftIcon={ICONS.phone}
-            title={post.contact.phone}
+            title={post.contactPhone}
             onPress={() => console.log('phone pressed')}
             customStyle={[{ height: 50 }]}
           />
@@ -259,7 +269,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   topImage: {
-    width: '100%',
+    // width: '100%',
     height: 180,
     resizeMode: 'cover',
   },

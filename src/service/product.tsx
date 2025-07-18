@@ -9,19 +9,16 @@ export const getAllImages = async () => {
 
 export const getAllPosts = async () => {
   try {
-    const response = await axios.get(
-      'http://realestate.foxai.com.vn:3000/api/v1/property-post',
-      {
-        params: {
-          page: 1,
-          limit: 10,
-        },
-        headers: {
-          Accept: 'application/json',
-          // Authorization: 'Bearer your_token_here', // nếu API cần token
-        },
+    const response = await apiClient.get('/posts/getall', {
+      params: {
+        page: 1,
+        limit: 10,
       },
-    );
+      headers: {
+        Accept: 'application/json',
+        // Authorization: 'Bearer your_token_here', // nếu API cần token
+      },
+    });
     console.log('Property Posts:', response.data);
     return response.data;
   } catch (error: any) {

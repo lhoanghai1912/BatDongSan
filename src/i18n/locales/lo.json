@@ -29,6 +29,8 @@
   "company_name": "ບໍລິສັດ ຈຳກັດ ...",
   "company_address": "ຊັ້ນ 3, ອາຄານ N03-T3, ແຂວງ Bac Tu Liem, ນະຄອນຮານອຍ",
   "version": "ສະບັບ 1.0",
+  "description": "ຄໍາອະທິບາຍ",
+  "property_features":"ລັກສະນະຂອງອະສັງຫາລິມທະພັດ",
 
     "modal": {
     "chooseHouseType": "ເລືອກປະເພດເຮືອນ",

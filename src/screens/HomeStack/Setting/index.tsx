@@ -58,7 +58,7 @@ const SettingScreen = () => {
               style={[
                 styles.headerItem,
                 {
-                  flex: 2,
+                  flex: 1,
                   justifyContent: 'flex-end',
                   marginRight: Spacing.medium,
                 },

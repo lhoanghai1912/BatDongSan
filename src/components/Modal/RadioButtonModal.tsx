@@ -108,6 +108,17 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
     onReset(); // ✅ GỌI RA NGOÀI
   };
 
+  const safeSplitRange = (value?: string): [number, number] => {
+    if (typeof value !== 'string' || !value.includes('-')) {
+      return [0, 0];
+    }
+
+    const parts = value.split('-').map(Number);
+    const [min, max] = parts.length === 2 ? parts : [0, 0];
+
+    return [min || 0, max || 0];
+  };
+
   // Khi slider thay đổi -> cập nhật input và range
   const handleSliderChange = (values: number[]) => {
     if (isSingleValue) {
@@ -144,7 +155,9 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
       const val = parseInt(value);
       if (!isNaN(val)) setSliderValue(val);
     } else {
-      const [min, max] = value.split('-').map(Number);
+      const [min, max] = (
+        value?.includes('-') ? value.split('-') : ['0', '0']
+      ).map(Number);
       if (!isNaN(min) && !isNaN(max)) {
         const minPercent = (min / maxValue) * 100;
         const maxPercent = (max / maxValue) * 100;
@@ -258,9 +271,12 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
                           ? ICONS.radio_checked
                           : ICONS.radio_unchecked
                         : (() => {
-                            const [min, max] = item.value
-                              .split('-')
-                              .map(Number);
+                            const [min, max] = (
+                              item.value?.includes('-')
+                                ? item.value.split('-')
+                                : ['0', '0']
+                            ).map(Number);
+
                             const [curMin, curMax] = range.map(val =>
                               Math.round((val / 100) * maxValue),
                             );

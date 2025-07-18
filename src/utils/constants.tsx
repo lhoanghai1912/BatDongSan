@@ -48,6 +48,9 @@ export const text = {
   responsible_person: 'responsible_person',
   company_address: 'company_address',
   version: 'version',
+  url: 'https://bds.foxai.com.vn:8441',
+  description: 'description',
+  property_features: 'property_features',
 
   //modal
   modal: {
@@ -127,6 +130,11 @@ export const ICONS = {
   projectLand: require('../assets/icons/projectLand.png'),
   farm: require('../assets/icons/farm.png'),
   condotel: require('../assets/icons/condotel.png'),
+  share: require('../assets/icons/share.png'),
+  price: require('../assets/icons/price.png'),
+  expand: require('../assets/icons/expand.png'),
+  direction: require('../assets/icons/direction.png'),
+  furniture: require('../assets/icons/furniture.png'),
 };
 
 export const IMAGES = {

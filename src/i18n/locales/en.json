@@ -33,7 +33,8 @@
   "company_name": "JOINT STOCK COMPANY ...",
   "company_address": "3rd Floor, N03-T3 Ngoai Giao Doan, Bac Tu Liem, Hanoi",
   "version": "Version 1.0",
-
+  "description": "Description",
+  "property_features": "Property features",
 
   "modal": {
     "chooseHouseType": "Choose house type",

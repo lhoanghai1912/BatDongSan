@@ -29,7 +29,7 @@ const LoginScreen = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const [email, setEmail] = useState('hoanghai281zzz@gmail.com');
-  const [password, setPassWord] = useState('12345678Ab@');
+  const [password, setPassWord] = useState('123456789Ab@');
   const [checked, setchecked] = useState(false);
   const [loading, setLoading] = useState(false);
 

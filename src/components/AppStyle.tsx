@@ -19,6 +19,7 @@ const AppStyles = StyleSheet.create({
     fontSize: Fonts.large,
     marginBottom: Spacing.small,
     color: '#333',
+    fontWeight: '500',
   },
   input: {
     height: 50,
@@ -141,6 +142,7 @@ const AppStyles = StyleSheet.create({
     borderColor: Colors.Gray,
     borderWidth: 0.5,
     marginBottom: Spacing.medium,
+    width: '100%',
   },
 });
 

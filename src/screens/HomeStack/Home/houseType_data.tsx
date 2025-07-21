@@ -1,19 +1,47 @@
 // src/screens/Home/utils/houseType_data.ts
+import { useTranslation } from 'react-i18next';
 import { ICONS, text } from '../../../utils/constants';
-
 export const getHouseTypeData = (t: (key: string) => string) => [
-  { icon: ICONS.apartment, label: t(text.modal.houseType.apartment) },
-  { icon: ICONS.mini_apartment, label: t(text.modal.houseType.mini_apartment) },
-  { icon: ICONS.house, label: t(text.modal.houseType.house) },
-  { icon: ICONS.villa, label: t(text.modal.houseType.villa) },
-  { icon: ICONS.roadhouse, label: t(text.modal.houseType.roadhouse) },
-  { icon: ICONS.shophouse, label: t(text.modal.houseType.shophouse) },
-  { icon: ICONS.projectLand, label: t(text.modal.houseType.projectLand) },
-  { icon: ICONS.land, label: t(text.modal.houseType.land) },
-  { icon: ICONS.farm, label: t(text.modal.houseType.farm) },
-  { icon: ICONS.condotel, label: t(text.modal.houseType.condotel) },
-  { icon: ICONS.warehouse, label: t(text.modal.houseType.warehouse) },
-  { icon: ICONS.other, label: t(text.modal.houseType.other) },
+  {
+    value: 'apartment',
+    icon: ICONS.apartment,
+    label: t(text.modal.houseType.apartment),
+  },
+  {
+    value: 'mini_apartment',
+    icon: ICONS.mini_apartment,
+    label: t(text.modal.houseType.mini_apartment),
+  },
+  { value: 'house', icon: ICONS.house, label: t(text.modal.houseType.house) },
+  { value: 'villa', icon: ICONS.villa, label: t(text.modal.houseType.villa) },
+  {
+    value: 'roadhouse',
+    icon: ICONS.roadhouse,
+    label: t(text.modal.houseType.roadhouse),
+  },
+  {
+    value: 'shophouse',
+    icon: ICONS.shophouse,
+    label: t(text.modal.houseType.shophouse),
+  },
+  {
+    value: 'projectLand',
+    icon: ICONS.projectLand,
+    label: t(text.modal.houseType.projectLand),
+  },
+  { value: 'land', icon: ICONS.land, label: t(text.modal.houseType.land) },
+  { value: 'farm', icon: ICONS.farm, label: t(text.modal.houseType.farm) },
+  {
+    value: 'condotel',
+    icon: ICONS.condotel,
+    label: t(text.modal.houseType.condotel),
+  },
+  {
+    value: 'warehouse',
+    icon: ICONS.warehouse,
+    label: t(text.modal.houseType.warehouse),
+  },
+  { value: 'other', icon: ICONS.other, label: t(text.modal.houseType.other) },
 ];
 
 export const getPriceData = (t: (key: string) => string) => [
@@ -43,7 +71,7 @@ export const getAcreageData = (t: (key: string) => string) => [
   { label: '250-300m²', value: '250-300' },
   { label: '300-500m²', value: '300-500' },
   { label: '500-800m²', value: '500-800' },
-  { label: 'trên 800m²', value: '800-999999999999' },
+  { label: 'trên 800m²', value: '800-1000' },
 ];
 
 export const getBedRoomData = (t: (key: string) => string) => [
@@ -53,3 +81,20 @@ export const getBedRoomData = (t: (key: string) => string) => [
   { label: '4', value: '4' },
   { label: '5+', value: '5' },
 ];
+
+// src/screens/Home/utils/houseType_data.ts
+
+export const HOUSE_TYPE_CATEGORY_MAP: Record<string, number> = {
+  apartment: 1,
+  mini_apartment: 2,
+  house: 3,
+  villa: 4,
+  roadhouse: 5,
+  shophouse: 6,
+  projectLand: 7,
+  land: 8,
+  farm: 9,
+  condotel: 10,
+  warehouse: 11,
+  other: 12,
+};

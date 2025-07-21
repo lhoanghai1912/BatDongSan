@@ -13,10 +13,13 @@ import {
 } from 'react-native';
 import { Colors } from '../../utils/color';
 import { Spacing } from '../../utils/spacing';
-import { ICONS, IMAGES } from '../../utils/constants';
+import { ICONS, IMAGES, text } from '../../utils/constants';
 import AppStyles from '../AppStyle';
 import AppButton from '../AppButton';
+import { HOUSE_TYPE_CATEGORY_MAP } from '../../screens/HomeStack/Home/houseType_data';
+import { useTranslation } from 'react-i18next';
 interface Option {
+  value: string;
   label: string;
   icon: string;
 }
@@ -39,6 +42,7 @@ const CheckBoxModal: React.FC<CheckBoxModalProps> = ({
   onReset,
   onSubmit,
 }) => {
+  const { t } = useTranslation();
   const [localSelected, setLocalSelected] = useState<string[]>(selected);
 
   useEffect(() => {
@@ -52,8 +56,9 @@ const CheckBoxModal: React.FC<CheckBoxModalProps> = ({
         : [...prev, value],
     );
   };
+
   const clearValue = () => {
-    setLocalSelected(['']);
+    setLocalSelected([]);
     onReset();
   };
 
@@ -80,11 +85,11 @@ const CheckBoxModal: React.FC<CheckBoxModalProps> = ({
           {/* <View style={styles.body}> */}
           <ScrollView style={styles.body}>
             {data.map((item, idx) => {
-              const isChecked = localSelected.includes(item.label);
+              const isChecked = localSelected.includes(item.value);
               return (
                 <TouchableOpacity
                   key={idx}
-                  onPress={() => toggleValue(item.label)}
+                  onPress={() => toggleValue(item.value)}
                   style={styles.option}
                 >
                   <View style={styles.optionContent}>
@@ -125,6 +130,8 @@ const CheckBoxModal: React.FC<CheckBoxModalProps> = ({
                 <AppButton
                   title="Áp dụng"
                   onPress={() => {
+                    console.log('selected value:', localSelected);
+
                     onSubmit(localSelected), onClose();
                   }}
                 />

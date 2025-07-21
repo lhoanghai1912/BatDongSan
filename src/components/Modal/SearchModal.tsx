@@ -9,21 +9,24 @@ import {
 } from 'react-native';
 import { Colors } from '../../utils/color';
 import { Spacing } from '../../utils/spacing';
-import { ICONS } from '../../utils/constants';
+import { ICONS, text } from '../../utils/constants';
 import AppButton from '../AppButton';
 import AppStyles from '../AppStyle';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   visible: boolean;
   onClose: () => void;
-  onSearch: (value: 'forSale' | 'forRent') => void;
+  onSearch: (value: number) => void;
 }
 
 const SearchModal: React.FC<Props> = ({ visible, onClose, onSearch }) => {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState<'forSale' | 'forRent'>('forSale');
 
   const handleSubmit = () => {
-    onSearch(selected);
+    const result = selected === 'forSale' ? 1 : 2;
+    onSearch(result); // 👈 Trả về 1 hoặc 2
     onClose();
   };
 
@@ -65,7 +68,7 @@ const SearchModal: React.FC<Props> = ({ visible, onClose, onSearch }) => {
                         : styles.tabText
                     }
                   >
-                    Mua
+                    {t(text.sale)}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -82,7 +85,7 @@ const SearchModal: React.FC<Props> = ({ visible, onClose, onSearch }) => {
                         : styles.tabText
                     }
                   >
-                    Thuê
+                    {t(text.rent)}
                   </Text>
                 </TouchableOpacity>
               </View>

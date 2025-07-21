@@ -1,5 +1,3 @@
-// components/RadioButtonModal.tsx
-
 import React, { useState, useEffect } from 'react';
 import {
   Modal,
@@ -45,11 +43,12 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
   isSingleValue = false,
 }) => {
   const extractMaxValue = (): number => {
-    if (data) {
-      const parts = data[data.length - 1].value.split('-').map(Number);
-      return parts[1] || 100;
-    }
-    return 0;
+    const values = data
+      .map(d => d.value.split('-')[1])
+      .map(Number)
+      .filter(v => !isNaN(v));
+
+    return Math.max(...values, 1000); // giới hạn tối đa 1000 m²
   };
 
   const maxValue = extractMaxValue();
@@ -58,32 +57,50 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
     const parts = value.split('-').map(Number);
     if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
       const [min, max] = parts;
-
       return [
-        Math.round((min / maxValue) * 10), // phần trăm * 10 (vd 30m² → 3)
-        Math.round((max / maxValue) * 10),
+        Math.round((min / maxValue) * 100), // Tính tỷ lệ phần trăm cho giá trị min
+        Math.round((max / maxValue) * 100), // Tính tỷ lệ phần trăm cho giá trị max
       ];
     }
     return [0, 0];
   };
 
   const initialRange = parseRangeFromString(selected);
-
   const [selectedValue, setSelectedValue] = useState<string>(selected);
   const [range, setRange] = useState<[number, number]>(initialRange);
   const [minInput, setMinInput] = useState(
     initialRange[0].toFixed(2).toString(),
   );
   const [sliderValue, setSliderValue] = useState<number>(
-    parseInt(selected) || 1,
+    isNaN(parseInt(selected)) ? 1 : parseInt(selected),
   );
   const [maxInput, setMaxInput] = useState(
     initialRange[1].toFixed(2).toString(),
   );
+  const [hasChanged, setHasChanged] = useState(false);
 
   useEffect(() => {
     setSelectedValue(selected);
-  }, [selected]);
+
+    if (isSingleValue) {
+      const val = parseInt(selected);
+      if (!isNaN(val)) setSliderValue(val);
+    } else {
+      const [min, max] = selected.includes('-')
+        ? selected.split('-')
+        : ['0', '0'];
+      const minValue = Number(min);
+      const maxValue = Number(max);
+      if (!isNaN(minValue) && !isNaN(maxValue)) {
+        const totalMax = extractMaxValue();
+        const minPercent = (minValue / totalMax) * 100;
+        const maxPercent = (maxValue / totalMax) * 100;
+        setRange([minPercent, maxPercent]);
+        setMinInput(minValue.toString());
+        setMaxInput(maxValue.toString());
+      }
+    }
+  }, [selected, visible]); // 👈 rất quan trọng: thêm cả `visible`
 
   const handleSubmit = () => {
     if (isSingleValue) {
@@ -105,28 +122,15 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
     setRange([0, 0]);
     setMinInput('0');
     setMaxInput('0');
-    onReset(); // ✅ GỌI RA NGOÀI
+    onReset();
   };
 
-  const safeSplitRange = (value?: string): [number, number] => {
-    if (typeof value !== 'string' || !value.includes('-')) {
-      return [0, 0];
-    }
-
-    const parts = value.split('-').map(Number);
-    const [min, max] = parts.length === 2 ? parts : [0, 0];
-
-    return [min || 0, max || 0];
-  };
-
-  // Khi slider thay đổi -> cập nhật input và range
   const handleSliderChange = (values: number[]) => {
     if (isSingleValue) {
-      setSliderValue(values[0]); // chỉ cần 1 giá trị
+      setSliderValue(values[0]);
       setSelectedValue(values[0].toString());
     } else {
       setRange([values[0], values[1]]);
-
       const realMin = ((values[0] / 100) * maxValue).toFixed(2);
       const realMax = ((values[1] / 100) * maxValue).toFixed(2);
 
@@ -136,37 +140,40 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
     }
   };
 
-  // Khi input thay đổi -> cập nhật slider (sau debounce)
   useEffect(() => {
     if (!isSingleValue) {
       const min = parseFloat(minInput);
       const max = parseFloat(maxInput);
       if (!isNaN(min) && !isNaN(max) && min < max && max <= maxValue) {
         setRange([(min / maxValue) * 100, (max / maxValue) * 100]);
-        setSelectedValue('');
       }
     }
   }, [minInput, maxInput]);
 
-  const handleRadioSelected = (value: string) => {
+  const handleRadioSelected = (value: any) => {
     setSelectedValue(value);
+    setHasChanged(true);
 
     if (isSingleValue) {
       const val = parseInt(value);
       if (!isNaN(val)) setSliderValue(val);
     } else {
-      const [min, max] = (
-        value?.includes('-') ? value.split('-') : ['0', '0']
-      ).map(Number);
-      if (!isNaN(min) && !isNaN(max)) {
-        const minPercent = (min / maxValue) * 100;
-        const maxPercent = (max / maxValue) * 100;
+      const [min, max] = value?.includes('-') ? value.split('-') : ['0', '0'];
+      const minValue = Number(min); // Đảm bảo kiểu số
+      const maxValue = Number(max); // Đảm bảo kiểu số
+      if (!isNaN(minValue) && !isNaN(maxValue)) {
+        const totalMax = extractMaxValue(); // giá trị lớn nhất thực tế trong danh sách data
+
+        const minPercent = (minValue / totalMax) * 100;
+        const maxPercent = (maxValue / totalMax) * 100;
+
         setRange([minPercent, maxPercent]);
-        setMinInput(min.toString());
-        setMaxInput(max.toString());
+        setMinInput(minValue.toString());
+        setMaxInput(maxValue.toString());
       }
     }
   };
+  console.log('selectedValue', selectedValue);
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
@@ -195,9 +202,7 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
               marginTop: Spacing.medium,
             }}
           >
-            {/* Text hiển thị giá trị */}
             <View style={styles.valueRow}>
-              {/* Giá trị hiển thị */}
               {isSingleValue ? (
                 <Text style={styles.valueText}>Số phòng: {sliderValue}</Text>
               ) : (
@@ -231,10 +236,9 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
               </View>
             )}
 
-            {/* Thanh kéo */}
-            <View style={{}}>
+            <View>
               <MultiSlider
-                values={isSingleValue ? [sliderValue] : range} // ✅ fix
+                values={isSingleValue ? [sliderValue] : range}
                 onValuesChange={handleSliderChange}
                 min={isSingleValue ? 1 : 0}
                 max={isSingleValue ? 5 : 100}
@@ -255,9 +259,8 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
           <View style={[AppStyles.line, { marginTop: 0, marginBottom: 0 }]} />
           <ScrollView style={styles.body}>
             {data.map((item, idx) => (
-              <>
+              <React.Fragment key={idx}>
                 <TouchableOpacity
-                  key={idx}
                   onPress={() => handleRadioSelected(item.value)}
                   style={styles.option}
                 >
@@ -271,16 +274,14 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
                           ? ICONS.radio_checked
                           : ICONS.radio_unchecked
                         : (() => {
-                            const [min, max] = (
-                              item.value?.includes('-')
-                                ? item.value.split('-')
-                                : ['0', '0']
-                            ).map(Number);
-
+                            const [min, max] = item.value?.includes('-')
+                              ? item.value.split('-')
+                              : ['0', '0'];
                             const [curMin, curMax] = range.map(val =>
                               Math.round((val / 100) * maxValue),
                             );
-                            return min === curMin && max === curMax
+                            return Number(min) === curMin &&
+                              Number(max) === curMax
                               ? ICONS.radio_checked
                               : ICONS.radio_unchecked;
                           })()
@@ -289,7 +290,7 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
                   />
                 </TouchableOpacity>
                 <View style={[AppStyles.line, { marginTop: Spacing.medium }]} />
-              </>
+              </React.Fragment>
             ))}
           </ScrollView>
 

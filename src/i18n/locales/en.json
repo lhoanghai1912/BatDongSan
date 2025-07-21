@@ -35,7 +35,14 @@
   "version": "Version 1.0",
   "description": "Description",
   "property_features": "Property features",
-
+  "create_post": "Create Post",
+  "exit": "Exit",
+  "step": "Step",
+  "property_info": "Property Info",
+  "demand" : "Demand",
+  "sale": "For Sale",
+  "rent": "For Rent",
+  
   "modal": {
     "chooseHouseType": "Choose house type",
     "chooseDirection": "Choose direction",

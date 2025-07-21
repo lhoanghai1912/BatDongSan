@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   ScrollView,
   FlatList,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import { ICONS, text } from '../../../utils/constants';
 import { Spacing } from '../../../utils/spacing';
@@ -33,11 +34,13 @@ import {
   getHouseTypeData,
   getPriceData,
 } from './houseType_data';
+import { buildGridifyFilter } from './Utils/filterUtils';
 
 const HomeScreen: React.FC = ({}) => {
   const dispatch = useDispatch();
   const { userData, token } = useSelector((state: any) => state.user);
   const { t } = useTranslation();
+  const [refreshing, setRefreshing] = useState<boolean>(false);
 
   const [postData, setPostsData] = useState<PostType[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -76,98 +79,35 @@ const HomeScreen: React.FC = ({}) => {
   const [loading, setLoading] = useState(false);
   const [isSingleValue, setIsSingleValue] = useState(false);
   const [filteredData, setFilteredData] = useState<PostType[]>([]);
-  const [seachValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState<number>(1); // mặc định là 'Mua'
   const [houseType, setHouseType] = useState([]);
   const numberResults = filteredData.length.toString();
   const [langModalVisible, setLangModalVisible] = useState(false);
   const [selectedLang, setSelectedLang] = useState('vi');
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex(prev => (prev + 1) % placeholderTexts.length);
-    }, 1000); // đổi text mỗi 1s
+  const fetchFilteredData = async () => {
+    setLoading(true);
+    try {
+      const userFilters = buildGridifyFilter(selectedValue);
+      const typeFilter = `type=${searchValue}`;
+      const fullFilter = userFilters
+        ? `${typeFilter},${userFilters}`
+        : typeFilter;
 
-    return () => clearInterval(interval); // clear khi unmount
-  }, []);
+      console.log('🧪 Final Filter:', fullFilter);
 
-  useEffect(() => {
-    const loadNews = async () => {
-      setLoading(true);
-      try {
-        const data = await getAllPosts(); // Gọi API bài viết
-        console.log('data', data);
-        setPostsData(data.result);
-      } catch (error) {
-        console.log('Lỗi khi tải bài viết:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadNews();
-  }, []);
+      const res = await getAllPosts(fullFilter);
+      setFilteredData(res.result);
+    } catch (err) {
+      console.error('❌ Lỗi khi tải dữ liệu có filter:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const applyFilters = () => {
-      let filtered = [...postData];
-
-      // Lọc theo loại nhà
-      if (selectedValue.loaiNha?.length) {
-        console.log('loai nha', selectedValue.loaiNha);
-        console.log(
-          ' data loai nha',
-          filtered.filter(post =>
-            selectedValue.loaiNha.includes(post.info_main.type_property),
-          ),
-        );
-
-        filtered = filtered.filter(post =>
-          selectedValue.loaiNha.includes(post.info_main.type_property),
-        );
-      }
-
-      // Lọc theo khoảng giá (giá trong post.price, tính theo tỷ)
-      if (selectedValue.khoangGia) {
-        const [min, max] = selectedValue.khoangGia
-          .split('-')
-          .map(val => Number(val) * 1_000_000_000);
-        console.log(min, ' min   ; ', max, '  max');
-
-        filtered = filtered.filter(
-          post => post.info_main.price >= min && post.info_main.price <= max,
-        );
-      }
-
-      // Lọc theo diện tích (diện tích trong post.acreage, đơn vị m²)
-      if (selectedValue.dienTich) {
-        const [min, max] = selectedValue.dienTich.split('-').map(Number);
-        console.log('dien tich', min, max);
-
-        filtered = filtered.filter(
-          post =>
-            post.info_main.acreage >= min && post.info_main.acreage <= max,
-        );
-      }
-
-      // Lọc theo số phòng ngủ (post.bedrooms là số)
-      if (selectedValue.soPhongNgu) {
-        const val = parseInt(selectedValue.soPhongNgu);
-
-        if (!isNaN(val)) {
-          if (val < 5) {
-            filtered = filtered.filter(
-              post => post.info_other.bedrooms === val,
-            );
-          } else {
-            filtered = filtered.filter(post => post.info_other.bedrooms >= val);
-          }
-        }
-      }
-
-      setFilteredData(filtered);
-    };
-
-    applyFilters();
-  }, [selectedValue, postData]);
+    fetchFilteredData();
+  }, [JSON.stringify(selectedValue), searchValue]);
 
   useEffect(() => {
     const loadMenu = async () => {
@@ -205,17 +145,17 @@ const HomeScreen: React.FC = ({}) => {
         break;
       case 'khoangGia':
         setModalType('radioButtonModal');
-        setModalData([getPriceData(t)]);
+        setModalData(getPriceData(t));
         setModalTitle('Chọn khoảng giá');
         break;
       case 'dienTich':
         setModalType('radioButtonModal');
-        setModalData([getAcreageData(t)]);
+        setModalData(getAcreageData(t));
         setModalTitle('Chọn diện tích');
         break;
       case 'soPhongNgu':
         setModalType('radioButtonModal');
-        setModalData([getBedRoomData(t)]);
+        setModalData(getBedRoomData(t));
         setModalTitle('Chọn số phòng ngủ');
         setIsSingleValue(true); // ✅ thêm biến flag
 
@@ -223,6 +163,29 @@ const HomeScreen: React.FC = ({}) => {
     }
     setModalVisible(true);
   };
+  const valueToLabel = (key: string, value: string | string[]) => {
+    const mapping: Record<string, any[]> = {
+      loaiNha: getHouseTypeData(t),
+      khoangGia: getPriceData(t),
+      dienTich: getAcreageData(t),
+      soPhongNgu: getBedRoomData(t),
+    };
+
+    const list = mapping[key];
+    if (!list) return typeof value === 'string' ? value : value.join(', ');
+
+    if (Array.isArray(value)) {
+      return value
+        .map(v => list.find(item => item.value === v)?.label || v)
+        .join(', ');
+    } else {
+      return list.find(item => item.value === value)?.label || value;
+    }
+  };
+  const onRefresh = useCallback(() => {
+    setSelectedValue({});
+    fetchFilteredData();
+  }, []);
 
   const renderPost = ({ item }: { item: PostType }) => {
     return (
@@ -247,6 +210,8 @@ const HomeScreen: React.FC = ({}) => {
     await i18n.changeLanguage(newLang);
     setSelectedLang(newLang);
   };
+  console.log('searchValue', searchValue);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -276,7 +241,7 @@ const HomeScreen: React.FC = ({}) => {
               let label = item.label;
               if (selected) {
                 if (Array.isArray(selected)) {
-                  label = `${selected.join(', ')}`;
+                  label = valueToLabel(item.key, selected);
                 } else {
                   if (item.key === 'khoangGia') {
                     label = `${selected} tỷ`;
@@ -369,7 +334,9 @@ const HomeScreen: React.FC = ({}) => {
             </Text>
           }
           keyExtractor={item => item.id}
-          // renderItem={({ item }) => <ImageCard post={item} />}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
           renderItem={renderPost}
         />
       </View>

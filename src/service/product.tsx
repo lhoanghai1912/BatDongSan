@@ -7,18 +7,27 @@ export const getAllImages = async () => {
   return res.data;
 };
 
-export const getAllPosts = async () => {
+// src/service/index.ts hoặc service/postService.ts
+
+export const getAllPosts = async (filterString = '', page = 1, limit = 10) => {
   try {
+    const params: any = {
+      page,
+      limit,
+    };
+
+    if (filterString) {
+      params.Filter = filterString;
+    }
+
     const response = await apiClient.get('/posts/getall', {
-      params: {
-        page: 1,
-        limit: 10,
-      },
+      params,
       headers: {
         Accept: 'application/json',
-        // Authorization: 'Bearer your_token_here', // nếu API cần token
+        // Authorization: 'Bearer your_token_here',
       },
     });
+
     console.log('Property Posts:', response.data);
     return response.data;
   } catch (error: any) {
@@ -27,5 +36,6 @@ export const getAllPosts = async () => {
       console.log('Status:', error.response.status);
       console.log('Data:', error.response.data);
     }
+    throw error;
   }
 };

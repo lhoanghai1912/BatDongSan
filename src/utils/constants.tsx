@@ -27,6 +27,7 @@ export const text = {
   find_ward: 'find_ward',
   find_street: 'find_street',
   property_type: 'property_type',
+  property_info: 'property_info',
   price_range: 'price_range',
   acreage: 'acreage',
   bedrooms: 'bedrooms',
@@ -51,7 +52,12 @@ export const text = {
   url: 'https://bds.foxai.com.vn:8441',
   description: 'description',
   property_features: 'property_features',
-
+  create_post: 'create_post',
+  exit: 'exit',
+  step: 'step',
+  demand: 'demand',
+  sale: 'sale',
+  rent: 'rent',
   //modal
   modal: {
     chooseHouseType: 'modal.chooseHouseType',
@@ -102,6 +108,7 @@ export const ICONS = {
   dot: require('../assets/icons/dot.png'),
   back: require('../assets/icons/back.png'),
   down: require('../assets/icons/down.png'),
+  up: require('../assets/icons/up.png'),
   sort_down: require('../assets/icons/sort_down.png'),
   bath: require('../assets/icons/bath.png'),
   bed: require('../assets/icons/bed.png'),
@@ -112,6 +119,7 @@ export const ICONS = {
   issue: require('../assets/icons/issue.png'),
   about: require('../assets/icons/about.png'),
   clause: require('../assets/icons/clause.png'),
+  clause_focus: require('../assets/icons/clause_focus.png'),
   privacy: require('../assets/icons/privacy.png'),
   remove_user: require('../assets/icons/remove_user.png'),
   logout: require('../assets/icons/logout.png'),
@@ -135,6 +143,10 @@ export const ICONS = {
   expand: require('../assets/icons/expand.png'),
   direction: require('../assets/icons/direction.png'),
   furniture: require('../assets/icons/furniture.png'),
+  plus: require('../assets/icons/plus.png'),
+  plus_focus: require('../assets/icons/plus_focus.png'),
+  tag: require('../assets/icons/tag.png'),
+  key: require('../assets/icons/key.png'),
 };
 
 export const IMAGES = {

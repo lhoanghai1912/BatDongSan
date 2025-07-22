@@ -58,10 +58,28 @@ export const text = {
   demand: 'demand',
   sale: 'sale',
   rent: 'rent',
+  more_info: 'more_info',
+  prop_location: 'prop_location',
+  enter_location: 'enter_location',
+  enter_area: 'enter_area',
+  enter_price: 'enter_price',
+  enter_unit: 'enter_unit',
+  pick_location: 'pick_location',
+  main_info: 'main_info',
+  price: 'price',
+  unit: 'unit',
+  price_m2: 'price/m²',
+  deal: 'deal',
+  bilion: 'bilion',
+  milion: 'milion',
+  thousand: 'thousand ',
+  coin: 'coin',
+
   //modal
   modal: {
     chooseHouseType: 'modal.chooseHouseType',
     chooseDirection: 'modal.chooseDirection',
+    chooseUnit: 'modal.chooseUnit',
     houseType: {
       apartment: 'modal.houseType.apartment',
       mini_apartment: 'modal.houseType.mini_apartment',
@@ -146,7 +164,10 @@ export const ICONS = {
   plus: require('../assets/icons/plus.png'),
   plus_focus: require('../assets/icons/plus_focus.png'),
   tag: require('../assets/icons/tag.png'),
+  tag_focus: require('../assets/icons/tag_focus.png'),
   key: require('../assets/icons/key.png'),
+  key_focus: require('../assets/icons/key_focus.png'),
+  edit: require('../assets/icons/edit.png'),
 };
 
 export const IMAGES = {

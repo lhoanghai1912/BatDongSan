@@ -70,6 +70,11 @@ const AppStyles = StyleSheet.create({
     fontSize: Fonts.normal,
     color: Colors.Gray,
   },
+  text_bold: {
+    fontSize: Fonts.normal,
+    color: Colors.black,
+    fontWeight: 'bold',
+  },
   whitetext: {
     fontSize: Fonts.normal,
     color: Colors.white,

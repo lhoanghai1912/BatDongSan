@@ -71,7 +71,7 @@ const AppInput: React.FC<AppInputProps> = ({
             error && styles.errorBorder,
             isFocused && styles.focusedInput,
             {
-              paddingLeft: leftIcon ? Spacing.xxlarge : Spacing.small, // 🔥 padding động
+              paddingLeft: leftIcon ? Spacing.xxlarge : Spacing.medium, // 🔥 padding động
             },
           ]}
           placeholderTextColor="#999"
@@ -123,7 +123,7 @@ const AppInput: React.FC<AppInputProps> = ({
 
 const styles = StyleSheet.create({
   wrapper: {
-    marginBottom: Spacing.medium,
+    // marginBottom: Spacing.medium,
     width: '100%',
   },
   label: {

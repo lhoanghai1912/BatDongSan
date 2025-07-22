@@ -42,10 +42,26 @@
   "demand" : "Demand",
   "sale": "For Sale",
   "rent": "For Rent",
-  
+  "more_info": "More information",
+  "prop_location" : "Property location",
+  "enter_location" : "Enter location",
+  "enter_area" : "Enter area",
+  "enter_price" : "Enter price",
+  "enter_unit" : "Enter unit",
+  "pick_location":"Pick location",
+  "main_info":"Main information",
+  "price": "Price",
+  "unit": "Unit",
+  "price/m²" : "Price per m²",
+  "deal" : "Deal",
+  "bilion": "Bilion",
+  "milion": "milion",
+  "thousand ": "thousand ",
+  "coin":"coin",
   "modal": {
     "chooseHouseType": "Choose house type",
     "chooseDirection": "Choose direction",
+    "chooseUnit": "Choose Unit",
     "houseType": {
       "apartment": "Apartment",
       "mini_apartment": "Mini apartment, serviced apartment",
@@ -71,5 +87,4 @@
       "Tây Nam": "Southwest"
     }
   }
-
 }

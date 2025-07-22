@@ -26,19 +26,29 @@ const ImageCard = ({ post }) => {
     if (!price || isNaN(price)) return '0 đồng';
 
     if (price >= 1_000_000_000) {
-      return `${(price / 1_000_000_000).toFixed(2)} tỷ`;
+      const billion = price / 1_000_000_000;
+      return billion % 1 === 0
+        ? `${billion.toFixed(0)} tỷ` // Hiển thị số nguyên nếu chia hết
+        : `${billion.toFixed(2)} tỷ`; // Hiển thị 2 chữ số thập phân nếu không chia hết
     }
 
     if (price >= 1_000_000) {
-      return `${(price / 1_000_000).toFixed(0)} triệu`;
+      const million = price / 1_000_000;
+      return million % 1 === 0
+        ? `${million.toFixed(0)} triệu`
+        : `${million.toFixed(2)} triệu`;
     }
 
     if (price >= 1_000) {
-      return `${(price / 1_000).toFixed(0)} nghìn`;
+      const thousand = price / 1_000;
+      return thousand % 1 === 0
+        ? `${thousand.toFixed(0)} nghìn`
+        : `${thousand.toFixed(2)} nghìn`;
     }
 
-    return `${price.toFixed(0)} đồng`;
+    return `${price.toFixed(0)} đồng`; // Trả về giá trị nếu không thuộc các loại trên
   };
+
   const updated =
     moment(post.updatedAt).format('DD/MM/YYYY') ===
     moment().format('DD/MM/YYYY')

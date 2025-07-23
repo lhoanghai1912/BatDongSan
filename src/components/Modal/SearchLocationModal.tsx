@@ -39,13 +39,14 @@ const SearchLocationModal: React.FC<Props> = ({
     province: any;
     district: any;
     commune: any;
-  }>({ province: null, district: null, commune: null });
+  }>({ province: null, district: null, commune: '' });
 
   const handleSubmit = () => {
     onSearch(selectedLocation);
+    console.log(selectedLocation);
 
     onClose();
-    setSelectedLocation({ province: null, district: null, commune: null });
+    setSelectedLocation({ province: null, district: null, commune: '' });
   };
 
   const openLocationModal = (field: FieldType) => {
@@ -66,13 +67,13 @@ const SearchLocationModal: React.FC<Props> = ({
       setSelectedLocation({
         province: location,
         district: null,
-        commune: null,
+        commune: '',
       });
     } else if (locationModalField === 'district') {
       setSelectedLocation(prev => ({
         ...prev,
         district: location,
-        commune: null,
+        commune: '',
       }));
     } else if (locationModalField === 'commune') {
       setSelectedLocation(prev => ({ ...prev, commune: location }));

@@ -45,7 +45,7 @@ const PropertyLocationModal: React.FC<Props> = ({
 
   useEffect(() => {
     if (!visible) {
-      setSelectedItem(null); // Reset selected value when modal is closed
+      setSelectedItem(''); // Reset selected value when modal is closed
     }
   }, [visible]);
 
@@ -90,8 +90,6 @@ const PropertyLocationModal: React.FC<Props> = ({
     };
 
     fetchData();
-    setSearchText('');
-    setSelectedItem(null);
   }, [field, visible, selected]);
 
   const houseTypeData = Object.keys(HOUSE_TYPE_CATEGORY_MAP).map(key => ({
@@ -124,12 +122,14 @@ const PropertyLocationModal: React.FC<Props> = ({
     if (selectedItem) {
       onSelect(selectedItem);
     } else if (filteredOptions.length === 0 && searchText.trim() !== '') {
-      onSelect({ id: null, name: searchText.trim() });
+      onSelect({ id: '', name: searchText.trim() });
     } else if (field === 'commune' && options.length === 0) {
       onSelect({ id: '', name: '' });
     } else {
-      onSelect(null);
+      onSelect('');
     }
+    console.log(selectedItem);
+
     onClose();
   };
 

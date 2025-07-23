@@ -30,9 +30,9 @@ interface Props {
 const CreateScreen: React.FC<Props> = ({ navigation }) => {
   const { t } = useTranslation();
   const [isShowDemand, setIsShowDemand] = useState(true);
-  const [isShowMainInfo, setIsShowMainInfo] = useState(true);
-  const [isShowOtherInfo, setIsShowOtherInfo] = useState(true);
-  const [isShowTitDes, setIshowTitDes] = useState(true);
+  const [isShowMainInfo, setIsShowMainInfo] = useState(false);
+  const [isShowOtherInfo, setIsShowOtherInfo] = useState(false);
+  const [isShowTitDes, setIshowTitDes] = useState(false);
   const [demandLabel, setDemanLabel] = useState(`${t(text.more_info)}`);
 
   const [searchLocationModalVisible, setSearchLocationModalVisible] =
@@ -161,9 +161,11 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleSearchLocation = (location: any) => {
+    console.log('abc', location);
+
     setLocation(location);
     const parts = [
-      location?.commune?.name,
+      location?.commune?.name || '',
       location?.district?.name,
       location?.province?.name,
     ].filter(Boolean); // lọc null/undefined
@@ -297,26 +299,26 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
     console.log('proviceName: ', location?.province?.name);
     console.log('districId: ', location?.district?.id);
     console.log('districName: ', location?.district?.name);
-    console.log('communeId: ', location?.ward?.id);
-    console.log('communeName: ', location?.ward?.name);
+    console.log('communeId: ', location?.commune?.id);
+    console.log('communeName: ', location?.commune?.name);
     console.log('Area:', area);
     console.log('Price:', price);
-    console.log('Unit:', unit);
+    console.log('Unit:', unit.value);
+    console.log('Furniture:', furniture);
     console.log('Bedroom:', bedroom);
     console.log('Bathroom:', bathroom);
     console.log('Floor:', floor);
+    console.log('House Direction:', housedirection.value);
+    console.log('Balcony Direction:', balconydirection.value);
     console.log('Access Road:', accessRoad);
     console.log('Frontage:', frontage);
+    console.log('Legal:', legal.value);
+    console.log('Available From:', availableFrom.value);
+    console.log('Electricity Price:', electricityPrice.value);
+    console.log('Water Price:', waterPrice.value);
+    console.log('Internet Price:', internetPrice.value);
     console.log('Title:', title);
     console.log('Description:', description);
-    console.log('Legal:', legal);
-    console.log('Furniture:', furniture);
-    console.log('House Direction:', housedirection);
-    console.log('Balcony Direction:', balconydirection);
-    console.log('Available From:', availableFrom);
-    console.log('Electricity Price:', electricityPrice);
-    console.log('Water Price:', waterPrice);
-    console.log('Internet Price:', internetPrice);
 
     // Add any further logic for post creation (e.g., API call) here
   };
@@ -1138,7 +1140,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                 />
               </TouchableOpacity>
             </View>
-            {isShowMainInfo ? (
+            {isShowTitDes ? (
               <View>
                 {/* Title Input */}
                 <View>

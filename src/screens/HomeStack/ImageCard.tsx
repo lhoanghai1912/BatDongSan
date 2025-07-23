@@ -52,8 +52,8 @@ const ImageCard = ({ post }) => {
   const updated =
     moment(post.updatedAt).format('DD/MM/YYYY') ===
     moment().format('DD/MM/YYYY')
-      ? 'Hôm nay'
-      : moment(post.updatedAt).format('DD/MM/YYYY');
+      ? moment(post.updatedAt).format('DD/MM/YYYY')
+      : 'Hôm nay';
 
   return (
     <TouchableOpacity

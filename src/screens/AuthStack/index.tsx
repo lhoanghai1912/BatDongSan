@@ -40,11 +40,16 @@ const LoginScreen = () => {
       setLoading(true);
 
       const loginData = await login(email, password);
+      console.log(loginData.token);
 
       dispatch(setToken({ token: loginData.token }));
       dispatch(setUserData({ userData: loginData.profile }));
       if (checked) {
         await AsyncStorage.setItem('accessToken', loginData.token);
+        await AsyncStorage.setItem(
+          'userData',
+          JSON.stringify(loginData.profile),
+        ); // Save user data
       }
       navigate(Screen_Name.BottomTab_Navigator, {
         screen: Screen_Name.Setting_Screen,

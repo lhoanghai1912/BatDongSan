@@ -23,7 +23,7 @@ interface Props {
   onSearch: (location: any) => void;
 }
 
-type FieldType = 'province' | 'district' | 'ward';
+type FieldType = 'province' | 'district' | 'commune';
 
 const SearchLocationModal: React.FC<Props> = ({
   visible,
@@ -38,15 +38,14 @@ const SearchLocationModal: React.FC<Props> = ({
   const [selectedLocation, setSelectedLocation] = useState<{
     province: any;
     district: any;
-    ward: any;
-  }>({ province: null, district: null, ward: null });
+    commune: any;
+  }>({ province: null, district: null, commune: null });
 
   const handleSubmit = () => {
     onSearch(selectedLocation);
-    console.log(selectedLocation);
 
     onClose();
-    setSelectedLocation({ province: null, district: null, ward: null });
+    setSelectedLocation({ province: null, district: null, commune: null });
   };
 
   const openLocationModal = (field: FieldType) => {
@@ -54,7 +53,7 @@ const SearchLocationModal: React.FC<Props> = ({
       alert('Vui lòng chọn Tỉnh/Thành trước');
       return;
     }
-    if (field === 'ward' && !selectedLocation.district) {
+    if (field === 'commune' && !selectedLocation.district) {
       alert('Vui lòng chọn Quận/Huyện trước');
       return;
     }
@@ -64,15 +63,19 @@ const SearchLocationModal: React.FC<Props> = ({
 
   const handleLocationSelect = (location: any) => {
     if (locationModalField === 'province') {
-      setSelectedLocation({ province: location, district: null, ward: null });
+      setSelectedLocation({
+        province: location,
+        district: null,
+        commune: null,
+      });
     } else if (locationModalField === 'district') {
       setSelectedLocation(prev => ({
         ...prev,
         district: location,
-        ward: null,
+        commune: null,
       }));
-    } else if (locationModalField === 'ward') {
-      setSelectedLocation(prev => ({ ...prev, ward: location }));
+    } else if (locationModalField === 'commune') {
+      setSelectedLocation(prev => ({ ...prev, commune: location }));
     }
     setLocationModalVisible(false);
   };
@@ -89,7 +92,7 @@ const SearchLocationModal: React.FC<Props> = ({
                   setSelectedLocation({
                     province: null,
                     district: null,
-                    ward: null,
+                    commune: null,
                   }),
                     onClose();
                 }}
@@ -128,10 +131,10 @@ const SearchLocationModal: React.FC<Props> = ({
 
             <TouchableOpacity
               style={styles.selectBox}
-              onPress={() => openLocationModal('ward')}
+              onPress={() => openLocationModal('commune')}
             >
               <Text style={styles.selectText}>
-                {selectedLocation.ward?.name || 'Chọn Xã/Bản'}
+                {selectedLocation.commune?.name || 'Chọn Xã/Bản'}
               </Text>
             </TouchableOpacity>
           </View>

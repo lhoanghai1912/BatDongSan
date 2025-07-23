@@ -31,6 +31,8 @@ export const text = {
   price_range: 'price_range',
   acreage: 'acreage',
   bedrooms: 'bedrooms',
+  bathrooms: 'bathrooms',
+  floors: 'floors',
   language: 'language',
   no_data: 'no_data',
   property: 'property',
@@ -74,11 +76,40 @@ export const text = {
   milion: 'milion',
   thousand: 'thousand ',
   coin: 'coin',
-
+  other_info: 'other_info',
+  legal: 'legal',
+  furnishing: 'Furnishing',
+  frontage: 'frontage',
+  accessRoad: 'accessRoad',
+  contact_info: 'contact_info',
+  fullname: 'fullname',
+  email: 'email',
+  phone: 'phone',
+  title: 'title',
+  optional: 'optional',
+  nothave: 'nothave',
+  have: 'have',
+  redbook: 'redbook',
+  waiting: 'waiting',
+  full: 'full',
+  highClass: 'highClass',
+  availableFrom: 'availableFrom',
+  electricityPrice: 'electricityPrice',
+  waterPrice: 'waterPrice',
+  internetPrice: 'internetPrice',
+  now: 'now',
+  week: 'week',
+  month: 'month',
+  supplier: 'supplier',
+  owner: 'owner',
+  title_des: 'title_des',
   //modal
   modal: {
     chooseHouseType: 'modal.chooseHouseType',
     chooseDirection: 'modal.chooseDirection',
+    houseDirection: 'modal.houseDirection',
+    balconyDirection: 'modal.balconyDirection',
+
     chooseUnit: 'modal.chooseUnit',
     houseType: {
       apartment: 'modal.houseType.apartment',
@@ -168,6 +199,7 @@ export const ICONS = {
   key: require('../assets/icons/key.png'),
   key_focus: require('../assets/icons/key_focus.png'),
   edit: require('../assets/icons/edit.png'),
+  minus: require('../assets/icons/minus.png'),
 };
 
 export const IMAGES = {

@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.small,
     color: Colors.black,
     alignItems: 'center',
+    fontWeight: 'bold',
   },
   inputContainer: {
     position: 'relative',

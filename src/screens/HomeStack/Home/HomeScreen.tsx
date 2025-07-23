@@ -83,7 +83,7 @@ const HomeScreen: React.FC = ({}) => {
   const [houseType, setHouseType] = useState([]);
   const numberResults = filteredData.length.toString();
   const [langModalVisible, setLangModalVisible] = useState(false);
-  const [selectedLang, setSelectedLang] = useState('vi');
+  const [selectedLang, setSelectedLang] = useState('en');
 
   const fetchFilteredData = async () => {
     setLoading(true);

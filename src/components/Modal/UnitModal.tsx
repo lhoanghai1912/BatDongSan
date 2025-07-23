@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Modal,
   View,
@@ -21,6 +21,16 @@ interface Props {
   onClose: () => void;
   onSelect: (value: { label: string; value: string }) => void;
   selectedValue?: { label: string; value: string };
+  type:
+    | 'unit'
+    | 'legal'
+    | 'furniture'
+    | 'housedirection'
+    | 'balconydirection'
+    | 'availableFrom'
+    | 'electricityPrice'
+    | 'waterPrice'
+    | 'internetPrice';
 }
 
 const UnitSelectionModal: React.FC<Props> = ({
@@ -28,15 +38,109 @@ const UnitSelectionModal: React.FC<Props> = ({
   onClose,
   onSelect,
   selectedValue,
+  type,
 }) => {
   const { t } = useTranslation();
-  const [selected, setSelected] = useState<any>(selectedValue || null);
+  const [selected, setSelected] = useState<any>(null);
 
-  const unitOptions = [
+  useEffect(() => {
+    if (!visible) {
+      setSelected(null); // Reset selected value when modal is closed
+    }
+  }, [visible]);
+
+  const unitOptions: { label: string; value: string }[] = [
     { label: 'VND', value: '1' },
     { label: `${t(text.price_m2)}`, value: '2' },
     { label: `${t(text.deal)}`, value: '3' },
   ];
+
+  const legalOptions: { label: string; value: string }[] = [
+    { label: `${t(text.nothave)}`, value: '0' },
+    { label: `${t(text.redbook)}`, value: '1' },
+    { label: `${t(text.waiting)}`, value: '2' },
+  ];
+
+  const furnitureOptions: { label: string; value: string }[] = [
+    { label: `${t(text.nothave)}`, value: '0' },
+    { label: `${t(text.have)}`, value: '1' },
+    { label: `${t(text.full)}`, value: '2' },
+    { label: `${t(text.highClass)}`, value: '3' },
+  ];
+
+  const directionOptions: { label: string; value: string }[] = [
+    { label: `${t(text.modal.direction.east)}`, value: '1' },
+    { label: `${t(text.modal.direction.west)}`, value: '2' },
+    { label: `${t(text.modal.direction.south)}`, value: '3' },
+    { label: `${t(text.modal.direction.north)}`, value: '4' },
+    { label: `${t(text.modal.direction.northeast)}`, value: '5' },
+    { label: `${t(text.modal.direction.northeast)}`, value: '6' },
+    { label: `${t(text.modal.direction.southeast)}`, value: '7' },
+    { label: `${t(text.modal.direction.southwest)}`, value: '8' },
+  ];
+  const availableFromOptions: { label: string; value: string }[] = [
+    { label: `${t(text.now)}`, value: '1' },
+    { label: `${t(text.week)}`, value: '2' },
+    { label: `${t(text.month)}`, value: '3' },
+    { label: `${t(text.deal)}`, value: '4' },
+  ];
+  const priceOption: { label: string; value: string }[] = [
+    { label: `${t(text.supplier)}`, value: '1' },
+    { label: `${t(text.owner)}`, value: '2' },
+    { label: `${t(text.deal)}`, value: '3' },
+  ];
+
+  let options: { label: string; value: string }[] = [];
+  let headerText = '';
+
+  switch (type) {
+    case 'unit':
+      options = unitOptions;
+      headerText = t(text.modal.chooseUnit);
+      break;
+
+    case 'legal':
+      options = legalOptions;
+      headerText = t(text.legal);
+      break;
+
+    case 'furniture':
+      options = furnitureOptions;
+      headerText = t(text.furnishing);
+      break;
+
+    case 'housedirection':
+      options = directionOptions;
+      headerText = t(text.modal.chooseDirection);
+      break;
+
+    case 'balconydirection':
+      options = directionOptions;
+      headerText = t(text.modal.chooseDirection);
+      break;
+
+    case 'availableFrom':
+      options = availableFromOptions;
+      headerText = t(text.availableFrom);
+      break;
+
+    case 'electricityPrice':
+      options = priceOption;
+      headerText = t(text.electricityPrice);
+      break;
+
+    case 'waterPrice':
+      options = priceOption;
+      headerText = t(text.waterPrice);
+      break;
+
+    case 'internetPrice':
+      options = priceOption;
+      headerText = t(text.internetPrice);
+      break;
+    default:
+      options = [];
+  }
 
   const handleSubmit = () => {
     if (selected) {
@@ -57,7 +161,7 @@ const UnitSelectionModal: React.FC<Props> = ({
                 { color: Colors.white, marginBottom: 0 },
               ]}
             >
-              {t(text.modal.chooseUnit)}
+              {headerText}
             </Text>
             <TouchableOpacity onPress={onClose}>
               <Image source={ICONS.clear} style={styles.backIcon} />
@@ -67,7 +171,7 @@ const UnitSelectionModal: React.FC<Props> = ({
 
           {/* Body */}
           <ScrollView contentContainerStyle={styles.body}>
-            {unitOptions.map((option, index) => (
+            {options.map((option, index) => (
               <TouchableOpacity
                 key={index}
                 style={[
@@ -93,6 +197,7 @@ const UnitSelectionModal: React.FC<Props> = ({
             />
             <AppButton
               title={t(text.accept)}
+              disabled={!selected}
               customStyle={[{ width: '40%' }]}
               onPress={handleSubmit}
             />

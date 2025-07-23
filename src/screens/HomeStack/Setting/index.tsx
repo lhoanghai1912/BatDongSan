@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -18,14 +18,39 @@ import { Fonts } from '../../../utils/fontSize';
 import { logout } from '../../../store/reducers/userSlice';
 import AppButton from '../../../components/AppButton';
 import { useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SettingScreen = () => {
   const { t } = useTranslation();
 
   const dispactch = useDispatch();
-  const { userData, token } = useSelector((state: any) => state.user);
-  console.log('token11111111', token);
+  const { userData: reduxUserData, token: reduxToken } = useSelector(
+    (state: any) => state.user,
+  );
 
+  const [userData, setUserData] = useState(reduxUserData || null);
+  const [token, setToken] = useState(reduxToken || '');
+
+  const fetchUserData = async () => {
+    try {
+      const storedToken = await AsyncStorage.getItem('accessToken');
+      const storedUser = await AsyncStorage.getItem('userData');
+
+      if (storedToken && storedUser) {
+        setToken(storedToken); // Store token
+        setUserData(JSON.parse(storedUser)); // Store user data
+      } else {
+        // If no data in AsyncStorage, use Redux data
+        setToken(reduxToken);
+        setUserData(reduxUserData);
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+  useEffect(() => {
+    fetchUserData();
+  }, [reduxToken, reduxUserData]);
   return (
     <View style={styles.container}>
       <View style={styles.header}>

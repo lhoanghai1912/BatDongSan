@@ -12,20 +12,21 @@ import {
 import AppInput from '../AppInput';
 import { Colors } from '../../utils/color';
 import { Spacing } from '../../utils/spacing';
-import { text } from '../../utils/constants';
+import { ICONS, text } from '../../utils/constants';
 import AppButton from '../AppButton';
 import { useTranslation } from 'react-i18next';
 import { Fonts } from '../../utils/fontSize';
+import { HOUSE_TYPE_CATEGORY_MAP } from '../../screens/HomeStack/Home/houseType_data';
 
 interface Props {
   visible: boolean;
   onClose: () => void;
   onSelect: (location: any) => void;
-  field: 'province' | 'district' | 'ward' | null;
+  field: 'province' | 'district' | 'commune' | null;
   selected: {
     province: any;
     district: any;
-    ward: any;
+    commune: any;
   };
 }
 
@@ -43,6 +44,12 @@ const PropertyLocationModal: React.FC<Props> = ({
   const [selectedItem, setSelectedItem] = useState<any>(null);
 
   useEffect(() => {
+    if (!visible) {
+      setSelectedItem(null); // Reset selected value when modal is closed
+    }
+  }, [visible]);
+
+  useEffect(() => {
     if (!visible || !field) return;
 
     const fetchData = async () => {
@@ -57,7 +64,7 @@ const PropertyLocationModal: React.FC<Props> = ({
             return;
           }
           url = `https://bds.foxai.com.vn:8441/api/Area/search-smart?id=${selected.province.id}&lang=en`;
-        } else if (field === 'ward') {
+        } else if (field === 'commune') {
           if (!selected.district?.id) {
             setOptions([]);
             setLoading(false);
@@ -68,7 +75,6 @@ const PropertyLocationModal: React.FC<Props> = ({
 
         const res = await fetch(url);
         const data = await res.json();
-        console.log('data', data);
 
         if (Array.isArray(data)) {
           setOptions(data);
@@ -88,6 +94,11 @@ const PropertyLocationModal: React.FC<Props> = ({
     setSelectedItem(null);
   }, [field, visible, selected]);
 
+  const houseTypeData = Object.keys(HOUSE_TYPE_CATEGORY_MAP).map(key => ({
+    label: t(text[key]), // Dùng t để dịch tên loại nhà (có thể phải cập nhật thêm key trong `text`)
+    value: HOUSE_TYPE_CATEGORY_MAP[key],
+    icon: ICONS[key], // Sử dụng tên từ HOUSE_TYPE_CATEGORY_MAP hoặc icon của bạn
+  }));
   const filteredOptions = options.filter(item =>
     item.name.toLowerCase().includes(searchText.toLowerCase()),
   );
@@ -100,7 +111,7 @@ const PropertyLocationModal: React.FC<Props> = ({
         return selected.province
           ? 'Chọn Quận/Huyện'
           : 'Vui lòng chọn Tỉnh/Thành trước';
-      case 'ward':
+      case 'commune':
         return selected.district
           ? 'Chọn Xã/Bản'
           : 'Vui lòng chọn Quận/Huyện trước';
@@ -114,8 +125,8 @@ const PropertyLocationModal: React.FC<Props> = ({
       onSelect(selectedItem);
     } else if (filteredOptions.length === 0 && searchText.trim() !== '') {
       onSelect({ id: null, name: searchText.trim() });
-    } else if (field === 'ward' && options.length === 0) {
-      onSelect({ id: null, name: '' });
+    } else if (field === 'commune' && options.length === 0) {
+      onSelect({ id: '', name: '' });
     } else {
       onSelect(null);
     }

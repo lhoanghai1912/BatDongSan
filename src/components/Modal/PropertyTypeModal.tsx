@@ -14,7 +14,10 @@ import { Spacing } from '../../utils/spacing';
 import { ICONS, text } from '../../utils/constants';
 import AppStyles from '../AppStyle';
 import AppButton from '../AppButton';
-import { getHouseTypeData } from '../../screens/HomeStack/Home/houseType_data';
+import {
+  getHouseTypeData,
+  HOUSE_TYPE_CATEGORY_MAP,
+} from '../../screens/HomeStack/Home/houseType_data';
 
 interface Props {
   visible: boolean;
@@ -30,8 +33,13 @@ const PropertyTypeModal: React.FC<Props> = ({
   selectedValue,
 }) => {
   const { t } = useTranslation();
-  const houseTypeData = getHouseTypeData(t);
   const [selected, setSelected] = useState<any>(selectedValue || []);
+
+  const houseTypeData = Object.keys(HOUSE_TYPE_CATEGORY_MAP).map(key => ({
+    label: t(text.modal.houseType[key]), // Lấy tên loại nhà từ text
+    value: HOUSE_TYPE_CATEGORY_MAP[key],
+    icon: ICONS[key], // Sử dụng tên từ HOUSE_TYPE_CATEGORY_MAP hoặc icon của bạn
+  }));
 
   const handleSubmit = () => {
     if (selected) {
@@ -69,7 +77,9 @@ const PropertyTypeModal: React.FC<Props> = ({
                   styles.radioItem,
                   selected?.value === item.value && styles.radioItemSelected,
                 ]}
-                onPress={() => setSelected(item)}
+                onPress={() => {
+                  setSelected(item), console.log(item);
+                }}
               >
                 <Image source={item.icon} style={AppStyles.icon} />
                 <Text style={styles.radioLabel}>{item.label}</Text>

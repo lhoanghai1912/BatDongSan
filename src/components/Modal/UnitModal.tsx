@@ -19,8 +19,8 @@ import { Fonts } from '../../utils/fontSize';
 interface Props {
   visible: boolean;
   onClose: () => void;
-  onSelect: (value: { label: string; value: string }) => void;
-  selectedValue?: { label: string; value: string };
+  onSelect: (value: { label: string; value: number }) => void;
+  selectedValue?: { label: string; value: number };
   type:
     | 'unit'
     | 'legal'

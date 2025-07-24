@@ -8,6 +8,20 @@ export const getAllImages = async () => {
 };
 
 // src/service/index.ts hoặc service/postService.ts
+export const createPost = async (formData: FormData) => {
+  try {
+    console.log('form data', formData);
+    const response = await apiClient.post('/posts/create', formData);
+
+    console.log('ressssssssssssssssssssssssssssssssssssssssApi', response);
+
+    console.log('Post Created: ', response.data);
+    return response;
+  } catch (error) {
+    console.log('API error', error);
+    throw error;
+  }
+};
 
 export const getAllPosts = async (filterString = '', page = 1, limit = 10) => {
   try {

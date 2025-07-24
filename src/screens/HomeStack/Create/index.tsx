@@ -2,11 +2,12 @@ import React, { use, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
   Image,
   TextInput,
+  StyleSheet,
+  ActivityIndicator,
 } from 'react-native';
 import AppStyles from '../../../components/AppStyle';
 import { ICONS, text } from '../../../utils/constants';
@@ -16,13 +17,13 @@ import { navigate } from '../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../navigation/ScreenName';
 import { Spacing } from '../../../utils/spacing';
 import { Colors } from '../../../utils/color';
-import { Fonts } from '../../../utils/fontSize';
-import { SearchBar } from 'react-native-screens';
-import SearchModal from '../../../components/Modal/SearchModal';
 import SearchLocationModal from '../../../components/Modal/SearchLocationModal';
 import PropertyTypeModal from '../../../components/Modal/PropertyTypeModal';
-import AppInput from '../../../components/AppInput';
 import UnitSelectionModal from '../../../components/Modal/UnitModal';
+import styles from './style';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { createPost } from '../../../service';
+import Toast from 'react-native-toast-message';
 
 interface Props {
   navigation: any;
@@ -33,7 +34,11 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
   const [isShowMainInfo, setIsShowMainInfo] = useState(false);
   const [isShowOtherInfo, setIsShowOtherInfo] = useState(false);
   const [isShowTitDes, setIshowTitDes] = useState(false);
+  const [isShowImageUpload, setIsShowImagesUpdaload] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const [demandLabel, setDemanLabel] = useState(`${t(text.more_info)}`);
+  const [imageUris, setImageUris] = useState<string[]>([]); // State để lưu các URI của ảnh đã chọn
 
   const [searchLocationModalVisible, setSearchLocationModalVisible] =
     useState(false);
@@ -50,83 +55,79 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
     | 'waterPrice'
     | 'internetPrice'
   >('unit');
-
+  const street = 'abc';
   const type =
     demandLabel === t(text.sale) ? 1 : demandLabel === t(text.rent) ? 2 : '';
-  const [provinceId, setProvinceId] = useState();
-  const [districtId, setDistrictId] = useState();
-  const [communeId, setCommuneId] = useState();
-  const [provinceName, setProvinceName] = useState('');
-  const [districtName, setDistrictName] = useState('');
-  const [communeName, setCommuneName] = useState('');
   const [location, setLocation] = useState<any>({});
   const [locationText, setLocationText] = useState(''); // NEW: hiển thị địa điểm
   const [propertyType, setPropertyType] = useState<any>('');
   const [area, setArea] = useState('');
-  const [price, setPrice] = useState(0);
-  const [unit, setUnit] = useState<{ label: string; value: string }>({
+  const [price, setPrice] = useState<number>(0);
+  const [unit, setUnit] = useState<{ label: string; value: number }>({
     label: 'VND',
-    value: '1',
+    value: 0,
   });
-  const [bedroom, setBedroom] = useState(0);
-  const [bathroom, setBathroom] = useState(0);
+  const [bedrooms, setBedroom] = useState(0);
+  const [bathrooms, setBathroom] = useState(0);
   const [floor, setFloor] = useState(0);
   const [accessRoad, setAccessRoad] = useState(0);
   const [frontage, setFrontage] = useState(0);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [legal, setLegal] = useState<{ label: string; value: string }>({
+  const [legal, setLegal] = useState<{ label: string; value: number }>({
     label: '',
-    value: '',
+    value: 0,
   });
-  const [furniture, setFurniture] = useState<{ label: string; value: string }>({
+  const [furniture, setFurniture] = useState<{ label: string; value: number }>({
     label: '',
-    value: '',
+    value: 0,
   });
   const [housedirection, setHouseDirection] = useState<{
     label: string;
-    value: string;
+    value: number;
   }>({
     label: '',
-    value: '',
+    value: 0,
   });
   const [balconydirection, setBalconyDirection] = useState<{
     label: string;
-    value: string;
+    value: number;
   }>({
     label: '',
-    value: '',
+    value: 0,
   });
 
   const [availableFrom, setAvailbleFrom] = useState<{
     label: string;
-    value: string;
+    value: number;
   }>({
     label: '',
-    value: '',
+    value: 0,
   });
   const [electricityPrice, seteElectricityPrice] = useState<{
     label: string;
-    value: string;
+    value: number;
   }>({
     label: '',
-    value: '',
+    value: 0,
   });
   const [waterPrice, setWaterPrice] = useState<{
     label: string;
-    value: string;
+    value: number;
   }>({
     label: '',
-    value: '',
+    value: 0,
   });
   const [internetPrice, setInternetPrice] = useState<{
     label: string;
-    value: string;
+    value: number;
   }>({
     label: '',
-    value: '',
+    value: 0,
   });
-  const handleSelect = (selected: { label: string; value: string }) => {
+  const [imageUpload, setImageUpload] = useState<any[]>([]);
+
+  const handleSelect = (selected: { label: string; value: number }) => {
     switch (selectedField) {
       case 'unit':
         setUnit(selected);
@@ -161,8 +162,6 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleSearchLocation = (location: any) => {
-    console.log('abc', location);
-
     setLocation(location);
     const parts = [
       location?.commune?.name || '',
@@ -177,21 +176,21 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
     setLocationText('');
     setPropertyType('');
     setArea('');
-    setPrice(0);
-    setUnit({ label: 'VND', value: '1' });
+    setPrice(Number(text));
+    setUnit({ label: 'VND', value: 0 });
     setBedroom(0);
     setBathroom(0);
     setFloor(0);
     setAccessRoad(0);
     setFrontage(0);
-    setLegal({ label: '', value: '' });
-    setFurniture({ label: '', value: '' });
-    setHouseDirection({ label: '', value: '' });
-    setBalconyDirection({ label: '', value: '' });
-    setAvailbleFrom({ label: '', value: '' });
-    seteElectricityPrice({ label: '', value: '' });
-    setWaterPrice({ label: '', value: '' });
-    setInternetPrice({ label: '', value: '' });
+    setLegal({ label: '', value: 0 });
+    setFurniture({ label: '', value: 0 });
+    setHouseDirection({ label: '', value: 0 });
+    setBalconyDirection({ label: '', value: 0 });
+    setAvailbleFrom({ label: '', value: 0 });
+    seteElectricityPrice({ label: '', value: 0 });
+    setWaterPrice({ label: '', value: 0 });
+    setInternetPrice({ label: '', value: 0 });
 
     // Đóng tất cả các modal nếu có
     setSearchLocationModalVisible(false);
@@ -228,20 +227,20 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
     return `${price.toFixed(0)} ${t(text.coin)}`; // Trả về giá trị nếu không thuộc các loại trên
   };
   const handleIncrease = (field: string) => {
-    if (field === 'bedroom') {
-      setBedroom(bedroom + 1);
-    } else if (field === 'bathroom') {
-      setBathroom(bathroom + 1);
+    if (field === 'bedrooms') {
+      setBedroom(bedrooms + 1);
+    } else if (field === 'bathrooms') {
+      setBathroom(bathrooms + 1);
     } else if (field === 'floor') {
       setFloor(floor + 1);
     }
   };
 
   const handleDecrease = (field: string) => {
-    if (field === 'bedroom' && bedroom >= 1) {
-      setBedroom(bedroom - 1);
-    } else if (field === 'bathroom' && bathroom >= 1) {
-      setBathroom(bathroom - 1);
+    if (field === 'bedrooms' && bedrooms >= 1) {
+      setBedroom(bedrooms - 1);
+    } else if (field === 'bathrooms' && bathrooms >= 1) {
+      setBathroom(bathrooms - 1);
     } else if (field === 'floor' && floor >= 1) {
       setFloor(floor - 1);
     }
@@ -251,8 +250,8 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
   const otherInfo = [
     { label: t(text.legal), value: legal },
     { label: t(text.furnishing), value: furniture },
-    { label: t(text.bedrooms), value: bedroom },
-    { label: t(text.bathrooms), value: bathroom },
+    { label: t(text.bedrooms), value: bedrooms },
+    { label: t(text.bathrooms), value: bathrooms },
     { label: t(text.floors), value: floor },
     { label: t(text.modal.houseDirection), value: housedirection },
     { label: t(text.modal.balconyDirection), value: balconydirection },
@@ -289,38 +288,117 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
     ? validOtherInfo
     : validOtherInfo.slice(0, maxVisibleItems);
   const remainingCount = validOtherInfo.length - visibleItems.length; // Số lượng phần còn lại
+  const formData = new FormData();
+  const data = {
+    type,
+    categoryType: propertyType.value,
+    provinceId: location?.province?.id,
+    provinceName: location?.province?.name,
+    districtId: location?.district?.id,
+    districtName: location?.district?.name,
+    communeId: location?.commune?.id,
+    communeName: location?.commune?.name,
+    street,
+    area,
+    price,
+    unit: unit.value,
+    legalDocument: legal.value,
+    furniture: furniture.value,
+    bedrooms,
+    bathrooms,
+    floor,
+    houseDirection: housedirection.value,
+    balconyDirection: balconydirection.value,
+    accessRoad,
+    frontage,
+    availableFrom: availableFrom.value,
+    electricityPrice: electricityPrice.value,
+    waterPrice: waterPrice.value,
+    internetPrice: internetPrice.value,
+    title,
+    description,
+    menities: '1',
+    contactName: 'Lê Hoàng Hải',
+    contactPhone: '0909123456',
+    contactEmail: 'nva@example.com',
+    videoUrl: 'http://youtu.be/xyz',
+    isExpired: false,
+    images: imageUpload.map((item: any, index: number) => {
+      return {
+        description: item?.fileName,
+        displayOrder: index,
+      };
+    }),
+  };
+  imageUpload.forEach((item: any) => {
+    formData.append('images', {
+      uri: item?.uri,
+      type: item?.type,
+      name: item?.fileName,
+    } as any);
+  });
 
-  const handleCreatePost = () => {
-    // Log tất cả các trường khi nhấn "Create Post"
-    console.log('type', type);
-    console.log('Category Type', propertyType.value);
+  formData.append('jsonPostData', JSON.stringify(data));
 
-    console.log('proviceId: ', location?.province?.id);
-    console.log('proviceName: ', location?.province?.name);
-    console.log('districId: ', location?.district?.id);
-    console.log('districName: ', location?.district?.name);
-    console.log('communeId: ', location?.commune?.id);
-    console.log('communeName: ', location?.commune?.name);
-    console.log('Area:', area);
-    console.log('Price:', price);
-    console.log('Unit:', unit.value);
-    console.log('Furniture:', furniture);
-    console.log('Bedroom:', bedroom);
-    console.log('Bathroom:', bathroom);
-    console.log('Floor:', floor);
-    console.log('House Direction:', housedirection.value);
-    console.log('Balcony Direction:', balconydirection.value);
-    console.log('Access Road:', accessRoad);
-    console.log('Frontage:', frontage);
-    console.log('Legal:', legal.value);
-    console.log('Available From:', availableFrom.value);
-    console.log('Electricity Price:', electricityPrice.value);
-    console.log('Water Price:', waterPrice.value);
-    console.log('Internet Price:', internetPrice.value);
-    console.log('Title:', title);
-    console.log('Description:', description);
+  const handleCreatePost = async () => {
+    setLoading(true);
+    try {
+      const res = await createPost(formData);
+      console.log('ressssssss=================', res);
+      console.log('ressdataaaaaaaaaaaaaaaaaaaa=================', res.data);
 
+      if (res.status === 200) {
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Create post success',
+        });
+        navigate(Screen_Name.Home_Screen);
+      }
+    } catch (error) {
+      console.log('Error is: ', error);
+    } finally {
+      setLoading(false);
+    }
     // Add any further logic for post creation (e.g., API call) here
+  };
+
+  const pickImagesFromLibrary = () => {
+    launchImageLibrary(
+      {
+        mediaType: 'photo',
+        quality: 1,
+        selectionLimit: 10,
+      },
+      response => {
+        if (response.assets) {
+          setImageUpload(response.assets);
+
+          const newImageUris = response.assets
+            .map(item => item.uri)
+            .filter((uri): uri is string => typeof uri === 'string');
+          // Lấy URI của ảnh đã chọn và loại bỏ undefined
+          setImageUris(prevState => [...prevState, ...newImageUris]); // Thêm ảnh đã chọn vào mảng hiện tại
+        }
+      },
+    );
+  };
+
+  // Hàm chụp ảnh mới
+  const pickImageFromCamera = () => {
+    launchCamera({ mediaType: 'photo', quality: 1 }, response => {
+      if (response.assets) {
+        const uri = response.assets[0].uri;
+        if (typeof uri === 'string') {
+          setImageUris(prevState => [...prevState, uri]); // Thêm ảnh chụp vào mảng hiện tại
+        }
+      }
+    });
+  };
+
+  // Xóa ảnh
+  const removeImage = (uri: string) => {
+    setImageUris(prevState => prevState.filter(item => item !== uri));
   };
 
   return (
@@ -349,6 +427,19 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
         </View>
       </View>
       <ScrollView>
+        {loading && (
+          <View
+            style={{
+              ...StyleSheet.absoluteFillObject,
+              backgroundColor: 'rgba(0,0,0,0.3)',
+              justifyContent: 'center',
+              alignItems: 'center',
+              zIndex: 10,
+            }}
+          >
+            <ActivityIndicator size="large" color="#E53935" />
+          </View>
+        )}
         <View style={styles.body}>
           <View style={styles.body_item}>
             <View style={styles.body_itemHeader}>
@@ -683,7 +774,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                 onPress={() => setIsShowOtherInfo(!isShowOtherInfo)}
               >
                 <Image
-                  source={isShowMainInfo ? ICONS.down : ICONS.up}
+                  source={isShowOtherInfo ? ICONS.down : ICONS.up}
                   style={AppStyles.icon}
                 />
               </TouchableOpacity>
@@ -748,8 +839,8 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                     <Text style={AppStyles.text_bold}>{t(text.bedrooms)}</Text>
                     <View style={{ flexDirection: 'row' }}>
                       <TouchableOpacity
-                        disabled={bedroom === 0}
-                        onPress={() => handleDecrease('bedroom')}
+                        disabled={bedrooms === 0}
+                        onPress={() => handleDecrease('bedrooms')}
                       >
                         <Image
                           source={ICONS.minus}
@@ -757,14 +848,14 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                             AppStyles.icon,
                             {
                               tintColor:
-                                bedroom === 0 ? Colors.Gray : Colors.darkGray,
+                                bedrooms === 0 ? Colors.Gray : Colors.darkGray,
                             },
                           ]}
                         />
                       </TouchableOpacity>
-                      <Text style={styles.quantity}>{bedroom}</Text>
+                      <Text style={styles.quantity}>{bedrooms}</Text>
                       <TouchableOpacity
-                        onPress={() => handleIncrease('bedroom')}
+                        onPress={() => handleIncrease('bedrooms')}
                       >
                         <Image
                           source={ICONS.plus}
@@ -789,8 +880,8 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                     <Text style={AppStyles.text_bold}>{t(text.bathrooms)}</Text>
                     <View style={{ flexDirection: 'row' }}>
                       <TouchableOpacity
-                        disabled={bathroom === 0}
-                        onPress={() => handleDecrease('bathroom')}
+                        disabled={bathrooms === 0}
+                        onPress={() => handleDecrease('bathrooms')}
                       >
                         <Image
                           source={ICONS.minus}
@@ -798,14 +889,14 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                             AppStyles.icon,
                             {
                               tintColor:
-                                bathroom === 0 ? Colors.Gray : Colors.darkGray,
+                                bathrooms === 0 ? Colors.Gray : Colors.darkGray,
                             },
                           ]}
                         />
                       </TouchableOpacity>
-                      <Text style={styles.quantity}>{bathroom}</Text>
+                      <Text style={styles.quantity}>{bathrooms}</Text>
                       <TouchableOpacity
-                        onPress={() => handleIncrease('bathroom')}
+                        onPress={() => handleIncrease('bathrooms')}
                       >
                         <Image
                           source={ICONS.plus}
@@ -1135,7 +1226,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
               </View>
               <TouchableOpacity onPress={() => setIshowTitDes(!isShowTitDes)}>
                 <Image
-                  source={isShowMainInfo ? ICONS.down : ICONS.up}
+                  source={isShowTitDes ? ICONS.down : ICONS.up}
                   style={AppStyles.icon}
                 />
               </TouchableOpacity>
@@ -1172,6 +1263,191 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
               </View>
             ) : (
               <></>
+            )}
+          </View>
+
+          {/* Image Upload */}
+          <View style={styles.body_item}>
+            <View style={styles.body_itemHeader}>
+              <View style={{ flexDirection: 'row' }}>
+                <Text
+                  style={[
+                    AppStyles.text_bold,
+                    { marginBottom: Spacing.medium },
+                  ]}
+                >
+                  {t(text.upload_image)}
+                </Text>
+                <Text
+                  style={[AppStyles.text, { marginLeft: Spacing.medium }]}
+                >{`(${t(text.optional)})`}</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => setIsShowImagesUpdaload(!isShowImageUpload)}
+              >
+                <Image
+                  source={isShowImageUpload ? ICONS.down : ICONS.up}
+                  style={AppStyles.icon}
+                />
+              </TouchableOpacity>
+            </View>
+            {isShowImageUpload ? (
+              <>
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                  }}
+                >
+                  <ScrollView
+                    contentContainerStyle={{ marginBottom: Spacing.medium }}
+                  >
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                      {imageUris.map((uri, index) => {
+                        const uniqueKey = `image-${index}-${uri}`; // Tạo key duy nhất cho mỗi phần tử
+
+                        if (index === 0) {
+                          // Ảnh đầu tiên sẽ chiếm hết chiều rộng
+                          return (
+                            <>
+                              <Image
+                                key={uniqueKey}
+                                source={{ uri }}
+                                style={{
+                                  width: '100%',
+                                  height: 200,
+                                  marginBottom: 10,
+                                }}
+                              />
+                              <TouchableOpacity
+                                style={styles.removeImageButton}
+                                onPress={() => removeImage(uri)}
+                              >
+                                <Image
+                                  source={ICONS.clear}
+                                  style={styles.clearImageIcon}
+                                />
+                              </TouchableOpacity>
+                            </>
+                          );
+                        } else {
+                          // Các ảnh sau sẽ chia thành 2 cột
+                          return (
+                            <View
+                              key={index}
+                              style={{ width: '50%', padding: 5 }}
+                            >
+                              <Image
+                                source={{ uri }}
+                                style={{ width: '100%', height: 100 }}
+                              />
+                              <TouchableOpacity
+                                style={[
+                                  styles.removeImageButton,
+                                  { top: 5, right: 5 },
+                                ]}
+                                onPress={() => removeImage(uri)}
+                              >
+                                <Image
+                                  source={ICONS.clear}
+                                  style={styles.clearImageIcon}
+                                />
+                              </TouchableOpacity>
+                            </View>
+                          );
+                        }
+                      })}
+                    </View>
+                  </ScrollView>
+
+                  <TouchableOpacity
+                    style={[
+                      AppStyles.button,
+                      {
+                        marginBottom: Spacing.medium,
+                        flexDirection: 'row',
+                        justifyContent: 'flex-start',
+                        alignItems: 'center',
+                      },
+                    ]}
+                    onPress={pickImagesFromLibrary}
+                  >
+                    <Image
+                      source={ICONS.image}
+                      style={[
+                        AppStyles.icon,
+                        {
+                          marginHorizontal: Spacing.medium,
+                          tintColor: Colors.white,
+                        },
+                      ]}
+                    />
+                    <Text style={[styles.text, { color: Colors.white }]}>
+                      Chọn ảnh từ thư viện
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      AppStyles.button,
+                      {
+                        marginBottom: Spacing.medium,
+                        flexDirection: 'row',
+                        justifyContent: 'flex-start',
+                        alignItems: 'center',
+                      },
+                    ]}
+                    onPress={pickImageFromCamera}
+                  >
+                    <Image
+                      source={ICONS.plus}
+                      style={[
+                        AppStyles.icon,
+                        {
+                          marginHorizontal: Spacing.medium,
+                          tintColor: Colors.white,
+                        },
+                      ]}
+                    />
+                    <Text style={[styles.text, { color: Colors.white }]}>
+                      Chụp ảnh mới
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            ) : (
+              <>
+                {imageUris.length > 0 ? (
+                  <>
+                    <TouchableOpacity
+                      onPress={() => setIsShowImagesUpdaload(true)}
+                    >
+                      <Text
+                        style={[
+                          styles.text,
+                          { textDecorationLine: 'underline' },
+                        ]}
+                      >{` ${
+                        (t(text.selected), imageUris.length, t(text.image))
+                      }`}</Text>
+                    </TouchableOpacity>
+                  </>
+                ) : (
+                  <>
+                    <TouchableOpacity
+                      onPress={() => setIsShowImagesUpdaload(true)}
+                    >
+                      <Text
+                        style={[
+                          styles.text,
+                          { textDecorationLine: 'underline' },
+                        ]}
+                      >
+                        Chọn ảnh
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+              </>
             )}
           </View>
         </View>
@@ -1221,100 +1497,5 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingTop: 70,
-    paddingHorizontal: Spacing.medium,
-    backgroundColor: Colors.white,
-    justifyContent: 'space-between',
-  },
-  header_top: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  processLine: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: Spacing.small,
-  },
-  line: {
-    borderColor: Colors.Gray,
-    borderWidth: 3,
-    borderRadius: 100,
-    marginBottom: Spacing.small,
-    width: '33%',
-  },
-  body: {
-    flex: 2,
-    paddingTop: Spacing.large,
-    paddingHorizontal: Spacing.medium,
-    paddingBottom: Spacing.large,
-  },
-  body_item: {
-    padding: Spacing.medium,
-    backgroundColor: Colors.white,
-    borderRadius: 20,
-    marginBottom: Spacing.medium,
-  },
-  body_itemHeader: { flexDirection: 'row', justifyContent: 'space-between' },
-  body_itemButton: {
-    marginTop: Spacing.medium,
-    borderWidth: 0.5,
-    paddingHorizontal: Spacing.medium,
-    width: '48%',
-    borderRadius: 20,
-  },
-  body_itemBody: {},
-  button: {
-    paddingHorizontal: Spacing.large,
-    paddingVertical: Spacing.small,
-    backgroundColor: Colors.white,
-    borderWidth: 1,
-    borderRadius: 20,
-  },
-  searchBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    // width: '100%',
-    borderRadius: 30,
-    paddingVertical: Spacing.small,
-    paddingHorizontal: Spacing.medium,
-    marginBottom: Spacing.medium,
-    backgroundColor: Colors.white,
-    borderColor: Colors.Gray,
-    borderWidth: 1,
-  },
-  item: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: Spacing.small,
-  },
-  input: {
-    height: 48,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 10,
-    paddingLeft: Spacing.medium,
-    marginBottom: Spacing.medium,
-  },
-  descriptionInput: {
-    height: 120, // Chiều cao lớn cho description
-    textAlignVertical: 'top', // Đảm bảo text bắt đầu từ trên
-  },
-  scrollViewContainer: {
-    maxHeight: 200, // Giới hạn chiều cao của ScrollView nếu cần
-  },
-  quantity: {
-    marginHorizontal: Spacing.medium,
-    fontSize: Fonts.large,
-    color: Colors.black,
-  },
-  text: { color: Colors.black, fontSize: Fonts.normal },
-});
 
 export default CreateScreen;

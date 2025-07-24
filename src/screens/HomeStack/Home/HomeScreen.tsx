@@ -42,7 +42,6 @@ const HomeScreen: React.FC = ({}) => {
   const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  const [postData, setPostsData] = useState<PostType[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [modalType, setModalType] = useState<
     'checkBoxModal' | 'radioButtonModal' | null
@@ -185,12 +184,14 @@ const HomeScreen: React.FC = ({}) => {
   const onRefresh = useCallback(() => {
     setSelectedValue({});
     fetchFilteredData();
-  }, []);
+  }, [searchValue]);
 
   const renderPost = ({ item }: { item: PostType }) => {
+    const key = item._id ? item._id.toString() : `${Math.random()}`; // Đảm bảo key hợp lệ
+
     return (
       <>
-        <ImageCard post={item} />
+        <ImageCard post={item} key={key} />
         <View style={styles.underLine} />
       </>
     );
@@ -333,7 +334,9 @@ const HomeScreen: React.FC = ({}) => {
               Không có dữ liệu phù hợp
             </Text>
           }
-          keyExtractor={item => item.id}
+          keyExtractor={item =>
+            item._id ? item._id.toString() : `${Math.random()}`
+          } // Sử dụng key ngẫu nhiên nếu _id không có
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }

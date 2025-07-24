@@ -44,11 +44,11 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
 }) => {
   const extractMaxValue = (): number => {
     const values = data
-      .map(d => d.value.split('-')[1])
+      .map(d => d.value.split('-')[1]) // Lấy phần sau dấu '-'
       .map(Number)
       .filter(v => !isNaN(v));
 
-    return Math.max(...values, 1000); // giới hạn tối đa 1000 m²
+    return values.length ? Math.max(...values) : 1000; // Trả về giá trị lớn nhất hoặc 1000 nếu không có giá trị hợp lệ
   };
 
   const maxValue = extractMaxValue();
@@ -100,7 +100,7 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
         setMaxInput(maxValue.toString());
       }
     }
-  }, [selected, visible]); // 👈 rất quan trọng: thêm cả `visible`
+  }, [selected, visible]);
 
   const handleSubmit = () => {
     if (isSingleValue) {
@@ -112,6 +112,10 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
         return;
       }
       const resultValue = `${minInput}-${maxInput}`;
+      if (parseFloat(minInput) >= parseFloat(maxInput)) {
+        alert('Giá trị tối thiểu phải nhỏ hơn tối đa');
+        return;
+      }
       onSubmit(resultValue);
     }
 
@@ -131,12 +135,12 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
       setSelectedValue(values[0].toString());
     } else {
       setRange([values[0], values[1]]);
-      const realMin = ((values[0] / 100) * maxValue).toFixed(2);
-      const realMax = ((values[1] / 100) * maxValue).toFixed(2);
+      const realMin = ((values[0] / 100) * maxValue).toFixed(2); // Tính giá trị min thực tế
+      const realMax = ((values[1] / 100) * maxValue).toFixed(2); // Tính giá trị max thực tế
 
-      setMinInput(realMin);
-      setMaxInput(realMax);
-      setSelectedValue('');
+      setMinInput(realMin); // Cập nhật giá trị đầu vào min
+      setMaxInput(realMax); // Cập nhật giá trị đầu vào max
+      setSelectedValue(''); // Đặt lại giá trị đã chọn
     }
   };
 
@@ -155,25 +159,29 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
     setHasChanged(true);
 
     if (isSingleValue) {
-      const val = parseInt(value);
+      const val = parseFloat(value);
       if (!isNaN(val)) setSliderValue(val);
     } else {
       const [min, max] = value?.includes('-') ? value.split('-') : ['0', '0'];
-      const minValue = Number(min); // Đảm bảo kiểu số
-      const maxValue = Number(max); // Đảm bảo kiểu số
+      const minValue = Number(min);
+      const maxValue = Number(max);
+
       if (!isNaN(minValue) && !isNaN(maxValue)) {
-        const totalMax = extractMaxValue(); // giá trị lớn nhất thực tế trong danh sách data
+        const totalMax = extractMaxValue(); // Lấy giá trị max thực tế từ data
 
         const minPercent = (minValue / totalMax) * 100;
         const maxPercent = (maxValue / totalMax) * 100;
 
-        setRange([minPercent, maxPercent]);
+        setRange([minPercent, maxPercent]); // Cập nhật giá trị phạm vi
         setMinInput(minValue.toString());
         setMaxInput(maxValue.toString());
       }
     }
   };
-  console.log('selectedValue', selectedValue);
+  console.log('Range:', range);
+  console.log('Min:', minInput);
+  console.log('Max:', maxInput);
+  console.log('Selected Value:', selectedValue);
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
@@ -195,6 +203,7 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
               />
             </TouchableOpacity>
           </View>
+
           <View
             style={{
               alignItems: 'center',
@@ -216,6 +225,7 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
                 </View>
               )}
             </View>
+
             {!isSingleValue && (
               <View style={styles.inputRow}>
                 <TextInput
@@ -238,7 +248,7 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
 
             <View>
               <MultiSlider
-                values={isSingleValue ? [sliderValue] : range}
+                values={isSingleValue ? [sliderValue] : range} // Đảm bảo range được tính đúng
                 onValuesChange={handleSliderChange}
                 min={isSingleValue ? 1 : 0}
                 max={isSingleValue ? 5 : 100}
@@ -256,6 +266,7 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
               />
             </View>
           </View>
+
           <View style={[AppStyles.line, { marginTop: 0, marginBottom: 0 }]} />
           <ScrollView style={styles.body}>
             {data.map((item, idx) => (
@@ -338,17 +349,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  submit: {
-    backgroundColor: Colors.primary,
-    padding: Spacing.medium,
-    marginTop: Spacing.medium,
-    borderRadius: 8,
-  },
-  submitText: {
-    color: Colors.white,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
   header: {
     backgroundColor: Colors.black,
     borderTopLeftRadius: 20,
@@ -358,26 +358,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  body: {
-    maxHeight: '100%',
-    paddingHorizontal: Spacing.medium,
-    marginVertical: Spacing.medium,
-  },
-  footer: { marginBottom: Spacing.medium },
-  buttonWrap: {
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.medium,
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  rangeSection: {
-    paddingHorizontal: Spacing.medium,
-    marginBottom: Spacing.medium,
-  },
-  rangeDisplay: {
+  valueRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    width: 300,
     marginBottom: Spacing.small,
+  },
+  valueText: {
+    fontSize: 16,
+    color: Colors.darkGray,
   },
   inputRow: {
     flexDirection: 'row',
@@ -393,14 +382,16 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
   },
-  valueRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: 300,
-    marginBottom: Spacing.small,
+  body: {
+    maxHeight: '100%',
+    paddingHorizontal: Spacing.medium,
+    marginVertical: Spacing.medium,
   },
-  valueText: {
-    fontSize: 16,
-    color: Colors.darkGray,
+  footer: { marginBottom: Spacing.medium },
+  buttonWrap: {
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.medium,
+    alignItems: 'center',
+    flexDirection: 'row',
   },
 });

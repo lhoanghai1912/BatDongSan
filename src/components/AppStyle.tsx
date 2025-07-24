@@ -37,6 +37,18 @@ const AppStyles = StyleSheet.create({
     elevation: 2,
     marginBottom: Spacing.medium,
   },
+  button: {
+    backgroundColor: Colors.button,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignContent: 'center',
+    paddingVertical: Spacing.medium,
+    paddingHorizontal: Spacing.medium,
+    shadowColor: Colors.primary,
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+  },
   disable: {
     opacity: 0.5,
     height: 50,

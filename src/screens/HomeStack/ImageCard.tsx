@@ -50,10 +50,10 @@ const ImageCard = ({ post }) => {
   };
 
   const updated =
-    moment(post.updatedAt).format('DD/MM/YYYY') ===
+    moment(post.createdAt).format('DD/MM/YYYY') ===
     moment().format('DD/MM/YYYY')
-      ? moment(post.updatedAt).format('DD/MM/YYYY')
-      : 'Hôm nay';
+      ? 'Hôm nay'
+      : moment(post.createdAt).format('DD/MM/YYYY');
 
   return (
     <TouchableOpacity
@@ -61,49 +61,48 @@ const ImageCard = ({ post }) => {
       onPress={() => navigate(Screen_Name.Detail_Screen, { post })}
     >
       <View style={{ marginBottom: Spacing.medium }}>
-        {images.length === 1 && (
+        {images.length === 1 && imageslink[0] ? (
           <Image
             source={{ uri: `${text.url}${imageslink[0]}` }}
             style={styles.fullImage}
           />
-        )}
+        ) : (
+          images.length > 1 && (
+            <>
+              <View style={styles.imageWrap}>
+                <Image
+                  source={{ uri: `${text.url}${imageslink[0]}` }}
+                  style={[
+                    styles.topImage,
+                    { borderTopLeftRadius: 20, borderTopRightRadius: 20 },
+                  ]}
+                />
+              </View>
 
-        {images.length > 1 && (
-          <>
-            {/* Ảnh đầu tiên (full width) */}
-            <View style={styles.imageWrap}>
-              <Image
-                source={{ uri: `${text.url}${imageslink[0]}` }}
-                style={[
-                  styles.topImage,
-                  { borderTopLeftRadius: 20, borderTopRightRadius: 20 },
-                ]}
-              />
-            </View>
+              <View style={styles.bottomRow}>
+                {images.slice(1).map((img, idx) => {
+                  // Kiểm tra ảnh trước khi hiển thị
+                  if (!img.imageUrl) return null;
 
-            {/* Ảnh còn lại chia đều */}
-            <View style={styles.bottomRow}>
-              {images.slice(1).map((img, idx) => {
-                const imageCount = img.length - 2;
-
-                return (
-                  <View key={img.id} style={[styles.imageWrap, { flex: 1 }]}>
-                    <Image
-                      source={{ uri: `${text.url}${img.imageUrl}` }}
-                      style={[
-                        styles.bottomImage,
-                        {
-                          borderBottomLeftRadius: idx === 0 ? 20 : 0,
-                          borderBottomRightRadius:
-                            idx === imageCount - 1 ? 20 : 0,
-                        },
-                      ]}
-                    />
-                  </View>
-                );
-              })}
-            </View>
-          </>
+                  return (
+                    <View key={idx} style={[styles.imageWrap, { flex: 1 }]}>
+                      <Image
+                        source={{ uri: `${text.url}${img.imageUrl}` }}
+                        style={[
+                          styles.bottomImage,
+                          {
+                            borderBottomLeftRadius: idx === 0 ? 20 : 0,
+                            borderBottomRightRadius:
+                              idx === images.length - 2 ? 20 : 0,
+                          },
+                        ]}
+                      />
+                    </View>
+                  );
+                })}
+              </View>
+            </>
+          )
         )}
       </View>
       <View style={{ marginBottom: Spacing.medium }}>

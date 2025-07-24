@@ -11,6 +11,7 @@ export const text = {
   home: 'home',
   profile: 'profile',
   settings: 'settings',
+  back: 'back',
   accept: 'Xác nhận',
   cancel: 'Hủy bỏ',
   logout: 'logout',
@@ -55,6 +56,7 @@ export const text = {
   description: 'description',
   property_features: 'property_features',
   create_post: 'create_post',
+  upload_image: 'upload_image',
   exit: 'exit',
   step: 'step',
   demand: 'demand',
@@ -103,6 +105,9 @@ export const text = {
   supplier: 'supplier',
   owner: 'owner',
   title_des: 'title_des',
+  image: 'image',
+  min: 'min',
+  selected: 'selected',
   //modal
   modal: {
     chooseHouseType: 'modal.chooseHouseType',
@@ -200,6 +205,7 @@ export const ICONS = {
   key_focus: require('../assets/icons/key_focus.png'),
   edit: require('../assets/icons/edit.png'),
   minus: require('../assets/icons/minus.png'),
+  image: require('../assets/icons/image.png'),
 };
 
 export const IMAGES = {

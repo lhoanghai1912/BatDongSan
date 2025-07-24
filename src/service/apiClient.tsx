@@ -7,8 +7,8 @@ const apiClient = axios.create({
   baseURL: 'https://bds.foxai.com.vn:8441/api',
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json',
     Accept: 'application/json',
+    'Content-Type': 'multipart/form-data',
   },
 });
 

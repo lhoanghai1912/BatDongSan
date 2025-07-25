@@ -14,7 +14,7 @@ export const updateUser = async (
   address: string,
   dateOfBirth?: Date,
   gender?: string,
-  avatarBase64?: string,
+  taxCode?: string,
 ) => {
   const response = await apiClient.put('/UserProfile/profile', {
     fullName: fullName,
@@ -22,9 +22,26 @@ export const updateUser = async (
     address: address,
     dateOfBirth: dateOfBirth,
     gender: gender,
-    avatarBase64: avatarBase64,
+    taxCode: taxCode,
   });
   return response.data;
+};
+export const updateAvatar = async (formData: FormData) => {
+  try {
+    const response = await apiClient.post(
+      '/UserProfile/upload-avatar',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading avatar', error);
+    throw error;
+  }
 };
 
 export const updatePassword = async (

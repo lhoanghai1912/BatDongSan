@@ -125,6 +125,7 @@ const styles = StyleSheet.create({
   wrapper: {
     // marginBottom: Spacing.medium,
     width: '100%',
+    marginBottom: Spacing.medium,
   },
   label: {
     fontSize: Fonts.normal,

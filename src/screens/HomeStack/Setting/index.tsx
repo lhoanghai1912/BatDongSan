@@ -48,9 +48,16 @@ const SettingScreen = () => {
       console.log('error', error);
     }
   };
+
   useEffect(() => {
-    fetchUserData();
-  }, [reduxToken, reduxUserData]);
+    if (!reduxUserData) {
+      // Khi `reduxUserData` chưa có thì mới fetch từ AsyncStorage
+      fetchUserData();
+    } else {
+      setUserData(reduxUserData);
+    }
+  }, [reduxUserData]);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -64,7 +71,10 @@ const SettingScreen = () => {
                   navigate(Screen_Name.User_Screen);
                 }}
               >
-                <Image source={IMAGES.avartar} style={AppStyles.avartar} />
+                <Image
+                  source={{ uri: `${text.url}${userData.avatarUrl}` }}
+                  style={AppStyles.avartar}
+                />
               </TouchableOpacity>
               <Text
                 style={[

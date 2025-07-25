@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Image,
@@ -17,12 +17,38 @@ import { ICONS, IMAGES, text } from '../../utils/constants';
 import AppButton from '../../components/AppButton';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ImageCard = ({ post }) => {
   const { t } = useTranslation();
   const images = post.images?.map(img => img).slice(0, 4) || [];
   const imageslink = post.images?.map(img => img.imageUrl).slice(0, 4) || [];
 
+  const { userData: reduxUserData, token: reduxToken } = useSelector(
+    (state: any) => state.user,
+  );
+
+  const [userData, setUserData] = useState(reduxUserData || null);
+  const [token, setToken] = useState(reduxToken || '');
+
+  const fetchUserData = async () => {
+    try {
+      const storedToken = await AsyncStorage.getItem('accessToken');
+      const storedUser = await AsyncStorage.getItem('userData');
+
+      if (storedToken && storedUser) {
+        setToken(storedToken); // Store token
+        setUserData(JSON.parse(storedUser)); // Store user data
+      } else {
+        // If no data in AsyncStorage, use Redux data
+        setToken(reduxToken);
+        setUserData(reduxUserData);
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
   if (imageslink.length === 0) return null;
   const formatPriceToTy = (price: number): string => {
     if (!price || isNaN(price)) return '0 đồng';
@@ -212,7 +238,14 @@ const ImageCard = ({ post }) => {
             },
           ]}
         >
-          <Image source={IMAGES.avartar} style={AppStyles.avartar_item} />
+          <Image
+            source={
+              userData?.avatarUrl
+                ? { uri: `${text.url}${userData.avatarUrl}` }
+                : IMAGES.avartar
+            }
+            style={AppStyles.avartar_item}
+          />
           <View style={{ marginLeft: Spacing.small }}>
             <Text style={[AppStyles.text, { color: Colors.black }]}>
               {post.contactName}

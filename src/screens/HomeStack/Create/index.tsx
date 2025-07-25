@@ -101,7 +101,6 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
     label: '',
     value: 0,
   });
-
   const [availableFrom, setAvailbleFrom] = useState<{
     label: string;
     value: number;
@@ -134,6 +133,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
   const [contactEmail, setContactEmail] = useState(userData?.email);
   const [contactPhone, setContactPhone] = useState(userData?.phoneNumber);
   const [imageUpload, setImageUpload] = useState<any[]>([]);
+  console.log(userData);
 
   const handleSelect = (selected: { label: string; value: number }) => {
     switch (selectedField) {
@@ -269,18 +269,20 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
       const storedUser = await AsyncStorage.getItem('userData');
 
       if (storedUser) {
-        setUserData(JSON.parse(storedUser)); // Store user data
-        setContactEmail(userData.email);
-        setContactName(userData.fullName);
-        setContactPhone(userData.phone);
+        const parsedUser = JSON.parse(storedUser);
+        setUserData(parsedUser); // Store user data
+        setContactEmail(parsedUser.email);
+        setContactName(parsedUser.fullName);
+        setContactPhone(parsedUser.phone);
       } else {
         // If no data in AsyncStorage, use Redux data
         setUserData(reduxUserData);
       }
     } catch (error) {
-      console.log('error', error);
+      console.log('Error fetching user data from AsyncStorage:', error);
     }
   };
+
   useEffect(() => {
     fetchUserData();
   }, [reduxUserData]);

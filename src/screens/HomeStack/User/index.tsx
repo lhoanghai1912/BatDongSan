@@ -16,9 +16,15 @@ import NavBar from '../../../components/Navbar';
 import { IMAGES } from '../../../utils/constants';
 import AppStyles from '../../../components/AppStyle';
 import { Spacing } from '../../../utils/spacing';
-import { getCurrentUser, updatePassword, updateUser } from '../../../service';
+import {
+  getCurrentUser,
+  updateAvatar,
+  updatePassword,
+  updateUser,
+} from '../../../service';
 import moment from 'moment';
 import AppInput from '../../../components/AppInput';
+import { launchImageLibrary } from 'react-native-image-picker';
 
 interface Props {
   navigation: any;
@@ -26,18 +32,20 @@ interface Props {
 const UserScreen: React.FC<Props> = ({ navigation }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [changePassword, setChangePassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
-
+  const [taxCode, setTaxCode] = useState('');
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState(moment().format('YYYY-MM-DD'));
   const [gender, setGender] = useState('');
   const [avatarBase64, setAvatarBase64] = useState('');
+  const [imageUri, setImageUri] = useState<string | null>(null); // Chứa URI ảnh chọn
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -56,20 +64,56 @@ const UserScreen: React.FC<Props> = ({ navigation }) => {
     loadUserData();
   }, []);
 
-  const handleSaveInfo = async () => {
-    console.log('abc');
-    const res = await updateUser(
-      fullName,
-      phoneNumber,
-      address,
-      new Date(dateOfBirth),
-      gender,
-      avatarBase64,
-    );
+  const handleUpdateUser = async () => {
+    setLoading(true);
+    const formData = new FormData();
+
+    // Nếu có chọn ảnh, tải ảnh lên
+    if (avatarBase64) {
+      formData.append('file', {
+        uri: imageUri,
+        type: 'image/jpeg',
+        name: 'avatar.jpg',
+      } as any);
+      try {
+        const avatarResponse = await updateAvatar(formData); // Gọi API tải avatar lên
+        console.log('Avatar uploaded', avatarResponse);
+      } catch (error) {
+        console.error('Error uploading avatar', error);
+      }
+    }
+
+    try {
+      // Cập nhật thông tin người dùng (kể cả avatar nếu cần)
+      await updateUser(
+        fullName,
+        phoneNumber,
+        address,
+        new Date(dateOfBirth),
+        gender,
+        taxCode,
+      );
+      Toast.show({ type: 'success', text1: 'Cập nhật thông tin thành công' });
+    } catch (error) {
+      console.error('Error updating user info', error);
+      Toast.show({ type: 'error', text1: 'Cập nhật thông tin thất bại' });
+    } finally {
+      setLoading(false);
+    }
 
     // TODO: call API cập nhật user info
     Toast.show({ type: 'success', text1: 'Cập nhật thành công' });
     setIsEditing(false);
+  };
+
+  const pickImage = () => {
+    launchImageLibrary({ mediaType: 'photo', quality: 1 }, response => {
+      if (response.assets && response.assets.length > 0) {
+        const selectedImage = response.assets[0];
+        setImageUri(selectedImage.uri || '');
+        setAvatarBase64(selectedImage.base64 || ''); // Lưu base64 nếu có
+      }
+    });
   };
 
   const handleChangePassword = async () => {
@@ -89,15 +133,22 @@ const UserScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
       <NavBar
         title="Thông tin khách hàng"
         onPress={() => navigation.goBack()}
       />
-      <TouchableOpacity style={{ alignItems: 'center' }}>
+      <TouchableOpacity
+        style={{ alignItems: 'center' }}
+        onPress={pickImage}
+        disabled={!isEditing}
+      >
         <Image
-          source={IMAGES.avartar}
-          style={[AppStyles.avartar, { width: 150, height: 150 }]}
+          source={imageUri ? { uri: imageUri } : IMAGES.avartar}
+          style={[
+            AppStyles.avartar,
+            { width: 150, height: 150, resizeMode: 'cover' },
+          ]}
         />
       </TouchableOpacity>
       <AppInput label="Tên đăng nhập" value={email} editable={false} />
@@ -125,7 +176,7 @@ const UserScreen: React.FC<Props> = ({ navigation }) => {
           <>
             <AppButton
               title="Lưu thông tin"
-              onPress={handleSaveInfo}
+              onPress={handleUpdateUser}
               customStyle={[{ marginBottom: Spacing.medium }]}
             />
             <AppButton title="Hủy" onPress={() => setIsEditing(false)} />
@@ -172,7 +223,7 @@ const UserScreen: React.FC<Props> = ({ navigation }) => {
           onPress={() => setChangePassword(true)}
         />
       )}
-    </ScrollView>
+    </View>
   );
 };
 
@@ -180,6 +231,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     backgroundColor: Colors.white,
+    paddingTop: 50,
   },
   title: {
     fontSize: 20,

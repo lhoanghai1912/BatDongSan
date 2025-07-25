@@ -102,7 +102,6 @@ const HomeScreen: React.FC = ({}) => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchFilteredData();
   }, [JSON.stringify(selectedValue), searchValue]);

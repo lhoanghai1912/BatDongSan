@@ -40,6 +40,7 @@ const userSlice = createSlice({
       state.userData = null;
       state.token = null;
       AsyncStorage.removeItem('accessToken');
+      AsyncStorage.removeItem('userData');
     },
   },
 });

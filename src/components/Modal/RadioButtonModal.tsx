@@ -178,10 +178,6 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
       }
     }
   };
-  console.log('Range:', range);
-  console.log('Min:', minInput);
-  console.log('Max:', maxInput);
-  console.log('Selected Value:', selectedValue);
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
@@ -288,11 +284,11 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
                             const [min, max] = item.value?.includes('-')
                               ? item.value.split('-')
                               : ['0', '0'];
-                            const [curMin, curMax] = range.map(val =>
-                              Math.round((val / 100) * maxValue),
+                            const [curMin, curMax] = range.map(
+                              val => (val / 100) * maxValue,
                             );
-                            return Number(min) === curMin &&
-                              Number(max) === curMax
+                            return Math.abs(Number(min) - curMin) <= 0.1 &&
+                              Math.abs(Number(max) - curMax) <= 0.1
                               ? ICONS.radio_checked
                               : ICONS.radio_unchecked;
                           })()

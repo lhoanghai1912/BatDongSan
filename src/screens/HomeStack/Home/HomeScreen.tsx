@@ -92,10 +92,12 @@ const HomeScreen: React.FC = ({}) => {
       const fullFilter = userFilters
         ? `${typeFilter},${userFilters}`
         : typeFilter;
+      console.log('filter khoang gia', selectedValue.khoangGia);
 
       console.log('🧪 Final Filter:', fullFilter);
 
       const res = await getAllPosts(fullFilter);
+
       setFilteredData(res.result);
     } catch (err) {
       console.error('❌ Lỗi khi tải dữ liệu có filter:', err);
@@ -169,9 +171,10 @@ const HomeScreen: React.FC = ({}) => {
       dienTich: getAcreageData(t),
       soPhongNgu: getBedRoomData(t),
     };
-
     const list = mapping[key];
+
     if (!list) return typeof value === 'string' ? value : value.join(', ');
+    if (value === 'deal') return 'Thỏa thuận';
 
     if (Array.isArray(value)) {
       return value
@@ -211,7 +214,6 @@ const HomeScreen: React.FC = ({}) => {
     await i18n.changeLanguage(newLang);
     setSelectedLang(newLang);
   };
-  console.log('searchValue', searchValue);
 
   return (
     <View style={styles.container}>

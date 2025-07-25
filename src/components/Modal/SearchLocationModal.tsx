@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  TextInput,
 } from 'react-native';
 import { Colors } from '../../utils/color';
 import { Spacing } from '../../utils/spacing';
@@ -39,14 +40,20 @@ const SearchLocationModal: React.FC<Props> = ({
     province: any;
     district: any;
     commune: any;
-  }>({ province: null, district: null, commune: '' });
+    street: string;
+  }>({ province: null, district: null, commune: '', street: '' });
 
   const handleSubmit = () => {
     onSearch(selectedLocation);
     console.log(selectedLocation);
 
     onClose();
-    setSelectedLocation({ province: null, district: null, commune: '' });
+    setSelectedLocation({
+      province: null,
+      district: null,
+      commune: '',
+      street: '',
+    });
   };
 
   const openLocationModal = (field: FieldType) => {
@@ -68,6 +75,7 @@ const SearchLocationModal: React.FC<Props> = ({
         province: location,
         district: null,
         commune: '',
+        street: '',
       });
     } else if (locationModalField === 'district') {
       setSelectedLocation(prev => ({
@@ -94,6 +102,7 @@ const SearchLocationModal: React.FC<Props> = ({
                     province: null,
                     district: null,
                     commune: null,
+                    street: '',
                   }),
                     onClose();
                 }}
@@ -110,34 +119,79 @@ const SearchLocationModal: React.FC<Props> = ({
 
           {/* Body */}
           <View style={styles.body}>
-            <Text style={AppStyles.label}>{t(text.pick_location)}</Text>
-
-            <TouchableOpacity
-              style={styles.selectBox}
-              onPress={() => openLocationModal('province')}
-            >
-              <Text style={styles.selectText}>
-                {selectedLocation.province?.name || 'Chọn Tỉnh/Thành'}
+            <Text style={[AppStyles.label, { marginBottom: Spacing.medium }]}>
+              {t(text.pick_location)}
+            </Text>
+            <View style={{ width: '90%' }}>
+              <Text
+                style={[AppStyles.text_bold, { marginBottom: Spacing.medium }]}
+              >
+                {t(text.pick_location)}
               </Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.searchBox}
+                onPress={() => openLocationModal('province')}
+              >
+                <Text style={styles.selectText}>
+                  {selectedLocation.province?.name || 'Chọn Tỉnh/Thành'}
+                </Text>
+              </TouchableOpacity>
+            </View>
 
-            <TouchableOpacity
-              style={styles.selectBox}
-              onPress={() => openLocationModal('district')}
-            >
-              <Text style={styles.selectText}>
-                {selectedLocation.district?.name || 'Chọn Quận/Huyện'}
+            <View style={{ width: '90%' }}>
+              <Text
+                style={[AppStyles.text_bold, { marginBottom: Spacing.medium }]}
+              >
+                {t(text.pick_location)}
               </Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.searchBox}
+                onPress={() => openLocationModal('district')}
+              >
+                <Text style={styles.selectText}>
+                  {selectedLocation.district?.name || 'Chọn Quận/Huyện'}
+                </Text>
+              </TouchableOpacity>
+            </View>
 
-            <TouchableOpacity
-              style={styles.selectBox}
-              onPress={() => openLocationModal('commune')}
-            >
-              <Text style={styles.selectText}>
-                {selectedLocation.commune?.name || 'Chọn Xã/Bản'}
+            <View style={{ width: '90%' }}>
+              <Text
+                style={[AppStyles.text_bold, { marginBottom: Spacing.medium }]}
+              >
+                {t(text.pick_location)}
               </Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.searchBox}
+                onPress={() => openLocationModal('commune')}
+              >
+                <Text style={styles.selectText}>
+                  {selectedLocation.commune?.name || 'Chọn Xã/Bản'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <View>
+              <Text
+                style={[AppStyles.text_bold, { marginBottom: Spacing.medium }]}
+              >
+                {t(text.find_street)}
+              </Text>
+              <View
+                style={[
+                  styles.searchBox,
+                  { paddingVertical: 0, paddingHorizontal: 0 },
+                ]}
+              >
+                <TextInput
+                  style={styles.searchInput}
+                  value={selectedLocation.street}
+                  onChangeText={text =>
+                    setSelectedLocation(prev => ({ ...prev, street: text }))
+                  }
+                  placeholder="Nhập tên đường"
+                />
+              </View>
+            </View>
           </View>
 
           {/* Footer */}
@@ -193,7 +247,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   searchInput: {
-    width: '100%',
+    width: '90%',
     paddingHorizontal: Spacing.medium,
   },
   searchRow: {
@@ -203,14 +257,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.medium,
   },
   selectBox: {
-    width: '90%',
     paddingVertical: Spacing.medium,
     paddingHorizontal: Spacing.medium,
     borderWidth: 1,
     borderColor: Colors.Gray,
     borderRadius: 8,
     backgroundColor: Colors.white,
-    marginTop: Spacing.medium,
+    marginBottom: Spacing.medium,
   },
   selectText: {
     color: Colors.black,
@@ -238,5 +291,17 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+  },
+  searchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    // width: '100%',
+    borderRadius: 30,
+    paddingVertical: Spacing.small,
+    paddingHorizontal: Spacing.medium,
+    marginBottom: Spacing.medium,
+    backgroundColor: Colors.white,
+    borderColor: Colors.Gray,
+    borderWidth: 1,
   },
 });

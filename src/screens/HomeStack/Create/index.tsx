@@ -1,4 +1,4 @@
-import React, { use, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -24,17 +24,23 @@ import styles from './style';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { createPost } from '../../../service';
 import Toast from 'react-native-toast-message';
+import { useSelector } from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Props {
   navigation: any;
 }
 const CreateScreen: React.FC<Props> = ({ navigation }) => {
   const { t } = useTranslation();
+  const { userData: reduxUserData } = useSelector((state: any) => state.user);
+
+  const [userData, setUserData] = useState(reduxUserData || null);
   const [isShowDemand, setIsShowDemand] = useState(true);
-  const [isShowMainInfo, setIsShowMainInfo] = useState(false);
-  const [isShowOtherInfo, setIsShowOtherInfo] = useState(false);
-  const [isShowTitDes, setIshowTitDes] = useState(false);
-  const [isShowImageUpload, setIsShowImagesUpdaload] = useState(false);
+  const [isShowMainInfo, setIsShowMainInfo] = useState(true);
+  const [isShowOtherInfo, setIsShowOtherInfo] = useState(true);
+  const [isShowTitDes, setIshowTitDes] = useState(true);
+  const [isShowImageUpload, setIsShowImagesUpdaload] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const [demandLabel, setDemanLabel] = useState(`${t(text.more_info)}`);
@@ -55,7 +61,6 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
     | 'waterPrice'
     | 'internetPrice'
   >('unit');
-  const street = 'abc';
   const type =
     demandLabel === t(text.sale) ? 1 : demandLabel === t(text.rent) ? 2 : '';
   const [location, setLocation] = useState<any>({});
@@ -125,6 +130,9 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
     label: '',
     value: 0,
   });
+  const [contactName, setContactName] = useState(userData?.fullName);
+  const [contactEmail, setContactEmail] = useState(userData?.email);
+  const [contactPhone, setContactPhone] = useState(userData?.phoneNumber);
   const [imageUpload, setImageUpload] = useState<any[]>([]);
 
   const handleSelect = (selected: { label: string; value: number }) => {
@@ -164,42 +172,52 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
   const handleSearchLocation = (location: any) => {
     setLocation(location);
     const parts = [
+      location?.street,
       location?.commune?.name || '',
       location?.district?.name,
       location?.province?.name,
     ].filter(Boolean); // lọc null/undefined
     setLocationText(parts.join(', ')); // Ví dụ: "Phường Bến Nghé, Quận 1, TP.HCM"
   };
-  const handleCancel = () => {
-    // Reset các giá trị nhập liệu
-    setDemanLabel(`${t(text.more_info)}`);
-    setLocationText('');
-    setPropertyType('');
-    setArea('');
-    setPrice(Number(text));
-    setUnit({ label: 'VND', value: 0 });
-    setBedroom(0);
-    setBathroom(0);
-    setFloor(0);
-    setAccessRoad(0);
-    setFrontage(0);
-    setLegal({ label: '', value: 0 });
-    setFurniture({ label: '', value: 0 });
-    setHouseDirection({ label: '', value: 0 });
-    setBalconyDirection({ label: '', value: 0 });
-    setAvailbleFrom({ label: '', value: 0 });
-    seteElectricityPrice({ label: '', value: 0 });
-    setWaterPrice({ label: '', value: 0 });
-    setInternetPrice({ label: '', value: 0 });
 
-    // Đóng tất cả các modal nếu có
-    setSearchLocationModalVisible(false);
-    setPropertyTypeVisible(false);
-    setUnitModalVisible(false);
+  useFocusEffect(
+    React.useCallback(() => {
+      // Reset toàn bộ các trường về rỗng
+      setDemanLabel(`${t(text.more_info)}`);
+      setLocation({});
+      setLocationText('');
+      setPropertyType('');
+      setArea('');
+      setPrice(0);
+      setUnit({ label: 'VND', value: 0 });
+      setBedroom(0);
+      setBathroom(0);
+      setFloor(0);
+      setAccessRoad(0);
+      setFrontage(0);
+      setTitle('');
+      setDescription('');
+      setLegal({ label: '', value: 0 });
+      setFurniture({ label: '', value: 0 });
+      setHouseDirection({ label: '', value: 0 });
+      setBalconyDirection({ label: '', value: 0 });
+      setAvailbleFrom({ label: '', value: 0 });
+      seteElectricityPrice({ label: '', value: 0 });
+      setWaterPrice({ label: '', value: 0 });
+      setInternetPrice({ label: '', value: 0 });
+      setImageUpload([]);
+      setImageUris([]);
+      setIsShowDemand(true);
+      setIsShowMainInfo(true);
+      setIsShowOtherInfo(true);
+      setIshowTitDes(true);
+      setIsShowImagesUpdaload(true);
 
-    // Quay lại màn hình trước
-    navigation.goBack();
-  };
+      return () => {
+        // Cleanup nếu cần
+      };
+    }, []),
+  );
 
   const formatPriceToTy = (price: number): string => {
     if (!price || isNaN(price)) return '0 đồng';
@@ -246,6 +264,26 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
+  const fetchUserData = async () => {
+    try {
+      const storedUser = await AsyncStorage.getItem('userData');
+
+      if (storedUser) {
+        setUserData(JSON.parse(storedUser)); // Store user data
+        setContactEmail(userData.email);
+        setContactName(userData.fullName);
+        setContactPhone(userData.phone);
+      } else {
+        // If no data in AsyncStorage, use Redux data
+        setUserData(reduxUserData);
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+  useEffect(() => {
+    fetchUserData();
+  }, [reduxUserData]);
   // Danh sách các trường có giá trị
   const otherInfo = [
     { label: t(text.legal), value: legal },
@@ -298,7 +336,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
     districtName: location?.district?.name,
     communeId: location?.commune?.id,
     communeName: location?.commune?.name,
-    street,
+    street: location?.street,
     area,
     price,
     unit: unit.value,
@@ -318,9 +356,9 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
     title,
     description,
     menities: '1',
-    contactName: 'Lê Hoàng Hải',
-    contactPhone: '0909123456',
-    contactEmail: 'nva@example.com',
+    contactName,
+    contactPhone,
+    contactEmail,
     videoUrl: 'http://youtu.be/xyz',
     isExpired: false,
     images: imageUpload.map((item: any, index: number) => {
@@ -345,7 +383,6 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
     try {
       const res = await createPost(formData);
       console.log('ressssssss=================', res);
-      console.log('ressdataaaaaaaaaaaaaaaaaaaa=================', res.data);
 
       if (res.status === 200) {
         Toast.show({
@@ -360,7 +397,6 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
     } finally {
       setLoading(false);
     }
-    // Add any further logic for post creation (e.g., API call) here
   };
 
   const pickImagesFromLibrary = () => {
@@ -409,7 +445,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
             {t(text.create_post)}
           </Text>
           <TouchableOpacity
-            onPress={() => handleCancel()}
+            onPress={() => navigation.goBack()}
             style={styles.button}
           >
             <Text style={styles.text}>{t(text.exit)}</Text>
@@ -442,19 +478,20 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
         )}
         <View style={styles.body}>
           <View style={styles.body_item}>
-            <View style={styles.body_itemHeader}>
+            <TouchableOpacity
+              style={styles.body_itemHeader}
+              onPress={() => setIsShowDemand(!isShowDemand)}
+            >
               <Text
                 style={[AppStyles.text_bold, { marginBottom: Spacing.medium }]}
               >
                 {t(text.demand)}
               </Text>
-              <TouchableOpacity onPress={() => setIsShowDemand(!isShowDemand)}>
-                <Image
-                  source={isShowDemand ? ICONS.down : ICONS.up}
-                  style={AppStyles.icon}
-                />
-              </TouchableOpacity>
-            </View>
+              <Image
+                source={isShowDemand ? ICONS.down : ICONS.up}
+                style={AppStyles.icon}
+              />
+            </TouchableOpacity>
             <View style={styles.body_itemHeader}>
               {isShowDemand ? (
                 <>
@@ -553,14 +590,6 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                 >
                   {t(text.prop_location)}
                 </Text>
-                <TouchableOpacity
-                  onPress={() => setIsShowDemand(!isShowDemand)}
-                >
-                  <Image
-                    source={isShowDemand ? ICONS.down : ICONS.up}
-                    style={AppStyles.icon}
-                  />
-                </TouchableOpacity>
               </View>
               <View style={styles.body_itemHeader}>
                 {!locationText ? (
@@ -575,22 +604,21 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                     <Text style={AppStyles.text}>{t(text.enter_location)}</Text>
                   </TouchableOpacity>
                 ) : (
-                  <View
+                  <TouchableOpacity
+                    onPress={() => setSearchLocationModalVisible(true)}
                     style={{
+                      paddingHorizontal: Spacing.medium,
                       flexDirection: 'row',
                       alignItems: 'center',
                       width: '100%',
                       justifyContent: 'space-between',
                     }}
                   >
-                    <Text style={styles.text}>{locationText}</Text>
-                    <TouchableOpacity
-                      onPress={() => setSearchLocationModalVisible(true)}
-                      style={{ paddingHorizontal: Spacing.medium }}
-                    >
-                      <Image source={ICONS.edit} style={AppStyles.icon} />
-                    </TouchableOpacity>
-                  </View>
+                    <Text style={[styles.text, { flexShrink: 1 }]}>
+                      {locationText}
+                    </Text>
+                    <Image source={ICONS.edit} style={AppStyles.icon} />
+                  </TouchableOpacity>
                 )}
               </View>
             </View>
@@ -599,616 +627,174 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
           )}
 
           {/* Main info */}
-          {/* {isShowMainInfo ? ( */}
-          <View style={styles.body_item}>
-            <View style={styles.body_itemHeader}>
-              <Text
-                style={[AppStyles.text_bold, { marginBottom: Spacing.medium }]}
-              >
-                {t(text.main_info)}
-              </Text>
-              <TouchableOpacity
-                onPress={() => setIsShowMainInfo(!isShowMainInfo)}
-              >
-                <Image
-                  source={isShowMainInfo ? ICONS.down : ICONS.up}
-                  style={AppStyles.icon}
-                />
-              </TouchableOpacity>
-            </View>
-            {isShowMainInfo ? (
-              <View style={styles.body_itemBody}>
-                <View>
+          {locationText ? (
+            <>
+              <View style={styles.body_item}>
+                <View style={styles.body_itemHeader}>
                   <Text
                     style={[
                       AppStyles.text_bold,
                       { marginBottom: Spacing.medium },
                     ]}
                   >
-                    {t(text.property_type)}
+                    {t(text.main_info)}
                   </Text>
                   <TouchableOpacity
-                    onPress={() => setPropertyTypeVisible(true)}
-                    style={styles.searchBox}
+                    onPress={() => setIsShowMainInfo(!isShowMainInfo)}
                   >
-                    <Text style={[AppStyles.text, { color: '#666666' }]}>
-                      {propertyType?.label || t(text.property_type)}
-                    </Text>
+                    <Image
+                      source={isShowMainInfo ? ICONS.down : ICONS.up}
+                      style={AppStyles.icon}
+                    />
                   </TouchableOpacity>
                 </View>
-                <View>
-                  <Text
-                    style={[
-                      AppStyles.text_bold,
-                      { marginBottom: Spacing.medium },
-                    ]}
-                  >
-                    {t(text.acreage)}
-                  </Text>
-                  <View style={[styles.searchBox, { paddingVertical: 0 }]}>
-                    <TextInput
-                      style={[styles.text, { flex: 1 }]}
-                      value={area}
-                      keyboardType="number-pad"
-                      onChangeText={text => setArea(text)}
-                      placeholder={t(text.enter_area)}
-                    />
-                    <Text
-                      style={
-                        (AppStyles.text,
-                        {
-                          backgroundColor: Colors.lightGray,
-                          padding: 5,
-                          borderRadius: 10,
-                        })
-                      }
-                    >
-                      m²
-                    </Text>
-                    {area.length > 0 && (
-                      <TouchableOpacity onPress={() => setArea('')}>
-                        <Image
-                          source={ICONS.clear}
-                          style={[
-                            AppStyles.icon,
-                            { marginLeft: Spacing.small },
-                          ]}
-                        />
+                {isShowMainInfo ? (
+                  <View style={styles.body_itemBody}>
+                    <View>
+                      <Text
+                        style={[
+                          AppStyles.text_bold,
+                          { marginBottom: Spacing.medium },
+                        ]}
+                      >
+                        {t(text.property_type)}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => setPropertyTypeVisible(true)}
+                        style={styles.searchBox}
+                      >
+                        <Text style={[AppStyles.text, { color: '#666666' }]}>
+                          {propertyType?.label || t(text.property_type)}
+                        </Text>
                       </TouchableOpacity>
-                    )}
-                  </View>
-                </View>
-                <View style={styles.body_itemHeader}>
-                  <View style={{ flex: 0.55 }}>
-                    <Text
-                      style={[
-                        AppStyles.text_bold,
-                        { marginBottom: Spacing.medium },
-                      ]}
-                    >
-                      {t(text.price)}
-                    </Text>
-                    <View style={[styles.searchBox, { paddingVertical: 0 }]}>
-                      <TextInput
-                        style={[styles.text, { flex: 1 }]}
-                        value={price !== undefined ? price.toString() : ''}
-                        keyboardType="number-pad"
-                        onChangeText={text => setPrice(Number(text))}
-                        placeholder={t(text.enter_price)}
-                      />
+                    </View>
+                    <View>
+                      <Text
+                        style={[
+                          AppStyles.text_bold,
+                          { marginBottom: Spacing.medium },
+                        ]}
+                      >
+                        {t(text.acreage)}
+                      </Text>
+                      <View style={[styles.searchBox, { paddingVertical: 0 }]}>
+                        <TextInput
+                          style={[styles.text, { flex: 1 }]}
+                          value={area}
+                          keyboardType="number-pad"
+                          onChangeText={text => setArea(text)}
+                          placeholder={t(text.enter_area)}
+                        />
+                        <Text
+                          style={
+                            (AppStyles.text,
+                            {
+                              backgroundColor: Colors.lightGray,
+                              padding: 5,
+                              borderRadius: 10,
+                            })
+                          }
+                        >
+                          m²
+                        </Text>
+                        {area.length > 0 && (
+                          <TouchableOpacity onPress={() => setArea('')}>
+                            <Image
+                              source={ICONS.clear}
+                              style={[
+                                AppStyles.icon,
+                                { marginLeft: Spacing.small },
+                              ]}
+                            />
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    </View>
+                    <View style={styles.body_itemHeader}>
+                      <View style={{ flex: 0.55 }}>
+                        <Text
+                          style={[
+                            AppStyles.text_bold,
+                            { marginBottom: Spacing.medium },
+                          ]}
+                        >
+                          {t(text.price)}
+                        </Text>
+                        <View
+                          style={[styles.searchBox, { paddingVertical: 0 }]}
+                        >
+                          <TextInput
+                            style={[styles.text, { flex: 1 }]}
+                            value={price !== undefined ? price.toString() : ''}
+                            keyboardType="number-pad"
+                            onChangeText={text => setPrice(Number(text))}
+                            placeholder={t(text.enter_price)}
+                          />
 
-                      {area.length > 0 && (
-                        <TouchableOpacity onPress={() => setArea('')}>
+                          {area.length > 0 && (
+                            <TouchableOpacity onPress={() => setArea('')}>
+                              <Image
+                                source={ICONS.clear}
+                                style={[
+                                  AppStyles.icon,
+                                  { marginLeft: Spacing.small },
+                                ]}
+                              />
+                            </TouchableOpacity>
+                          )}
+                        </View>
+                      </View>
+                      <View style={{ flex: 0.45, marginLeft: Spacing.small }}>
+                        <Text
+                          style={[
+                            AppStyles.text_bold,
+                            { marginBottom: Spacing.medium },
+                          ]}
+                        >
+                          {t(text.unit)}
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setSelectedField('unit'), setUnitModalVisible(true);
+                          }}
+                          style={[styles.searchBox, { height: 48 }]}
+                        >
+                          <Text
+                            style={[styles.text, { flex: 1, color: '#666666' }]}
+                          >
+                            {unit.label || t(text.enter_unit)}
+                          </Text>
+
                           <Image
-                            source={ICONS.clear}
+                            source={ICONS.down}
                             style={[
                               AppStyles.icon,
                               { marginLeft: Spacing.small },
                             ]}
                           />
                         </TouchableOpacity>
-                      )}
-                    </View>
-                  </View>
-                  <View style={{ flex: 0.45, marginLeft: Spacing.small }}>
-                    <Text
-                      style={[
-                        AppStyles.text_bold,
-                        { marginBottom: Spacing.medium },
-                      ]}
-                    >
-                      {t(text.unit)}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setSelectedField('unit'), setUnitModalVisible(true);
-                      }}
-                      style={[styles.searchBox, { height: 48 }]}
-                    >
-                      <Text
-                        style={[styles.text, { flex: 1, color: '#666666' }]}
-                      >
-                        {unit.label || t(text.enter_unit)}
-                      </Text>
-
-                      <Image
-                        source={ICONS.down}
-                        style={[AppStyles.icon, { marginLeft: Spacing.small }]}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-            ) : (
-              <>
-                {price && propertyType && area && unit ? (
-                  <Text style={styles.text}>{`${
-                    propertyType.label
-                  } • ${formatPriceToTy(price)} • ${area}m²`}</Text>
-                ) : (
-                  <TouchableOpacity onPress={() => setIsShowMainInfo(true)}>
-                    <Text>{t(text.more_info)}</Text>
-                  </TouchableOpacity>
-                )}
-              </>
-            )}
-          </View>
-
-          {/* Other Info */}
-          <View style={styles.body_item}>
-            <View style={styles.body_itemHeader}>
-              <View style={{ flexDirection: 'row' }}>
-                <Text
-                  style={[
-                    AppStyles.text_bold,
-                    { marginBottom: Spacing.medium },
-                  ]}
-                >
-                  {t(text.other_info)}
-                </Text>
-                <Text
-                  style={[AppStyles.text, { marginLeft: Spacing.medium }]}
-                >{`(${t(text.optional)})`}</Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => setIsShowOtherInfo(!isShowOtherInfo)}
-              >
-                <Image
-                  source={isShowOtherInfo ? ICONS.down : ICONS.up}
-                  style={AppStyles.icon}
-                />
-              </TouchableOpacity>
-            </View>
-            {isShowOtherInfo ? (
-              <View style={styles.body_itemBody}>
-                {/* Legal */}
-                <View>
-                  <Text
-                    style={[
-                      AppStyles.text_bold,
-                      { marginBottom: Spacing.medium },
-                    ]}
-                  >
-                    {t(text.legal)}
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setSelectedField('legal'), setUnitModalVisible(true);
-                    }}
-                    style={styles.searchBox}
-                  >
-                    <Text style={[AppStyles.text, { color: '#666666' }]}>
-                      {legal.label || t(text.legal)}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* Furnishing */}
-                <View>
-                  <Text
-                    style={[
-                      AppStyles.text_bold,
-                      { marginBottom: Spacing.medium },
-                    ]}
-                  >
-                    {t(text.furnishing)}
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setSelectedField('furniture'), setUnitModalVisible(true);
-                    }}
-                    style={styles.searchBox}
-                  >
-                    <Text style={[AppStyles.text, { color: '#666666' }]}>
-                      {furniture.label || t(text.furnishing)}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* Increase/Decrease Item */}
-                <View>
-                  {/* Bed */}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginBottom: Spacing.medium,
-                    }}
-                  >
-                    <Text style={AppStyles.text_bold}>{t(text.bedrooms)}</Text>
-                    <View style={{ flexDirection: 'row' }}>
-                      <TouchableOpacity
-                        disabled={bedrooms === 0}
-                        onPress={() => handleDecrease('bedrooms')}
-                      >
-                        <Image
-                          source={ICONS.minus}
-                          style={[
-                            AppStyles.icon,
-                            {
-                              tintColor:
-                                bedrooms === 0 ? Colors.Gray : Colors.darkGray,
-                            },
-                          ]}
-                        />
-                      </TouchableOpacity>
-                      <Text style={styles.quantity}>{bedrooms}</Text>
-                      <TouchableOpacity
-                        onPress={() => handleIncrease('bedrooms')}
-                      >
-                        <Image
-                          source={ICONS.plus}
-                          style={[
-                            AppStyles.icon,
-                            { tintColor: Colors.darkGray },
-                          ]}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-
-                  {/* Bath */}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginBottom: Spacing.medium,
-                    }}
-                  >
-                    <Text style={AppStyles.text_bold}>{t(text.bathrooms)}</Text>
-                    <View style={{ flexDirection: 'row' }}>
-                      <TouchableOpacity
-                        disabled={bathrooms === 0}
-                        onPress={() => handleDecrease('bathrooms')}
-                      >
-                        <Image
-                          source={ICONS.minus}
-                          style={[
-                            AppStyles.icon,
-                            {
-                              tintColor:
-                                bathrooms === 0 ? Colors.Gray : Colors.darkGray,
-                            },
-                          ]}
-                        />
-                      </TouchableOpacity>
-                      <Text style={styles.quantity}>{bathrooms}</Text>
-                      <TouchableOpacity
-                        onPress={() => handleIncrease('bathrooms')}
-                      >
-                        <Image
-                          source={ICONS.plus}
-                          style={[
-                            AppStyles.icon,
-                            { tintColor: Colors.darkGray },
-                          ]}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-
-                  {/* Floor */}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginBottom: Spacing.medium,
-                    }}
-                  >
-                    <Text style={AppStyles.text_bold}>{t(text.floors)}</Text>
-                    <View style={{ flexDirection: 'row' }}>
-                      <TouchableOpacity
-                        disabled={floor === 0}
-                        onPress={() => handleDecrease('floor')}
-                      >
-                        <Image
-                          source={ICONS.minus}
-                          style={[
-                            AppStyles.icon,
-                            {
-                              tintColor:
-                                floor === 0 ? Colors.Gray : Colors.darkGray,
-                            },
-                          ]}
-                        />
-                      </TouchableOpacity>
-                      <Text style={styles.quantity}>{floor}</Text>
-                      <TouchableOpacity onPress={() => handleIncrease('floor')}>
-                        <Image
-                          source={ICONS.plus}
-                          style={[
-                            AppStyles.icon,
-                            { tintColor: Colors.darkGray },
-                          ]}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
-
-                {/* House Direction */}
-                <View>
-                  <Text
-                    style={[
-                      AppStyles.text_bold,
-                      { marginBottom: Spacing.medium },
-                    ]}
-                  >
-                    {t(text.modal.houseDirection)}
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setSelectedField('housedirection'),
-                        setUnitModalVisible(true);
-                    }}
-                    style={styles.searchBox}
-                  >
-                    <Text style={[AppStyles.text, { color: '#666666' }]}>
-                      {housedirection.label || t(text.modal.balconyDirection)}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* Balcony Direction */}
-                <View>
-                  <Text
-                    style={[
-                      AppStyles.text_bold,
-                      { marginBottom: Spacing.medium },
-                    ]}
-                  >
-                    {t(text.modal.balconyDirection)}
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setSelectedField('balconydirection'),
-                        setUnitModalVisible(true);
-                    }}
-                    style={styles.searchBox}
-                  >
-                    <Text style={[AppStyles.text, { color: '#666666' }]}>
-                      {balconydirection.label || t(text.modal.balconyDirection)}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* Access Road */}
-                <View>
-                  <Text
-                    style={[
-                      AppStyles.text_bold,
-                      { marginBottom: Spacing.medium },
-                    ]}
-                  >
-                    {t(text.accessRoad)}
-                  </Text>
-                  <View style={[styles.searchBox, { paddingVertical: 0 }]}>
-                    <TextInput
-                      style={[styles.text, { flex: 1 }]}
-                      value={
-                        accessRoad !== undefined ? accessRoad.toString() : ''
-                      }
-                      keyboardType="number-pad"
-                      onChangeText={text => setAccessRoad(Number(text))}
-                      placeholder={t(text.accessRoad)}
-                    />
-                    <Text
-                      style={
-                        (AppStyles.text,
-                        {
-                          backgroundColor: Colors.lightGray,
-                          padding: 5,
-                          borderRadius: 10,
-                        })
-                      }
-                    >
-                      m
-                    </Text>
-                    {accessRoad > 0 && (
-                      <TouchableOpacity onPress={() => setAccessRoad(0)}>
-                        <Image
-                          source={ICONS.clear}
-                          style={[
-                            AppStyles.icon,
-                            { marginLeft: Spacing.small },
-                          ]}
-                        />
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                </View>
-
-                {/* Frontage */}
-                <View>
-                  <Text
-                    style={[
-                      AppStyles.text_bold,
-                      { marginBottom: Spacing.medium },
-                    ]}
-                  >
-                    {t(text.frontage)}
-                  </Text>
-                  <View style={[styles.searchBox, { paddingVertical: 0 }]}>
-                    <TextInput
-                      style={[styles.text, { flex: 1 }]}
-                      value={frontage !== undefined ? frontage.toString() : ''}
-                      keyboardType="number-pad"
-                      onChangeText={text => setFrontage(Number(text))}
-                      placeholder={t(text.frontage)}
-                    />
-                    <Text
-                      style={
-                        (AppStyles.text,
-                        {
-                          backgroundColor: Colors.lightGray,
-                          padding: 5,
-                          borderRadius: 10,
-                        })
-                      }
-                    >
-                      m
-                    </Text>
-                    {frontage > 0 && (
-                      <TouchableOpacity onPress={() => setFrontage(0)}>
-                        <Image
-                          source={ICONS.clear}
-                          style={[
-                            AppStyles.icon,
-                            { marginLeft: Spacing.small },
-                          ]}
-                        />
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                </View>
-
-                {type === 2 ? (
-                  <View>
-                    {/* Available From */}
-                    <View>
-                      <Text
-                        style={[
-                          AppStyles.text_bold,
-                          { marginBottom: Spacing.medium },
-                        ]}
-                      >
-                        {t(text.availableFrom)}
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setSelectedField('availableFrom'),
-                            setUnitModalVisible(true);
-                        }}
-                        style={styles.searchBox}
-                      >
-                        <Text style={[AppStyles.text, { color: '#666666' }]}>
-                          {availableFrom.label || t(text.availableFrom)}
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-
-                    {/* Electricity Price */}
-                    <View>
-                      <Text
-                        style={[
-                          AppStyles.text_bold,
-                          { marginBottom: Spacing.medium },
-                        ]}
-                      >
-                        {t(text.electricityPrice)}
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setSelectedField('electricityPrice'),
-                            setUnitModalVisible(true);
-                        }}
-                        style={styles.searchBox}
-                      >
-                        <Text style={[AppStyles.text, { color: '#666666' }]}>
-                          {electricityPrice.label || t(text.electricityPrice)}
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-
-                    {/* Water Price */}
-                    <View>
-                      <Text
-                        style={[
-                          AppStyles.text_bold,
-                          { marginBottom: Spacing.medium },
-                        ]}
-                      >
-                        {t(text.waterPrice)}
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setSelectedField('waterPrice'),
-                            setUnitModalVisible(true);
-                        }}
-                        style={styles.searchBox}
-                      >
-                        <Text style={[AppStyles.text, { color: '#666666' }]}>
-                          {waterPrice.label || t(text.waterPrice)}
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-
-                    {/* Internet Price */}
-                    <View>
-                      <Text
-                        style={[
-                          AppStyles.text_bold,
-                          { marginBottom: Spacing.medium },
-                        ]}
-                      >
-                        {t(text.internetPrice)}
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setSelectedField('internetPrice'),
-                            setUnitModalVisible(true);
-                        }}
-                        style={styles.searchBox}
-                      >
-                        <Text style={[AppStyles.text, { color: '#666666' }]}>
-                          {internetPrice.label || t(text.internetPrice)}
-                        </Text>
-                      </TouchableOpacity>
+                      </View>
                     </View>
                   </View>
                 ) : (
-                  <></>
+                  <>
+                    {price && propertyType && area && unit ? (
+                      <Text style={styles.text}>{`${
+                        propertyType.label
+                      } • ${formatPriceToTy(price)} • ${area}m²`}</Text>
+                    ) : (
+                      <TouchableOpacity onPress={() => setIsShowMainInfo(true)}>
+                        <Text style={styles.text}>{t(text.more_info)}</Text>
+                      </TouchableOpacity>
+                    )}
+                  </>
                 )}
               </View>
-            ) : (
-              <View style={styles.body_itemBody}>
-                {/* Hiển thị các phần tử đầu tiên khi thu gọn */}
-                {visibleItems.map((item, index) => (
-                  <View key={index} style={styles.item}>
-                    <Text style={styles.text}>{item.label}:</Text>
-                    <Text style={styles.text}>
-                      {typeof item.value === 'object' && item.value !== null
-                        ? item.value.label
-                        : item.value}
-                    </Text>
-                  </View>
-                ))}
-                {/* Hiển thị thông báo về số lượng còn lại nếu có */}
-                {remainingCount > 0 && (
-                  <TouchableOpacity onPress={() => setIsShowOtherInfo(true)}>
-                    <Text style={AppStyles.text}>{`+ ${remainingCount} ${t(
-                      text.more_info,
-                    )}`}</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            )}
-          </View>
+            </>
+          ) : (
+            <></>
+          )}
 
-          {/* Title and Descripton */}
           <View style={styles.body_item}>
             <View style={styles.body_itemHeader}>
               <View style={{ flexDirection: 'row' }}>
@@ -1218,69 +804,8 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                     { marginBottom: Spacing.medium },
                   ]}
                 >
-                  {t(text.title_des)}
+                  {t(text.contact_info)}
                 </Text>
-                <Text
-                  style={[AppStyles.text, { marginLeft: Spacing.medium }]}
-                >{`(${t(text.optional)})`}</Text>
-              </View>
-              <TouchableOpacity onPress={() => setIshowTitDes(!isShowTitDes)}>
-                <Image
-                  source={isShowTitDes ? ICONS.down : ICONS.up}
-                  style={AppStyles.icon}
-                />
-              </TouchableOpacity>
-            </View>
-            {isShowTitDes ? (
-              <View>
-                {/* Title Input */}
-                <View>
-                  <Text style={AppStyles.text_bold}>{t(text.title)}</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Enter Title"
-                    value={title}
-                    onChangeText={text => setTitle(text)}
-                    maxLength={99}
-                  />
-                </View>
-                <View>
-                  {/* Description input (with larger height when expanded) */}
-                  <Text style={AppStyles.text_bold}>{t(text.description)}</Text>
-                  <ScrollView style={styles.scrollViewContainer}>
-                    <TextInput
-                      style={[styles.input, styles.descriptionInput]}
-                      placeholder="Enter Description"
-                      value={description}
-                      onChangeText={text => setDescription(text)}
-                      multiline={true}
-                      numberOfLines={5} // Tạo chiều cao lớn cho Description
-                      maxLength={3000} // Giới hạn tối đa 3000 ký tự
-                      scrollEnabled={true} // Cho phép cuộn khi nội dung dài
-                    />
-                  </ScrollView>
-                </View>
-              </View>
-            ) : (
-              <></>
-            )}
-          </View>
-
-          {/* Image Upload */}
-          <View style={styles.body_item}>
-            <View style={styles.body_itemHeader}>
-              <View style={{ flexDirection: 'row' }}>
-                <Text
-                  style={[
-                    AppStyles.text_bold,
-                    { marginBottom: Spacing.medium },
-                  ]}
-                >
-                  {t(text.upload_image)}
-                </Text>
-                <Text
-                  style={[AppStyles.text, { marginLeft: Spacing.medium }]}
-                >{`(${t(text.optional)})`}</Text>
               </View>
               <TouchableOpacity
                 onPress={() => setIsShowImagesUpdaload(!isShowImageUpload)}
@@ -1291,165 +816,799 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                 />
               </TouchableOpacity>
             </View>
-            {isShowImageUpload ? (
-              <>
-                <View
-                  style={{
-                    flex: 1,
-                    justifyContent: 'center',
-                  }}
-                >
-                  <ScrollView
-                    contentContainerStyle={{ marginBottom: Spacing.medium }}
-                  >
-                    <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-                      {imageUris.map((uri, index) => {
-                        const uniqueKey = `image-${index}-${uri}`; // Tạo key duy nhất cho mỗi phần tử
+            {/* fullname */}
+            <View>
+              <Text
+                style={[AppStyles.text_bold, { marginBottom: Spacing.medium }]}
+              >
+                {t(text.fullname)}
+              </Text>
+              <View style={[styles.searchBox, { paddingVertical: 0 }]}>
+                <TextInput
+                  style={[styles.text, { flex: 1 }]}
+                  value={contactName}
+                  keyboardType="number-pad"
+                  onChangeText={text => setContactName(text)}
+                  placeholder={t(text.fullname)}
+                />
+              </View>
+            </View>
+            {/* email */}
+            <View>
+              <Text
+                style={[AppStyles.text_bold, { marginBottom: Spacing.medium }]}
+              >
+                {t(text.email)}
+              </Text>
+              <View style={[styles.searchBox, { paddingVertical: 0 }]}>
+                <TextInput
+                  style={[styles.text, { flex: 1 }]}
+                  value={contactEmail}
+                  keyboardType="number-pad"
+                  onChangeText={text => setContactEmail(text)}
+                  placeholder={t(text.email)}
+                />
+              </View>
+            </View>
 
-                        if (index === 0) {
-                          // Ảnh đầu tiên sẽ chiếm hết chiều rộng
-                          return (
-                            <>
-                              <Image
-                                key={uniqueKey}
-                                source={{ uri }}
-                                style={{
-                                  width: '100%',
-                                  height: 200,
-                                  marginBottom: 10,
-                                }}
-                              />
-                              <TouchableOpacity
-                                style={styles.removeImageButton}
-                                onPress={() => removeImage(uri)}
-                              >
-                                <Image
-                                  source={ICONS.clear}
-                                  style={styles.clearImageIcon}
-                                />
-                              </TouchableOpacity>
-                            </>
-                          );
-                        } else {
-                          // Các ảnh sau sẽ chia thành 2 cột
-                          return (
-                            <View
-                              key={index}
-                              style={{ width: '50%', padding: 5 }}
-                            >
-                              <Image
-                                source={{ uri }}
-                                style={{ width: '100%', height: 100 }}
-                              />
-                              <TouchableOpacity
-                                style={[
-                                  styles.removeImageButton,
-                                  { top: 5, right: 5 },
-                                ]}
-                                onPress={() => removeImage(uri)}
-                              >
-                                <Image
-                                  source={ICONS.clear}
-                                  style={styles.clearImageIcon}
-                                />
-                              </TouchableOpacity>
-                            </View>
-                          );
-                        }
-                      })}
-                    </View>
-                  </ScrollView>
-
+            {/* phoneNumber */}
+            <View>
+              <Text
+                style={[AppStyles.text_bold, { marginBottom: Spacing.medium }]}
+              >
+                {t(text.phone)}
+              </Text>
+              <View style={[styles.searchBox, { paddingVertical: 0 }]}>
+                <TextInput
+                  style={[styles.text, { flex: 1 }]}
+                  value={contactPhone}
+                  keyboardType="number-pad"
+                  onChangeText={text => setContactPhone(text)}
+                  placeholder={t(text.phone)}
+                />
+              </View>
+            </View>
+          </View>
+          {/* Other Info */}
+          {propertyType && area && price && unit ? (
+            <>
+              <View style={styles.body_item}>
+                <View style={styles.body_itemHeader}>
+                  <View style={{ flexDirection: 'row' }}>
+                    <Text
+                      style={[
+                        AppStyles.text_bold,
+                        { marginBottom: Spacing.medium },
+                      ]}
+                    >
+                      {t(text.other_info)}
+                    </Text>
+                    <Text
+                      style={[AppStyles.text, { marginLeft: Spacing.medium }]}
+                    >{`(${t(text.optional)})`}</Text>
+                  </View>
                   <TouchableOpacity
-                    style={[
-                      AppStyles.button,
-                      {
-                        marginBottom: Spacing.medium,
-                        flexDirection: 'row',
-                        justifyContent: 'flex-start',
-                        alignItems: 'center',
-                      },
-                    ]}
-                    onPress={pickImagesFromLibrary}
+                    onPress={() => setIsShowOtherInfo(!isShowOtherInfo)}
                   >
                     <Image
-                      source={ICONS.image}
-                      style={[
-                        AppStyles.icon,
-                        {
-                          marginHorizontal: Spacing.medium,
-                          tintColor: Colors.white,
-                        },
-                      ]}
+                      source={isShowOtherInfo ? ICONS.down : ICONS.up}
+                      style={AppStyles.icon}
                     />
-                    <Text style={[styles.text, { color: Colors.white }]}>
-                      Chọn ảnh từ thư viện
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[
-                      AppStyles.button,
-                      {
-                        marginBottom: Spacing.medium,
-                        flexDirection: 'row',
-                        justifyContent: 'flex-start',
-                        alignItems: 'center',
-                      },
-                    ]}
-                    onPress={pickImageFromCamera}
-                  >
-                    <Image
-                      source={ICONS.plus}
-                      style={[
-                        AppStyles.icon,
-                        {
-                          marginHorizontal: Spacing.medium,
-                          tintColor: Colors.white,
-                        },
-                      ]}
-                    />
-                    <Text style={[styles.text, { color: Colors.white }]}>
-                      Chụp ảnh mới
-                    </Text>
                   </TouchableOpacity>
                 </View>
-              </>
-            ) : (
-              <>
-                {imageUris.length > 0 ? (
-                  <>
-                    <TouchableOpacity
-                      onPress={() => setIsShowImagesUpdaload(true)}
-                    >
+                {isShowOtherInfo ? (
+                  <View style={styles.body_itemBody}>
+                    {/* Legal */}
+                    <View>
                       <Text
                         style={[
-                          styles.text,
-                          { textDecorationLine: 'underline' },
+                          AppStyles.text_bold,
+                          { marginBottom: Spacing.medium },
                         ]}
-                      >{` ${
-                        (t(text.selected), imageUris.length, t(text.image))
-                      }`}</Text>
-                    </TouchableOpacity>
+                      >
+                        {t(text.legal)}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setSelectedField('legal'), setUnitModalVisible(true);
+                        }}
+                        style={styles.searchBox}
+                      >
+                        <Text style={[AppStyles.text, { color: '#666666' }]}>
+                          {legal.label || t(text.legal)}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    {/* Furnishing */}
+                    <View>
+                      <Text
+                        style={[
+                          AppStyles.text_bold,
+                          { marginBottom: Spacing.medium },
+                        ]}
+                      >
+                        {t(text.furnishing)}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setSelectedField('furniture'),
+                            setUnitModalVisible(true);
+                        }}
+                        style={styles.searchBox}
+                      >
+                        <Text style={[AppStyles.text, { color: '#666666' }]}>
+                          {furniture.label || t(text.furnishing)}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    {/* Increase/Decrease Item */}
+                    <View>
+                      {/* Bed */}
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          marginBottom: Spacing.medium,
+                        }}
+                      >
+                        <Text style={AppStyles.text_bold}>
+                          {t(text.bedrooms)}
+                        </Text>
+                        <View style={{ flexDirection: 'row' }}>
+                          <TouchableOpacity
+                            disabled={bedrooms === 0}
+                            onPress={() => handleDecrease('bedrooms')}
+                          >
+                            <Image
+                              source={ICONS.minus}
+                              style={[
+                                AppStyles.icon,
+                                {
+                                  tintColor:
+                                    bedrooms === 0
+                                      ? Colors.Gray
+                                      : Colors.darkGray,
+                                },
+                              ]}
+                            />
+                          </TouchableOpacity>
+                          <Text style={styles.quantity}>{bedrooms}</Text>
+                          <TouchableOpacity
+                            onPress={() => handleIncrease('bedrooms')}
+                          >
+                            <Image
+                              source={ICONS.plus}
+                              style={[
+                                AppStyles.icon,
+                                { tintColor: Colors.darkGray },
+                              ]}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+
+                      {/* Bath */}
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          marginBottom: Spacing.medium,
+                        }}
+                      >
+                        <Text style={AppStyles.text_bold}>
+                          {t(text.bathrooms)}
+                        </Text>
+                        <View style={{ flexDirection: 'row' }}>
+                          <TouchableOpacity
+                            disabled={bathrooms === 0}
+                            onPress={() => handleDecrease('bathrooms')}
+                          >
+                            <Image
+                              source={ICONS.minus}
+                              style={[
+                                AppStyles.icon,
+                                {
+                                  tintColor:
+                                    bathrooms === 0
+                                      ? Colors.Gray
+                                      : Colors.darkGray,
+                                },
+                              ]}
+                            />
+                          </TouchableOpacity>
+                          <Text style={styles.quantity}>{bathrooms}</Text>
+                          <TouchableOpacity
+                            onPress={() => handleIncrease('bathrooms')}
+                          >
+                            <Image
+                              source={ICONS.plus}
+                              style={[
+                                AppStyles.icon,
+                                { tintColor: Colors.darkGray },
+                              ]}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+
+                      {/* Floor */}
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          marginBottom: Spacing.medium,
+                        }}
+                      >
+                        <Text style={AppStyles.text_bold}>
+                          {t(text.floors)}
+                        </Text>
+                        <View style={{ flexDirection: 'row' }}>
+                          <TouchableOpacity
+                            disabled={floor === 0}
+                            onPress={() => handleDecrease('floor')}
+                          >
+                            <Image
+                              source={ICONS.minus}
+                              style={[
+                                AppStyles.icon,
+                                {
+                                  tintColor:
+                                    floor === 0 ? Colors.Gray : Colors.darkGray,
+                                },
+                              ]}
+                            />
+                          </TouchableOpacity>
+                          <Text style={styles.quantity}>{floor}</Text>
+                          <TouchableOpacity
+                            onPress={() => handleIncrease('floor')}
+                          >
+                            <Image
+                              source={ICONS.plus}
+                              style={[
+                                AppStyles.icon,
+                                { tintColor: Colors.darkGray },
+                              ]}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </View>
+
+                    {/* House Direction */}
+                    <View>
+                      <Text
+                        style={[
+                          AppStyles.text_bold,
+                          { marginBottom: Spacing.medium },
+                        ]}
+                      >
+                        {t(text.modal.houseDirection)}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setSelectedField('housedirection'),
+                            setUnitModalVisible(true);
+                        }}
+                        style={styles.searchBox}
+                      >
+                        <Text style={[AppStyles.text, { color: '#666666' }]}>
+                          {housedirection.label ||
+                            t(text.modal.balconyDirection)}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    {/* Balcony Direction */}
+                    <View>
+                      <Text
+                        style={[
+                          AppStyles.text_bold,
+                          { marginBottom: Spacing.medium },
+                        ]}
+                      >
+                        {t(text.modal.balconyDirection)}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setSelectedField('balconydirection'),
+                            setUnitModalVisible(true);
+                        }}
+                        style={styles.searchBox}
+                      >
+                        <Text style={[AppStyles.text, { color: '#666666' }]}>
+                          {balconydirection.label ||
+                            t(text.modal.balconyDirection)}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    {/* Access Road */}
+                    <View>
+                      <Text
+                        style={[
+                          AppStyles.text_bold,
+                          { marginBottom: Spacing.medium },
+                        ]}
+                      >
+                        {t(text.accessRoad)}
+                      </Text>
+                      <View style={[styles.searchBox, { paddingVertical: 0 }]}>
+                        <TextInput
+                          style={[styles.text, { flex: 1 }]}
+                          value={
+                            accessRoad !== undefined
+                              ? accessRoad.toString()
+                              : ''
+                          }
+                          keyboardType="number-pad"
+                          onChangeText={text => setAccessRoad(Number(text))}
+                          placeholder={t(text.accessRoad)}
+                        />
+                        <Text
+                          style={
+                            (AppStyles.text,
+                            {
+                              backgroundColor: Colors.lightGray,
+                              padding: 5,
+                              borderRadius: 10,
+                            })
+                          }
+                        >
+                          m
+                        </Text>
+                        {accessRoad > 0 && (
+                          <TouchableOpacity onPress={() => setAccessRoad(0)}>
+                            <Image
+                              source={ICONS.clear}
+                              style={[
+                                AppStyles.icon,
+                                { marginLeft: Spacing.small },
+                              ]}
+                            />
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    </View>
+
+                    {/* Frontage */}
+                    <View>
+                      <Text
+                        style={[
+                          AppStyles.text_bold,
+                          { marginBottom: Spacing.medium },
+                        ]}
+                      >
+                        {t(text.frontage)}
+                      </Text>
+                      <View style={[styles.searchBox, { paddingVertical: 0 }]}>
+                        <TextInput
+                          style={[styles.text, { flex: 1 }]}
+                          value={
+                            frontage !== undefined ? frontage.toString() : ''
+                          }
+                          keyboardType="number-pad"
+                          onChangeText={text => setFrontage(Number(text))}
+                          placeholder={t(text.frontage)}
+                        />
+                        <Text
+                          style={
+                            (AppStyles.text,
+                            {
+                              backgroundColor: Colors.lightGray,
+                              padding: 5,
+                              borderRadius: 10,
+                            })
+                          }
+                        >
+                          m
+                        </Text>
+                        {frontage > 0 && (
+                          <TouchableOpacity onPress={() => setFrontage(0)}>
+                            <Image
+                              source={ICONS.clear}
+                              style={[
+                                AppStyles.icon,
+                                { marginLeft: Spacing.small },
+                              ]}
+                            />
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    </View>
+
+                    {type === 2 ? (
+                      <View>
+                        {/* Available From */}
+                        <View>
+                          <Text
+                            style={[
+                              AppStyles.text_bold,
+                              { marginBottom: Spacing.medium },
+                            ]}
+                          >
+                            {t(text.availableFrom)}
+                          </Text>
+                          <TouchableOpacity
+                            onPress={() => {
+                              setSelectedField('availableFrom'),
+                                setUnitModalVisible(true);
+                            }}
+                            style={styles.searchBox}
+                          >
+                            <Text
+                              style={[AppStyles.text, { color: '#666666' }]}
+                            >
+                              {availableFrom.label || t(text.availableFrom)}
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+
+                        {/* Electricity Price */}
+                        <View>
+                          <Text
+                            style={[
+                              AppStyles.text_bold,
+                              { marginBottom: Spacing.medium },
+                            ]}
+                          >
+                            {t(text.electricityPrice)}
+                          </Text>
+                          <TouchableOpacity
+                            onPress={() => {
+                              setSelectedField('electricityPrice'),
+                                setUnitModalVisible(true);
+                            }}
+                            style={styles.searchBox}
+                          >
+                            <Text
+                              style={[AppStyles.text, { color: '#666666' }]}
+                            >
+                              {electricityPrice.label ||
+                                t(text.electricityPrice)}
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+
+                        {/* Water Price */}
+                        <View>
+                          <Text
+                            style={[
+                              AppStyles.text_bold,
+                              { marginBottom: Spacing.medium },
+                            ]}
+                          >
+                            {t(text.waterPrice)}
+                          </Text>
+                          <TouchableOpacity
+                            onPress={() => {
+                              setSelectedField('waterPrice'),
+                                setUnitModalVisible(true);
+                            }}
+                            style={styles.searchBox}
+                          >
+                            <Text
+                              style={[AppStyles.text, { color: '#666666' }]}
+                            >
+                              {waterPrice.label || t(text.waterPrice)}
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+
+                        {/* Internet Price */}
+                        <View>
+                          <Text
+                            style={[
+                              AppStyles.text_bold,
+                              { marginBottom: Spacing.medium },
+                            ]}
+                          >
+                            {t(text.internetPrice)}
+                          </Text>
+                          <TouchableOpacity
+                            onPress={() => {
+                              setSelectedField('internetPrice'),
+                                setUnitModalVisible(true);
+                            }}
+                            style={styles.searchBox}
+                          >
+                            <Text
+                              style={[AppStyles.text, { color: '#666666' }]}
+                            >
+                              {internetPrice.label || t(text.internetPrice)}
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    ) : (
+                      <></>
+                    )}
+                  </View>
+                ) : (
+                  <View style={styles.body_itemBody}>
+                    {/* Hiển thị các phần tử đầu tiên khi thu gọn */}
+                    {visibleItems.map((item, index) => (
+                      <View key={index} style={styles.item}>
+                        <Text style={styles.text}>{item.label}:</Text>
+                        <Text style={styles.text}>
+                          {typeof item.value === 'object' && item.value !== null
+                            ? item.value.label
+                            : item.value}
+                        </Text>
+                      </View>
+                    ))}
+                    {/* Hiển thị thông báo về số lượng còn lại nếu có */}
+                    {remainingCount > 0 && (
+                      <TouchableOpacity
+                        onPress={() => setIsShowOtherInfo(true)}
+                      >
+                        <Text style={AppStyles.text}>{`+ ${remainingCount} ${t(
+                          text.more_info,
+                        )}`}</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                )}
+              </View>
+              {/* Title and Descripton */}
+              <View style={styles.body_item}>
+                <View style={styles.body_itemHeader}>
+                  <View style={{ flexDirection: 'row' }}>
+                    <Text
+                      style={[
+                        AppStyles.text_bold,
+                        { marginBottom: Spacing.medium },
+                      ]}
+                    >
+                      {t(text.title_des)}
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => setIshowTitDes(!isShowTitDes)}
+                  >
+                    <Image
+                      source={isShowTitDes ? ICONS.down : ICONS.up}
+                      style={AppStyles.icon}
+                    />
+                  </TouchableOpacity>
+                </View>
+                {isShowTitDes ? (
+                  <View>
+                    {/* Title Input */}
+                    <View>
+                      <Text style={AppStyles.text_bold}>{t(text.title)}</Text>
+                      <TextInput
+                        style={styles.input}
+                        placeholder="Enter Title"
+                        value={title}
+                        onChangeText={text => setTitle(text)}
+                        maxLength={99}
+                      />
+                    </View>
+                    <View>
+                      {/* Description input (with larger height when expanded) */}
+                      <Text style={AppStyles.text_bold}>
+                        {t(text.description)}
+                      </Text>
+                      <ScrollView style={styles.scrollViewContainer}>
+                        <TextInput
+                          style={[styles.input, styles.descriptionInput]}
+                          placeholder="Enter Description"
+                          value={description}
+                          onChangeText={text => setDescription(text)}
+                          multiline={true}
+                          numberOfLines={5} // Tạo chiều cao lớn cho Description
+                          maxLength={3000} // Giới hạn tối đa 3000 ký tự
+                          scrollEnabled={true} // Cho phép cuộn khi nội dung dài
+                        />
+                      </ScrollView>
+                    </View>
+                  </View>
+                ) : (
+                  <></>
+                )}
+              </View>
+            </>
+          ) : (
+            <></>
+          )}
+
+          {/* Image Upload */}
+          {title && description ? (
+            <>
+              <View style={styles.body_item}>
+                <View style={styles.body_itemHeader}>
+                  <View style={{ flexDirection: 'row' }}>
+                    <Text
+                      style={[
+                        AppStyles.text_bold,
+                        { marginBottom: Spacing.medium },
+                      ]}
+                    >
+                      {t(text.upload_image)}
+                    </Text>
+                    <Text
+                      style={[AppStyles.text, { marginLeft: Spacing.medium }]}
+                    >{`(${t(text.optional)})`}</Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => setIsShowImagesUpdaload(!isShowImageUpload)}
+                  >
+                    <Image
+                      source={isShowImageUpload ? ICONS.down : ICONS.up}
+                      style={AppStyles.icon}
+                    />
+                  </TouchableOpacity>
+                </View>
+                {isShowImageUpload ? (
+                  <>
+                    <View
+                      style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <ScrollView
+                        contentContainerStyle={{ marginBottom: Spacing.medium }}
+                      >
+                        <View
+                          style={{ flexDirection: 'row', flexWrap: 'wrap' }}
+                        >
+                          {imageUris.map((uri, index) => {
+                            const uniqueKey = `image-${index}-${uri}`; // Tạo key duy nhất cho mỗi phần tử
+
+                            if (index === 0) {
+                              // Ảnh đầu tiên sẽ chiếm hết chiều rộng
+                              return (
+                                <>
+                                  <Image
+                                    key={uniqueKey}
+                                    source={{ uri }}
+                                    style={{
+                                      width: '100%',
+                                      height: 200,
+                                      marginBottom: 10,
+                                    }}
+                                  />
+                                  <TouchableOpacity
+                                    style={styles.removeImageButton}
+                                    onPress={() => removeImage(uri)}
+                                  >
+                                    <Image
+                                      source={ICONS.clear}
+                                      style={styles.clearImageIcon}
+                                    />
+                                  </TouchableOpacity>
+                                </>
+                              );
+                            } else {
+                              // Các ảnh sau sẽ chia thành 2 cột
+                              return (
+                                <View
+                                  key={index}
+                                  style={{ width: '50%', padding: 5 }}
+                                >
+                                  <Image
+                                    source={{ uri }}
+                                    style={{ width: '100%', height: 100 }}
+                                  />
+                                  <TouchableOpacity
+                                    style={[
+                                      styles.removeImageButton,
+                                      { top: 5, right: 5 },
+                                    ]}
+                                    onPress={() => removeImage(uri)}
+                                  >
+                                    <Image
+                                      source={ICONS.clear}
+                                      style={styles.clearImageIcon}
+                                    />
+                                  </TouchableOpacity>
+                                </View>
+                              );
+                            }
+                          })}
+                        </View>
+                      </ScrollView>
+
+                      <TouchableOpacity
+                        style={[
+                          AppStyles.button,
+                          {
+                            marginBottom: Spacing.medium,
+                            flexDirection: 'row',
+                            justifyContent: 'flex-start',
+                            alignItems: 'center',
+                          },
+                        ]}
+                        onPress={pickImagesFromLibrary}
+                      >
+                        <Image
+                          source={ICONS.image}
+                          style={[
+                            AppStyles.icon,
+                            {
+                              marginHorizontal: Spacing.medium,
+                              tintColor: Colors.white,
+                            },
+                          ]}
+                        />
+                        <Text style={[styles.text, { color: Colors.white }]}>
+                          Chọn ảnh từ thư viện
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[
+                          AppStyles.button,
+                          {
+                            marginBottom: Spacing.medium,
+                            flexDirection: 'row',
+                            justifyContent: 'flex-start',
+                            alignItems: 'center',
+                          },
+                        ]}
+                        onPress={pickImageFromCamera}
+                      >
+                        <Image
+                          source={ICONS.plus}
+                          style={[
+                            AppStyles.icon,
+                            {
+                              marginHorizontal: Spacing.medium,
+                              tintColor: Colors.white,
+                            },
+                          ]}
+                        />
+                        <Text style={[styles.text, { color: Colors.white }]}>
+                          Chụp ảnh mới
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
                   </>
                 ) : (
                   <>
-                    <TouchableOpacity
-                      onPress={() => setIsShowImagesUpdaload(true)}
-                    >
-                      <Text
-                        style={[
-                          styles.text,
-                          { textDecorationLine: 'underline' },
-                        ]}
-                      >
-                        Chọn ảnh
-                      </Text>
-                    </TouchableOpacity>
+                    {imageUris.length > 0 ? (
+                      <>
+                        <TouchableOpacity
+                          onPress={() => setIsShowImagesUpdaload(true)}
+                        >
+                          <Text
+                            style={[
+                              styles.text,
+                              { textDecorationLine: 'underline' },
+                            ]}
+                          >{` ${
+                            (t(text.selected), imageUris.length, t(text.image))
+                          }`}</Text>
+                        </TouchableOpacity>
+                      </>
+                    ) : (
+                      <>
+                        <TouchableOpacity
+                          onPress={() => setIsShowImagesUpdaload(true)}
+                        >
+                          <Text
+                            style={[
+                              styles.text,
+                              { textDecorationLine: 'underline' },
+                            ]}
+                          >
+                            Chọn ảnh
+                          </Text>
+                        </TouchableOpacity>
+                      </>
+                    )}
                   </>
                 )}
-              </>
-            )}
-          </View>
+              </View>
+            </>
+          ) : (
+            <></>
+          )}
         </View>
         <AppButton
           title={t(text.create_post)}

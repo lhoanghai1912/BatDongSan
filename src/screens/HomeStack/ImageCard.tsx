@@ -16,8 +16,10 @@ import { Fonts } from '../../utils/fontSize';
 import { ICONS, IMAGES, text } from '../../utils/constants';
 import AppButton from '../../components/AppButton';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 
 const ImageCard = ({ post }) => {
+  const { t } = useTranslation();
   const images = post.images?.map(img => img).slice(0, 4) || [];
   const imageslink = post.images?.map(img => img.imageUrl).slice(0, 4) || [];
 
@@ -45,7 +47,9 @@ const ImageCard = ({ post }) => {
         ? `${thousand.toFixed(0)} nghìn`
         : `${thousand.toFixed(2)} nghìn`;
     }
-
+    if (price === 0) {
+      return `${t(text.deal)}`;
+    }
     return `${price.toFixed(0)} đồng`; // Trả về giá trị nếu không thuộc các loại trên
   };
 

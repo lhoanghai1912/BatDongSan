@@ -11,8 +11,12 @@ export const getAllImages = async () => {
 export const createPost = async (formData: FormData) => {
   try {
     console.log('form data', formData);
-    const response = await apiClient.post('/posts/create', formData);
-
+    const response = await apiClient.post('/posts/create', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data', // Đặt Content-Type cho formData
+        // Authorization: 'Bearer your_token_here', // Đảm bảo nếu cần, có thể để thêm token
+      },
+    });
     console.log('ressssssssssssssssssssssssssssssssssssssssApi', response);
 
     console.log('Post Created: ', response.data);

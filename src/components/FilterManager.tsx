@@ -35,7 +35,10 @@ const FilterManager: React.FC<FilterManagerProps> = ({
       <CheckBoxModal
         visible={visible}
         title={title}
-        data={data as { label: string; icon: string }[]}
+        data={(data as any[]).map(item => ({
+          ...item,
+          value: item.value ?? item.label, // fallback to label if value is missing
+        }))}
         selected={selected as string[]}
         onClose={onClose}
         onReset={onReset}

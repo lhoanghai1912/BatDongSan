@@ -37,8 +37,6 @@ import {
 import { buildGridifyFilter } from './Utils/filterUtils';
 
 const HomeScreen: React.FC = ({}) => {
-  const dispatch = useDispatch();
-  const { userData, token } = useSelector((state: any) => state.user);
   const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
@@ -92,7 +90,6 @@ const HomeScreen: React.FC = ({}) => {
       const fullFilter = userFilters
         ? `${typeFilter},${userFilters}`
         : typeFilter;
-      console.log('filter khoang gia', selectedValue.khoangGia);
 
       console.log('🧪 Final Filter:', fullFilter);
 
@@ -246,8 +243,10 @@ const HomeScreen: React.FC = ({}) => {
                 if (Array.isArray(selected)) {
                   label = valueToLabel(item.key, selected);
                 } else {
-                  if (item.key === 'khoangGia') {
+                  if (item.key === 'khoangGia' && selected !== 'Deal') {
                     label = `${selected} tỷ`;
+                  } else if (item.key === 'khoangGia' && selected === 'Deal') {
+                    label = `${selected}`;
                   } else if (item.key === 'dienTich') {
                     {
                       label = `${selected} m²`;
@@ -369,12 +368,26 @@ const HomeScreen: React.FC = ({}) => {
           selected={selectedValue[modalTitleKey] || ''} // ✅ fix đúng kiểu
           onClose={() => setModalVisible(false)}
           onReset={() => handleReset()}
+          // onApplyFilter={
+          //   value => {
+          //   setSelectedValue(prev => ({
+          //     ...prev,
+          //     [modalTitleKey]: value,
+          //   }));
+          //   setModalVisible(false);
+          // }}
           onApplyFilter={value => {
+            // Kiểm tra nếu giá trị là 'deal', bạn có thể xử lý theo cách đặc biệt
+
+            console.log('Giá trị đã chọn:', value);
+
+            // Cập nhật giá trị được chọn vào selectedValue
             setSelectedValue(prev => ({
               ...prev,
               [modalTitleKey]: value,
             }));
-            setModalVisible(false);
+
+            setModalVisible(false); // Đóng modal
           }}
         />
       )}

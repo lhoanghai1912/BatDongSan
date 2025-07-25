@@ -23,9 +23,14 @@ export const buildGridifyFilter = (filters: {
 
   // Lọc theo giá
   if (filters.khoangGia) {
-    const [min, max] = filters.khoangGia.split('-').map(Number);
-    if (!isNaN(min) && !isNaN(max)) {
-      parts.push(`price>=${min * 1e9}`, `price<=${max * 1e9}`);
+    if (filters.khoangGia === 'Deal') {
+      // Lọc theo giá thỏa thuận
+      parts.push(`unit=3`);
+    } else {
+      const [min, max] = filters.khoangGia.split('-').map(Number);
+      if (!isNaN(min) && !isNaN(max)) {
+        parts.push(`price>=${min * 1e9}`, `price<=${max * 1e9}`);
+      }
     }
   }
 

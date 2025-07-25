@@ -105,7 +105,9 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
   const handleSubmit = () => {
     if (isSingleValue) {
       onSubmit(sliderValue.toString());
-    } else {
+    }
+    if (selectedValue === 'Deal') onSubmit(selectedValue);
+    else {
       if (range[0] === 0 && range[1] === 0) {
         onSubmit('');
         onClose();

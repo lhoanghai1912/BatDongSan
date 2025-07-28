@@ -81,6 +81,7 @@ const HomeScreen: React.FC = ({}) => {
   const numberResults = filteredData.length.toString();
   const [langModalVisible, setLangModalVisible] = useState(false);
   const [selectedLang, setSelectedLang] = useState('en');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const fetchFilteredData = async () => {
     setLoading(true);
@@ -113,10 +114,6 @@ const HomeScreen: React.FC = ({}) => {
     };
     loadMenu();
   }, [selectedLang]);
-
-  useEffect(() => {
-    console.log('✅ houseType updated:', houseType);
-  }, [houseType]);
 
   const openFilterModal = (type: string) => {
     setModalTitleKey(type);
@@ -310,6 +307,9 @@ const HomeScreen: React.FC = ({}) => {
             )}`}</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={() =>
+              setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'))
+            }
             style={{
               borderColor: Colors.Gray,
               borderWidth: 1,
@@ -320,7 +320,9 @@ const HomeScreen: React.FC = ({}) => {
               alignItems: 'center',
             }}
           >
-            <Text style={AppStyles.text}>{t(text.arrange)}</Text>
+            <Text style={AppStyles.text}>
+              {sortOrder === 'asc' ? 'Giá tăng dần' : 'Giá giảm dần'}
+            </Text>
             <Image
               source={ICONS.sort_down}
               style={{ width: 20, height: 20, marginLeft: Spacing.small }}

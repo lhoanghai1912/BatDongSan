@@ -1,5 +1,12 @@
 import React from 'react';
-import { Image, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  Image,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ViewStyle,
+} from 'react-native';
 import { ICONS } from '../utils/constants';
 import AppStyles from './AppStyle';
 import { Fonts } from '../utils/fontSize';
@@ -13,6 +20,7 @@ interface NavBarProps {
   icon2?: any;
   onRightPress1?: () => void;
   onRightPress2?: () => void;
+  customStyle?: ViewStyle[];
 }
 
 const NavBar = ({
@@ -22,9 +30,10 @@ const NavBar = ({
   icon2,
   onRightPress1,
   onRightPress2,
+  customStyle = [],
 }: NavBarProps) => {
   return (
-    <View style={styles.navBar}>
+    <View style={[styles.navBar, ...customStyle]}>
       {/* Back button */}
       <TouchableOpacity onPress={onPress} style={styles.iconButton}>
         <Image source={ICONS.back} style={AppStyles.icon} />
@@ -39,12 +48,18 @@ const NavBar = ({
       <View style={styles.rightIcons}>
         {icon1 && (
           <TouchableOpacity onPress={onRightPress1} style={styles.iconButton}>
-            <Image source={icon1} style={AppStyles.icon} />
+            <Image
+              source={icon1}
+              style={[AppStyles.icon, { tintColor: Colors.black }]}
+            />
           </TouchableOpacity>
         )}
         {icon2 && (
           <TouchableOpacity onPress={onRightPress2} style={styles.iconButton}>
-            <Image source={icon2} style={AppStyles.icon} />
+            <Image
+              source={icon2}
+              style={[AppStyles.icon, { tintColor: Colors.black }]}
+            />
           </TouchableOpacity>
         )}
       </View>
@@ -58,7 +73,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingBottom: Spacing.small,
-    backgroundColor: Colors.white,
   },
   navTitle: {
     flex: 1,

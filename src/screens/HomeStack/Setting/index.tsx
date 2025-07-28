@@ -10,7 +10,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { Spacing } from '../../../utils/spacing';
 import { Colors } from '../../../utils/color';
-import { ICONS, IMAGES, text } from '../../../utils/constants';
+import { ICONS, IMAGES, link, text } from '../../../utils/constants';
 import AppStyles from '../../../components/AppStyle';
 import { navigate } from '../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../navigation/ScreenName';
@@ -71,10 +71,17 @@ const SettingScreen = () => {
                   navigate(Screen_Name.User_Screen);
                 }}
               >
-                <Image
-                  source={{ uri: `${text.url}${userData.avatarUrl}` }}
-                  style={AppStyles.avartar}
-                />
+                {userData?.avatarUrl ? (
+                  <Image
+                    source={{ uri: `${link.url}${userData.avatarUrl}` }}
+                    style={AppStyles.avartar}
+                  />
+                ) : (
+                  <Image
+                    source={IMAGES.avartar} // dùng avatar mặc định nếu null
+                    style={AppStyles.avartar}
+                  />
+                )}
               </TouchableOpacity>
               <Text
                 style={[

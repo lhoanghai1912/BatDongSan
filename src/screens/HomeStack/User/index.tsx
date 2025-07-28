@@ -13,7 +13,7 @@ import AppButton from '../../../components/AppButton';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import NavBar from '../../../components/Navbar';
-import { IMAGES } from '../../../utils/constants';
+import { IMAGES, link, text } from '../../../utils/constants';
 import AppStyles from '../../../components/AppStyle';
 import { Spacing } from '../../../utils/spacing';
 import {
@@ -47,20 +47,20 @@ const UserScreen: React.FC<Props> = ({ navigation }) => {
   const [avatarBase64, setAvatarBase64] = useState('');
   const [imageUri, setImageUri] = useState<string | null>(null); // Chứa URI ảnh chọn
 
-  useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        const res = await getCurrentUser();
-        setFullName(res.fullName);
-        setEmail(res.email);
-        setPhoneNumber(res.phoneNumber);
-        setAddress(res.address);
+  const loadUserData = async () => {
+    try {
+      const res = await getCurrentUser();
+      setFullName(res.fullName);
+      setEmail(res.email);
+      setPhoneNumber(res.phoneNumber);
+      setAddress(res.address);
 
-        console.log('userData', res);
-      } catch (error) {
-        console.log('erro', error);
-      }
-    };
+      console.log('userData', res);
+    } catch (error) {
+      console.log('erro', error);
+    }
+  };
+  useEffect(() => {
     loadUserData();
   }, []);
 
@@ -144,7 +144,7 @@ const UserScreen: React.FC<Props> = ({ navigation }) => {
         disabled={!isEditing}
       >
         <Image
-          source={imageUri ? { uri: imageUri } : IMAGES.avartar}
+          source={imageUri ? { uri: `${link.url}` } : IMAGES.avartar}
           style={[
             AppStyles.avartar,
             { width: 150, height: 150, resizeMode: 'cover' },

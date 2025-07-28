@@ -1,6 +1,8 @@
 // src/services/product.service.ts
 import axios from 'axios';
 import apiClient from './apiClient';
+import Toast from 'react-native-toast-message';
+import { text } from '../utils/constants';
 
 export const getAllImages = async () => {
   const res = await apiClient.get('/file');
@@ -56,4 +58,50 @@ export const getAllPosts = async (filterString = '', page = 1, limit = 10) => {
     }
     throw error;
   }
+};
+
+export const getPostById = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/posts/${id}`);
+    return response.data;
+  } catch (error) {
+    console.log(`Get post ${id} error:`, error);
+    return null;
+  }
+};
+
+export const likePost = async (id: number) => {
+  const res = await apiClient.post(`posts/${id}/like`, {
+    id: id,
+  });
+  Toast.show({
+    type: 'success',
+    text1: 'Success',
+    text2: 'Saved Post',
+  });
+  return res.data;
+};
+
+export const unlikePost = async (id: number) => {
+  const res = await apiClient.delete(`posts/${id}/like`, {
+    data: { id: id },
+  });
+  Toast.show({
+    type: 'success',
+    text1: 'Success',
+    text2: 'UnSaved Post',
+  });
+  return res.data;
+};
+
+export const checkLike = async (id: number) => {
+  const res = await apiClient.get(`posts/${id}/like/check`, {
+    data: { id: id },
+  });
+  return res.data;
+};
+
+export const listLikedPost = async () => {
+  const res = await apiClient.get(`posts/My_liked`);
+  return res.data;
 };

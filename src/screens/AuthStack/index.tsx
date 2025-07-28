@@ -20,7 +20,7 @@ import { navigate } from '../../navigation/RootNavigator';
 import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
 import { setToken, setUserData } from '../../store/reducers/userSlice';
-import { login } from '../../service';
+import { likePost, login } from '../../service';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
@@ -50,6 +50,7 @@ const LoginScreen = () => {
           'userData',
           JSON.stringify(loginData.profile),
         ); // Save user data
+        syncLocalLikesToServer();
       }
       navigate(Screen_Name.BottomTab_Navigator, {
         screen: Screen_Name.Setting_Screen,
@@ -64,6 +65,20 @@ const LoginScreen = () => {
     } finally {
       setLoading(false);
     }
+  };
+  const syncLocalLikesToServer = async () => {
+    const savedLikes = await AsyncStorage.getItem('savedLikes');
+    const likesArray = savedLikes ? JSON.parse(savedLikes) : [];
+
+    for (const id of likesArray) {
+      try {
+        await likePost(id);
+      } catch (err) {
+        console.log('Sync like fail', id);
+      }
+    }
+
+    await AsyncStorage.removeItem('savedLikes');
   };
 
   const handleLoginWithGoogle = async () => {};

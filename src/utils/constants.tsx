@@ -52,7 +52,6 @@ export const text = {
   responsible_person: 'responsible_person',
   company_address: 'company_address',
   version: 'version',
-  url: 'https://bds.foxai.com.vn:8441',
   description: 'description',
   property_features: 'property_features',
   create_post: 'create_post',
@@ -108,6 +107,7 @@ export const text = {
   image: 'image',
   min: 'min',
   selected: 'selected',
+  saved_post: 'saved_post',
   //modal
   modal: {
     chooseHouseType: 'modal.chooseHouseType',
@@ -212,4 +212,8 @@ export const IMAGES = {
   logo: require('../assets/images/company-logo.png'),
   avartar: require('../assets/images/avt_male.jpg'),
   bocongthuong: require('../assets/images/bocongthuong.png'),
+};
+
+export const link = {
+  url: 'https://bds.foxai.com.vn:8441',
 };

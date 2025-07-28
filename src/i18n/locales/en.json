@@ -91,6 +91,7 @@
   "title_des": "Title and Description",
   "image":"Image",
   "selected" : "Selected",
+  "saved_post": "Saved post",
   "modal": {
     "chooseHouseType": "Choose house type",
     "chooseDirection": "Choose direction",

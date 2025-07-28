@@ -1,6 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  RefreshControl,
+  Touchable,
+  TouchableOpacity,
+} from 'react-native';
 import { text } from '../../../utils/constants';
 import { Spacing } from '../../../utils/spacing';
 import AppStyles from '../../../components/AppStyle';
@@ -9,6 +17,9 @@ import ImageCard from '../ImageCard';
 import { Colors } from '../../../utils/color';
 import { useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
+import { navigate } from '../../../navigation/RootNavigator';
+import { Screen_Name } from '../../../navigation/ScreenName';
+import AppButton from '../../../components/AppButton';
 
 type PostType = {
   _id: string;
@@ -63,23 +74,40 @@ const HeartScreen = () => {
         </Text>
         <View style={AppStyles.line} />
       </View>
-      <View style={styles.body}>
-        <FlatList
-          data={listDataLiked}
-          ListEmptyComponent={
-            <Text style={[AppStyles.label, { flex: 1, textAlign: 'center' }]}>
-              Chưa lưu bài viết nào
-            </Text>
-          }
-          keyExtractor={item =>
-            item._id ? item._id.toString() : `${Math.random()}`
-          } // Sử dụng key ngẫu nhiên nếu _id không có
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          renderItem={renderPost}
-        />
-      </View>
+      {token ? (
+        <>
+          {' '}
+          <View style={styles.body}>
+            <FlatList
+              data={listDataLiked}
+              ListEmptyComponent={
+                <Text
+                  style={[AppStyles.label, { flex: 1, textAlign: 'center' }]}
+                >
+                  Chưa lưu bài viết nào
+                </Text>
+              }
+              keyExtractor={item =>
+                item._id ? item._id.toString() : `${Math.random()}`
+              } // Sử dụng key ngẫu nhiên nếu _id không có
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
+              renderItem={renderPost}
+            />
+          </View>
+        </>
+      ) : (
+        <View style={{ alignItems: 'center' }}>
+          <Text style={[AppStyles.text, { marginBottom: Spacing.medium }]}>
+            Đăng nhập để xem thêm các tin đăng
+          </Text>
+          <AppButton
+            title="Đăng nhập"
+            onPress={() => navigate(Screen_Name.Login_Screen)}
+          ></AppButton>
+        </View>
+      )}
     </View>
   );
 };

@@ -57,6 +57,9 @@ const ImageCard = ({ post }) => {
       console.log('error', error);
     }
   };
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData]);
   if (imageslink.length === 0) return null;
   const formatPriceToTy = (price: number): string => {
     if (!price || isNaN(price)) return '0 đồng';
@@ -98,18 +101,25 @@ const ImageCard = ({ post }) => {
       handleCheckLike(); // gọi lại API khi màn hình được focus
     }, [token]),
   );
-  console.log('liked', liked);
   const handleLike = async () => {
-    try {
-      if (liked === false) {
-        const res = await likePost(post.id);
-        setLiked(true); // cập nhật lại state nếu cần
-      } else {
-        const res = await unlikePost(post.id);
-        setLiked(false); // cập nhật lại state nếu cần
+    if (token) {
+      console.log('token', token);
+
+      try {
+        if (liked === false) {
+          const res = await likePost(post.id);
+          setLiked(true); // cập nhật lại state nếu cần
+        } else {
+          const res = await unlikePost(post.id);
+          setLiked(false); // cập nhật lại state nếu cần
+        }
+      } catch (error) {
+        console.error('Lỗi like/unlike:', error);
       }
-    } catch (error) {
-      console.error('Lỗi like/unlike:', error);
+    } else {
+      console.log('token', token);
+
+      navigate(Screen_Name.Login_Screen);
     }
   };
   return (

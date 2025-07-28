@@ -22,7 +22,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { checkLike, likePost, unlikePost } from '../../service';
 import { useFocusEffect } from '@react-navigation/native';
 
-const ImageCard = ({ post, onReload }) => {
+const ImageCard = ({ post }) => {
   const { t } = useTranslation();
   const images = post.images?.map(img => img).slice(0, 4) || [];
   const imageslink = post.images?.map(img => img.imageUrl).slice(0, 4) || [];
@@ -88,13 +88,15 @@ const ImageCard = ({ post, onReload }) => {
   };
 
   const handleCheckLike = async () => {
-    const res = await checkLike(post.id);
-    setLiked(res.liked);
+    if (token) {
+      const res = await checkLike(post.id);
+      setLiked(res.liked);
+    }
   };
   useFocusEffect(
     React.useCallback(() => {
       handleCheckLike(); // gọi lại API khi màn hình được focus
-    }, []),
+    }, [token]),
   );
   console.log('liked', liked);
   const handleLike = async () => {
@@ -105,9 +107,10 @@ const ImageCard = ({ post, onReload }) => {
       } else {
         const res = await unlikePost(post.id);
         setLiked(false); // cập nhật lại state nếu cần
-        onReload();
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error('Lỗi like/unlike:', error);
+    }
   };
   return (
     <TouchableOpacity

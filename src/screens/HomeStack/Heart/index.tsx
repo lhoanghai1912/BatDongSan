@@ -4,63 +4,48 @@ import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
 import { text } from '../../../utils/constants';
 import { Spacing } from '../../../utils/spacing';
 import AppStyles from '../../../components/AppStyle';
-import { listLikedPost, getPostById } from '../../../service';
+import { listLikedPost } from '../../../service';
 import ImageCard from '../ImageCard';
 import { Colors } from '../../../utils/color';
 import { useSelector } from 'react-redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 type PostType = {
   _id: string;
+  // add other properties as needed
   [key: string]: any;
 };
 
 const HeartScreen = () => {
   const { t } = useTranslation();
-  const [listDataLiked, setListLiked] = useState<PostType[]>([]);
+  const [listDataLiked, setListLiked] = useState([]);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const { token } = useSelector((state: any) => state.user);
 
   const getPost = async () => {
-    try {
-      setRefreshing(true);
-
-      if (token) {
-        const res = await listLikedPost();
-        setListLiked(res || []);
-      } else {
-        const stored = await AsyncStorage.getItem('savedLikes');
-        const likedIds = stored ? JSON.parse(stored) : [];
-
-        const promises = likedIds.map((id: number) => getPostById(id));
-        const posts = await Promise.all(promises);
-
-        setListLiked(posts.filter(Boolean)); // loại bỏ null
-      }
-    } catch (error) {
-      console.log('Get Post Error:', error);
-    } finally {
-      setRefreshing(false);
-    }
+    const res = await listLikedPost();
+    console.log('list Liked: ', res);
+    setListLiked(res);
   };
-
-  useEffect(() => {
-    getPost();
-  }, []);
-
+  useFocusEffect(
+    React.useCallback(() => {
+      getPost(); // gọi lại API khi màn hình được focus
+    }, [token]),
+  );
   const onRefresh = useCallback(() => {
     getPost();
   }, []);
 
   const renderPost = ({ item }: { item: PostType }) => {
+    const key = item._id ? item._id.toString() : `${Math.random()}`; // Đảm bảo key hợp lệ
+
     return (
       <>
-        <ImageCard post={item} onReload={getPost} />
+        <ImageCard post={item} key={key} />
         <View style={styles.underLine} />
       </>
     );
   };
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -88,7 +73,7 @@ const HeartScreen = () => {
           }
           keyExtractor={item =>
             item._id ? item._id.toString() : `${Math.random()}`
-          }
+          } // Sử dụng key ngẫu nhiên nếu _id không có
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }

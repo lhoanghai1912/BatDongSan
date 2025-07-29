@@ -33,8 +33,11 @@ import {
   getBedRoomData,
   getHouseTypeData,
   getPriceData,
+  getSortData,
 } from './houseType_data';
 import { buildGridifyFilter } from './Utils/filterUtils';
+import SortSelector from '../../../components/Modal/SortModal';
+import SortModal from '../../../components/Modal/SortModal';
 
 const HomeScreen: React.FC = ({}) => {
   const { t } = useTranslation();
@@ -71,6 +74,7 @@ const HomeScreen: React.FC = ({}) => {
   const [modalData, setModalData] = useState<any[]>([]);
   const [modalTitle, setModalTitle] = useState<string>('');
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalSortVisible, setModalSortVisible] = useState(false);
   const [searchModalVisible, setSearchModalVisible] = useState(false);
   const [selectedValue, setSelectedValue] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(false);
@@ -81,8 +85,13 @@ const HomeScreen: React.FC = ({}) => {
   const numberResults = filteredData.length.toString();
   const [langModalVisible, setLangModalVisible] = useState(false);
   const [selectedLang, setSelectedLang] = useState('en');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-
+  const [selectedSort, setSelectedSort] = useState<{
+    label: string;
+    value: string;
+  }>({
+    label: '', // giá trị mặc định
+    value: '', // giá trị mặc định
+  });
   const fetchFilteredData = async () => {
     setLoading(true);
     try {
@@ -152,8 +161,11 @@ const HomeScreen: React.FC = ({}) => {
         setModalData(getBedRoomData(t));
         setModalTitle('Chọn số phòng ngủ');
         setIsSingleValue(true); // ✅ thêm biến flag
-
         break;
+      case 'sapXep':
+        setModalType('radioButtonModal');
+        setModalData(getSortData(t));
+        setModalTitle('Chọn kiểu sắp xếp');
     }
     setModalVisible(true);
   };
@@ -163,6 +175,7 @@ const HomeScreen: React.FC = ({}) => {
       khoangGia: getPriceData(t),
       dienTich: getAcreageData(t),
       soPhongNgu: getBedRoomData(t),
+      sapXep: getSortData(t),
     };
     const list = mapping[key];
 
@@ -199,6 +212,12 @@ const HomeScreen: React.FC = ({}) => {
       return updated;
     });
     setModalVisible(false);
+  };
+  const handleSortChange = selected => {
+    setSelectedSort(selected);
+    console.log('aaaaaaa', selected);
+
+    // TODO: logic sắp xếp filteredData
   };
 
   const handleLanguageChange = async (newLang: string) => {
@@ -250,6 +269,10 @@ const HomeScreen: React.FC = ({}) => {
                   } else if (item.key === 'soPhongNgu') {
                     {
                       label = `${selected} ngủ`;
+                    }
+                  } else if (item.key === 'sapXep') {
+                    {
+                      label = `${selected} `;
                     }
                   }
                 }
@@ -307,9 +330,7 @@ const HomeScreen: React.FC = ({}) => {
             )}`}</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() =>
-              setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'))
-            }
+            onPress={() => setModalSortVisible(true)}
             style={{
               borderColor: Colors.Gray,
               borderWidth: 1,
@@ -320,9 +341,7 @@ const HomeScreen: React.FC = ({}) => {
               alignItems: 'center',
             }}
           >
-            <Text style={AppStyles.text}>
-              {sortOrder === 'asc' ? 'Giá tăng dần' : 'Giá giảm dần'}
-            </Text>
+            <Text style={AppStyles.text}>{selectedSort.label || 'Sort'}</Text>
             <Image
               source={ICONS.sort_down}
               style={{ width: 20, height: 20, marginLeft: Spacing.small }}
@@ -399,6 +418,12 @@ const HomeScreen: React.FC = ({}) => {
           handleLanguageChange(lang);
         }}
         onClose={() => setLangModalVisible(false)}
+      />
+      <SortModal
+        visible={modalSortVisible}
+        selected={selectedSort}
+        onSelect={handleSortChange}
+        onClose={() => setModalSortVisible(false)}
       />
       <SearchModal
         visible={searchModalVisible}

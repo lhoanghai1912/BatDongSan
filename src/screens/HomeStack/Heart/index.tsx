@@ -12,7 +12,7 @@ import {
 import { text } from '../../../utils/constants';
 import { Spacing } from '../../../utils/spacing';
 import AppStyles from '../../../components/AppStyle';
-import { listLikedPost } from '../../../service';
+import { likePost, listLikedPost, unlikePost } from '../../../service';
 import ImageCard from '../ImageCard';
 import { Colors } from '../../../utils/color';
 import { useSelector } from 'react-redux';
@@ -29,14 +29,16 @@ type PostType = {
 
 const HeartScreen = () => {
   const { t } = useTranslation();
-  const [listDataLiked, setListLiked] = useState([]);
+  const [listDataLiked, setListLiked] = useState<PostType[]>([]);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const { token } = useSelector((state: any) => state.user);
 
   const getPost = async () => {
-    const res = await listLikedPost();
-    console.log('list Liked: ', res);
-    setListLiked(res);
+    if (token) {
+      const res = await listLikedPost();
+      console.log('list Liked: ', res);
+      setListLiked(res);
+    }
   };
   useFocusEffect(
     React.useCallback(() => {
@@ -48,11 +50,10 @@ const HeartScreen = () => {
   }, []);
 
   const renderPost = ({ item }: { item: PostType }) => {
-    const key = item._id ? item._id.toString() : `${Math.random()}`; // Đảm bảo key hợp lệ
-
+    const key = item._id ? item._id.toString() : `${Math.random()}`;
     return (
       <>
-        <ImageCard post={item} key={key} />
+        <ImageCard post={item} key={key} onReload={getPost} />
         <View style={styles.underLine} />
       </>
     );
@@ -76,7 +77,6 @@ const HeartScreen = () => {
       </View>
       {token ? (
         <>
-          {' '}
           <View style={styles.body}>
             <FlatList
               data={listDataLiked}

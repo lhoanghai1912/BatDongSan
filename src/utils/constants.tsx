@@ -4,6 +4,9 @@ export const MESSAGES = {
   loginSuccess: 'Login successful!',
   loginFailed: 'Login failed. Please try again.',
   networkError: 'Network error. Please check your internet connection.',
+  requestLogin: 'requestLogin',
+  text1Error: 'text1Error',
+  text1Success: 'text1Success',
 };
 
 export const text = {
@@ -40,6 +43,7 @@ export const text = {
   arrange: 'arrange',
   guide: 'guide',
   faq: 'faq',
+  regulations: 'regulations',
   report_issue: 'report_issue',
   about_us: 'about_us',
   terms_and_conditions: 'terms_and_conditions',
@@ -108,6 +112,11 @@ export const text = {
   min: 'min',
   selected: 'selected',
   saved_post: 'saved_post',
+  area_asc: 'area_asc',
+  area_desc: 'area_desc',
+  price_asc: 'price_asc',
+  price_des: 'price_des',
+  sort: 'sort',
   //modal
   modal: {
     chooseHouseType: 'modal.chooseHouseType',

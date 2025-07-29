@@ -119,6 +119,7 @@ const SettingScreen = () => {
               borderColor: Colors.Gray,
               marginHorizontal: Spacing.medium,
               padding: Spacing.medium,
+              marginBottom: Spacing.medium,
             }}
           >
             <View
@@ -157,6 +158,7 @@ const SettingScreen = () => {
             marginTop: Spacing.medium,
             borderColor: Colors.lightGray,
             borderWidth: 1,
+            marginBottom: Spacing.medium,
           }}
         />
       </View>
@@ -229,7 +231,7 @@ const SettingScreen = () => {
                 marginBottom: Spacing.medium,
               }}
             >
-              Quy định
+              {t(text.regulations)}
             </Text>
             <TouchableOpacity
               style={{
@@ -372,7 +374,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flex: 0.2,
     justifyContent: 'center',
     backgroundColor: Colors.white,
     marginTop: 50,

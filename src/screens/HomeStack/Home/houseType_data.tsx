@@ -83,6 +83,12 @@ export const getBedRoomData = (t: (key: string) => string) => [
   { label: '5+', value: '5' },
 ];
 
+export const getSortData = (t: (key: string) => string) => [
+  { label: t(text.price_asc), value: 'Price' },
+  { label: t(text.price_des), value: 'Price desc' },
+  { label: t(text.area_asc), value: 'Price' },
+  { label: t(text.area_desc), value: 'Price desc' },
+];
 // src/screens/Home/utils/houseType_data.ts
 
 export const HOUSE_TYPE_CATEGORY_MAP: Record<string, number> = {

@@ -13,7 +13,7 @@ import { Spacing } from '../../utils/spacing';
 import AppStyles from '../../components/AppStyle';
 import { Colors } from '../../utils/color';
 import { Fonts } from '../../utils/fontSize';
-import { ICONS, IMAGES, link, text } from '../../utils/constants';
+import { ICONS, IMAGES, link, MESSAGES, text } from '../../utils/constants';
 import AppButton from '../../components/AppButton';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -21,8 +21,13 @@ import { useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { checkLike, likePost, unlikePost } from '../../service';
 import { useFocusEffect } from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
 
-const ImageCard = ({ post }) => {
+type ImageCardProps = {
+  post: any;
+  onReload?: () => void; // 🔹 Optional
+};
+const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
   const { t } = useTranslation();
   const images = post.images?.map(img => img).slice(0, 4) || [];
   const imageslink = post.images?.map(img => img.imageUrl).slice(0, 4) || [];
@@ -32,6 +37,7 @@ const ImageCard = ({ post }) => {
   );
 
   const [userData, setUserData] = useState(reduxUserData || null);
+
   const [token, setToken] = useState(reduxToken || '');
   const [liked, setLiked] = useState(false);
   const updated =
@@ -106,20 +112,27 @@ const ImageCard = ({ post }) => {
       console.log('token', token);
 
       try {
-        if (liked === false) {
+        if (!liked) {
           const res = await likePost(post.id);
           setLiked(true); // cập nhật lại state nếu cần
         } else {
           const res = await unlikePost(post.id);
           setLiked(false); // cập nhật lại state nếu cần
+          if (onReload) {
+            onReload();
+          }
         }
       } catch (error) {
         console.error('Lỗi like/unlike:', error);
       }
     } else {
       console.log('token', token);
-
-      navigate(Screen_Name.Login_Screen);
+      Toast.show({
+        type: `error`,
+        text1: `${t(MESSAGES.text1Error)}`,
+        text2: `${t(MESSAGES.requestLogin)}`,
+        visibilityTime: 1500,
+      });
     }
   };
   return (
@@ -346,17 +359,12 @@ const ImageCard = ({ post }) => {
               alignItems: 'center',
               justifyContent: 'center',
             }}
-            onPress={() => console.log('heart pressed')}
+            onPress={() => handleLike()}
           >
-            <TouchableOpacity
-              onPress={() => handleLike()}
-              style={{ justifyContent: 'center', alignItems: 'center' }}
-            >
-              <Image
-                source={liked ? ICONS.heart_focus : ICONS.heart}
-                style={AppStyles.icon}
-              />
-            </TouchableOpacity>
+            <Image
+              source={liked ? ICONS.heart_focus : ICONS.heart}
+              style={AppStyles.icon}
+            />
           </TouchableOpacity>
         </View>
       </View>

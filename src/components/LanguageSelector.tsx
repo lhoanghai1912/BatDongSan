@@ -4,6 +4,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import { Colors } from '../utils/color';
 import { Spacing } from '../utils/spacing';
+import { useTranslation } from 'react-i18next';
 
 interface LanguageSelectorProps {
   visible: boolean;
@@ -24,6 +25,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   onSelect,
   onClose,
 }) => {
+  const {t} = useTranslation();
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>

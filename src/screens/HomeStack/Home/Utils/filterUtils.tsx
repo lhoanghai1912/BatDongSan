@@ -1,19 +1,20 @@
-// src/screens/Home/utils/filterUtils.ts
-
 import { HOUSE_TYPE_CATEGORY_MAP } from '../houseType_data';
 
-export const buildGridifyFilter = (filters: {
-  loaiNha?: string[];
-  khoangGia?: string;
-  dienTich?: string;
-  soPhongNgu?: string;
-}) => {
+export const buildGridifyFilter = (
+  filters: {
+    loaiNha?: string[];
+    khoangGia?: string;
+    dienTich?: string;
+    soPhongNgu?: string;
+  },
+  orderby?: string, // Thêm tham số orderby
+) => {
   const parts: string[] = [];
 
   // Lọc theo loại nhà → categoryType
   if (filters.loaiNha?.length) {
     const categoryConditions = filters.loaiNha
-      .map(key => HOUSE_TYPE_CATEGORY_MAP[key])
+      .map(key => HOUSE_TYPE_CATEGORY_MAP[key]) // Giả sử HOUSE_TYPE_CATEGORY_MAP là một đối tượng ánh xạ loại nhà
       .filter(Boolean)
       .map(id => `categoryType=${id}`);
     if (categoryConditions.length) {

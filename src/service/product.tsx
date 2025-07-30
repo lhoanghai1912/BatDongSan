@@ -29,7 +29,14 @@ export const createPost = async (formData: FormData) => {
   }
 };
 
-export const getAllPosts = async (filterString = '', page = 1, limit = 10) => {
+export const getAllPosts = async (
+  filterString = '',
+  orderbyString = '',
+  page = 1,
+  limit = 10,
+) => {
+  console.log('filterString', filterString);
+
   try {
     const params: any = {
       page,
@@ -39,6 +46,9 @@ export const getAllPosts = async (filterString = '', page = 1, limit = 10) => {
     if (filterString) {
       params.Filter = filterString;
     }
+    if (orderbyString) {
+      params.OrderBy = orderbyString;
+    }
 
     const response = await apiClient.get('/posts/getall', {
       params,
@@ -47,6 +57,7 @@ export const getAllPosts = async (filterString = '', page = 1, limit = 10) => {
         // Authorization: 'Bearer your_token_here',
       },
     });
+    console.log('ress=====================================', response);
 
     console.log('Property Posts:', response.data);
     return response.data;

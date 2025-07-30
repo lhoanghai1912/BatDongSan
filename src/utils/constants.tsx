@@ -7,6 +7,7 @@ export const MESSAGES = {
   requestLogin: 'requestLogin',
   text1Error: 'text1Error',
   text1Success: 'text1Success',
+  min_max: 'min_max',
 };
 
 export const text = {
@@ -15,8 +16,6 @@ export const text = {
   profile: 'profile',
   settings: 'settings',
   back: 'back',
-  accept: 'Xác nhận',
-  cancel: 'Hủy bỏ',
   logout: 'logout',
   menu: 'Menu',
   register: 'Đăng kí tài khoản',
@@ -70,6 +69,8 @@ export const text = {
   enter_location: 'enter_location',
   enter_area: 'enter_area',
   enter_price: 'enter_price',
+  enter_bedrooms: 'enter_bedrooms',
+  enter_sort: 'enter_sort',
   enter_unit: 'enter_unit',
   pick_location: 'pick_location',
   main_info: 'main_info',
@@ -109,7 +110,6 @@ export const text = {
   owner: 'owner',
   title_des: 'title_des',
   image: 'image',
-  min: 'min',
   selected: 'selected',
   saved_post: 'saved_post',
   area_asc: 'area_asc',
@@ -117,6 +117,13 @@ export const text = {
   price_asc: 'price_asc',
   price_des: 'price_des',
   sort: 'sort',
+  under: 'under',
+  min: 'min',
+  max: 'max',
+  reset: 'reset',
+  submit: 'submit',
+  from: 'from',
+  to: 'to',
   //modal
   modal: {
     chooseHouseType: 'modal.chooseHouseType',
@@ -215,6 +222,7 @@ export const ICONS = {
   edit: require('../assets/icons/edit.png'),
   minus: require('../assets/icons/minus.png'),
   image: require('../assets/icons/image.png'),
+  language: require('../assets/icons/language.png'),
 };
 
 export const IMAGES = {

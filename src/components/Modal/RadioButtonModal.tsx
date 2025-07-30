@@ -11,10 +11,12 @@ import {
 } from 'react-native';
 import { Colors } from '../../utils/color';
 import { Spacing } from '../../utils/spacing';
-import { ICONS } from '../../utils/constants';
+import { ICONS, MESSAGES, text } from '../../utils/constants';
 import AppStyles from '../AppStyle';
 import AppButton from '../AppButton';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import { useTranslation } from 'react-i18next';
+import Toast from 'react-native-toast-message';
 
 interface Option {
   label: string;
@@ -64,7 +66,7 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
     }
     return [0, 0];
   };
-
+  const { t } = useTranslation();
   const initialRange = parseRangeFromString(selected);
   const [selectedValue, setSelectedValue] = useState<string>(selected);
   const [range, setRange] = useState<[number, number]>(initialRange);
@@ -115,7 +117,11 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
       }
       const resultValue = `${minInput}-${maxInput}`;
       if (parseFloat(minInput) >= parseFloat(maxInput)) {
-        alert('Giá trị tối thiểu phải nhỏ hơn tối đa');
+        Toast.show({
+          type: 'error',
+          text1: `${t(MESSAGES.text1Error)}`,
+          text2: `${t(MESSAGES.min_max)}`,
+        });
         return;
       }
       onSubmit(resultValue);
@@ -215,10 +221,12 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
               ) : (
                 <View style={styles.valueRow}>
                   <Text style={styles.valueText}>
-                    Từ: {minInput} {title.includes('giá') ? 'tỷ đồng' : 'm²'}
+                    {t(text.from)} {minInput}{' '}
+                    {title.includes(t(text.price)) ? t(text.bilion) : 'm²'}
                   </Text>
                   <Text style={styles.valueText}>
-                    Đến: {maxInput} {title.includes('giá') ? 'tỷ đồng' : 'm²'}
+                    {t(text.to)} {maxInput}{' '}
+                    {title.includes(t(text.price)) ? t(text.bilion) : 'm²'}
                   </Text>
                 </View>
               )}
@@ -231,7 +239,7 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
                   keyboardType="numeric"
                   value={minInput}
                   onChangeText={setMinInput}
-                  placeholder="Tối thiểu"
+                  placeholder={t(text.min)}
                 />
                 <Text style={{ marginHorizontal: 8 }}>-</Text>
                 <TextInput
@@ -239,7 +247,7 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
                   keyboardType="numeric"
                   value={maxInput}
                   onChangeText={setMaxInput}
-                  placeholder="Tối đa"
+                  placeholder={t(text.max)}
                 />
               </View>
             )}
@@ -308,13 +316,16 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
             <View style={styles.buttonWrap}>
               <View style={{ width: '40%' }}>
                 <AppButton
-                  title="Đặt lại"
+                  title={t(text.reset)}
                   disabled={selectedValue.length === 0}
                   onPress={() => handleReset()}
                 />
               </View>
               <View style={{ width: '40%' }}>
-                <AppButton title="Áp dụng" onPress={() => handleSubmit()} />
+                <AppButton
+                  title={t(text.submit)}
+                  onPress={() => handleSubmit()}
+                />
               </View>
             </View>
           </View>

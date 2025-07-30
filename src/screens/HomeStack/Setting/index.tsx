@@ -19,6 +19,9 @@ import { logout } from '../../../store/reducers/userSlice';
 import AppButton from '../../../components/AppButton';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { menu } from '../../../service/menu';
+import i18n from '../../../i18n/i18n';
+import LanguageSelector from '../../../components/LanguageSelector';
 
 const SettingScreen = () => {
   const { t } = useTranslation();
@@ -30,6 +33,8 @@ const SettingScreen = () => {
 
   const [userData, setUserData] = useState(reduxUserData || null);
   const [token, setToken] = useState(reduxToken || '');
+  const [langModalVisible, setLangModalVisible] = useState(false);
+  const [selectedLang, setSelectedLang] = useState('en');
 
   const fetchUserData = async () => {
     try {
@@ -57,6 +62,13 @@ const SettingScreen = () => {
       setUserData(reduxUserData);
     }
   }, [reduxUserData]);
+
+  const handleLanguageChange = async (newLang: string) => {
+    console.log('newlang', newLang);
+
+    await i18n.changeLanguage(newLang);
+    setSelectedLang(newLang);
+  };
 
   return (
     <View style={styles.container}>
@@ -244,10 +256,7 @@ const SettingScreen = () => {
                 source={ICONS.clause}
                 style={{ width: 20, height: 20, marginRight: Spacing.medium }}
               />
-              <Text style={AppStyles.text}>
-                {' '}
-                {t(text.terms_and_conditions)}
-              </Text>
+              <Text style={AppStyles.text}>{t(text.terms_and_conditions)}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={{
@@ -288,13 +297,26 @@ const SettingScreen = () => {
                 alignItems: 'center',
                 marginBottom: Spacing.medium,
               }}
+              onPress={() => setLangModalVisible(true)}
+            >
+              <Image
+                source={ICONS.language}
+                style={{ width: 20, height: 20, marginRight: Spacing.medium }}
+              />
+              <Text style={AppStyles.text}>{t(text.language)}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginBottom: Spacing.medium,
+              }}
             >
               <Image
                 source={ICONS.noti}
                 style={{ width: 20, height: 20, marginRight: Spacing.medium }}
               />
               <Text style={AppStyles.text}>
-                {' '}
                 {t(text.notification_settings)}
               </Text>
             </TouchableOpacity>
@@ -364,6 +386,14 @@ const SettingScreen = () => {
           </Text>
         </ScrollView>
       </View>
+      <LanguageSelector
+        visible={langModalVisible}
+        selectedLang={selectedLang}
+        onSelect={lang => {
+          handleLanguageChange(lang);
+        }}
+        onClose={() => setLangModalVisible(false)}
+      />
     </View>
   );
 };

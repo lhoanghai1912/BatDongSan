@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Modal,
   View,
@@ -14,6 +14,7 @@ import { ICONS, text } from '../../utils/constants';
 import AppButton from '../AppButton';
 import { Spacing } from '../../utils/spacing';
 import AppStyles from '../AppStyle';
+import { getSortData } from '../../screens/HomeStack/Home/houseType_data';
 
 type Option = {
   label: string;
@@ -35,20 +36,22 @@ const SortModal: React.FC<SortModalProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const options: Option[] = [
-    { label: t(text.price_asc), value: 'price_asc' },
-    { label: t(text.price_des), value: 'price_desc' },
-    { label: t(text.area_asc), value: 'area_asc' },
-    { label: t(text.area_desc), value: 'area_desc' },
-  ];
-
+  const options: Option[] = getSortData(t);
   // Đảm bảo selected là string (tên mặc định)
   const [checked, setChecked] = useState<{ label: string; value: string }>(
     selected,
   );
+  useEffect(() => {
+    setChecked(selected); // Đảm bảo rằng khi ngôn ngữ thay đổi, selected cũng được cập nhật lại
+  }, [selected, visible]);
 
   const handleSelect = (opt: Option) => {
     setChecked(opt); // Chỉ lưu 1 giá trị duy nhất
+  };
+
+  const handleReset = () => {
+    onSelect({ value: '', label: '' });
+    onClose();
   };
 
   const handleSubmit = () => {
@@ -89,8 +92,12 @@ const SortModal: React.FC<SortModalProps> = ({
             </TouchableOpacity>
           </View>
           <View style={{ paddingHorizontal: 20 }}>
-            {options.map(opt => (
-              <View key={opt.value} style={styles.item}>
+            {options.map((opt, index) => (
+              <TouchableOpacity
+                key={`${opt.value}-${index}`} // Ensure the key is unique by appending the index
+                style={styles.item}
+                onPress={() => handleSelect(opt)} // Lưu đối tượng opt
+              >
                 <Text style={styles.label}>{opt.label}</Text>
                 <RadioButton
                   value={opt.value}
@@ -98,7 +105,7 @@ const SortModal: React.FC<SortModalProps> = ({
                   onPress={() => handleSelect(opt)} // Lưu đối tượng opt
                   color={Colors.black || '#E53935'}
                 />
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
           <View
@@ -109,12 +116,12 @@ const SortModal: React.FC<SortModalProps> = ({
             }}
           >
             <AppButton
-              title={t(text.cancel)}
+              title={t(text.reset)}
               customStyle={[{ width: '40%' }]}
-              onPress={onClose}
+              onPress={handleReset}
             />
             <AppButton
-              title={t(text.accept)}
+              title={t(text.submit)}
               customStyle={[{ width: '40%' }]}
               onPress={handleSubmit}
             />

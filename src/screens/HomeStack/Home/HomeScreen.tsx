@@ -36,7 +36,6 @@ import {
   getSortData,
 } from './houseType_data';
 import { buildGridifyFilter } from './Utils/filterUtils';
-import SortSelector from '../../../components/Modal/SortModal';
 import SortModal from '../../../components/Modal/SortModal';
 
 const HomeScreen: React.FC = ({}) => {
@@ -69,7 +68,6 @@ const HomeScreen: React.FC = ({}) => {
     // add other properties as needed
     [key: string]: any;
   };
-
   const [modalTitleKey, setModalTitleKey] = useState<string>('');
   const [modalData, setModalData] = useState<any[]>([]);
   const [modalTitle, setModalTitle] = useState<string>('');
@@ -83,7 +81,6 @@ const HomeScreen: React.FC = ({}) => {
   const [searchValue, setSearchValue] = useState<number>(1); // mặc định là 'Mua'
   const [houseType, setHouseType] = useState([]);
   const numberResults = filteredData.length.toString();
-  const [langModalVisible, setLangModalVisible] = useState(false);
   const [selectedLang, setSelectedLang] = useState('en');
   const [selectedSort, setSelectedSort] = useState<{
     label: string;
@@ -92,19 +89,25 @@ const HomeScreen: React.FC = ({}) => {
     label: '', // giá trị mặc định
     value: '', // giá trị mặc định
   });
+  console.log('selectedSort.value', selectedSort.value);
+
   const fetchFilteredData = async () => {
     setLoading(true);
     try {
-      const userFilters = buildGridifyFilter(selectedValue);
+      const userFilters = buildGridifyFilter(selectedValue, selectedSort.value); // Thêm selectedSort.value cho sắp xếp
       const typeFilter = `type=${searchValue}`;
       const fullFilter = userFilters
         ? `${typeFilter},${userFilters}`
         : typeFilter;
 
-      console.log('🧪 Final Filter:', fullFilter);
+      console.log(
+        '🧪 Final Filter: Filter: ',
+        fullFilter,
+        'orderBy: ',
+        selectedSort?.value,
+      );
 
-      const res = await getAllPosts(fullFilter);
-
+      const res = await getAllPosts(fullFilter, selectedSort.value);
       setFilteredData(res.result);
     } catch (err) {
       console.error('❌ Lỗi khi tải dữ liệu có filter:', err);
@@ -112,15 +115,16 @@ const HomeScreen: React.FC = ({}) => {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    fetchFilteredData();
-  }, [JSON.stringify(selectedValue), searchValue]);
 
   useEffect(() => {
-    const loadMenu = async () => {
-      const data = await menu(selectedLang);
-      setHouseType(data.forSale);
-    };
+    fetchFilteredData();
+  }, [selectedValue, searchValue, selectedSort]);
+
+  const loadMenu = async () => {
+    const data = await menu(selectedLang);
+    setHouseType(data.forSale);
+  };
+  useEffect(() => {
     loadMenu();
   }, [selectedLang]);
 
@@ -149,23 +153,23 @@ const HomeScreen: React.FC = ({}) => {
       case 'khoangGia':
         setModalType('radioButtonModal');
         setModalData(getPriceData(t));
-        setModalTitle('Chọn khoảng giá');
+        setModalTitle(t(text.enter_price));
         break;
       case 'dienTich':
         setModalType('radioButtonModal');
         setModalData(getAcreageData(t));
-        setModalTitle('Chọn diện tích');
+        setModalTitle(t(text.enter_area));
         break;
       case 'soPhongNgu':
         setModalType('radioButtonModal');
         setModalData(getBedRoomData(t));
-        setModalTitle('Chọn số phòng ngủ');
+        setModalTitle(t(text.enter_bedrooms));
         setIsSingleValue(true); // ✅ thêm biến flag
         break;
       case 'sapXep':
         setModalType('radioButtonModal');
         setModalData(getSortData(t));
-        setModalTitle('Chọn kiểu sắp xếp');
+        setModalTitle(t(text.enter_sort));
     }
     setModalVisible(true);
   };
@@ -192,6 +196,7 @@ const HomeScreen: React.FC = ({}) => {
   };
   const onRefresh = useCallback(() => {
     setSelectedValue({});
+    setSelectedSort({ value: '', label: '' });
     fetchFilteredData();
   }, [searchValue]);
 
@@ -213,18 +218,11 @@ const HomeScreen: React.FC = ({}) => {
     });
     setModalVisible(false);
   };
-  const handleSortChange = selected => {
+  const handleSortChange = (selected: any) => {
     setSelectedSort(selected);
     console.log('aaaaaaa', selected);
 
     // TODO: logic sắp xếp filteredData
-  };
-
-  const handleLanguageChange = async (newLang: string) => {
-    console.log('newlang', newLang);
-
-    await i18n.changeLanguage(newLang);
-    setSelectedLang(newLang);
   };
 
   return (
@@ -259,7 +257,7 @@ const HomeScreen: React.FC = ({}) => {
                   label = valueToLabel(item.key, selected);
                 } else {
                   if (item.key === 'khoangGia' && selected !== 'Deal') {
-                    label = `${selected} tỷ`;
+                    label = `${selected}${t(text.bilion)}`;
                   } else if (item.key === 'khoangGia' && selected === 'Deal') {
                     label = `${selected}`;
                   } else if (item.key === 'dienTich') {
@@ -268,7 +266,7 @@ const HomeScreen: React.FC = ({}) => {
                     }
                   } else if (item.key === 'soPhongNgu') {
                     {
-                      label = `${selected} ngủ`;
+                      label = `${selected}${t(text.bedrooms)}`;
                     }
                   } else if (item.key === 'sapXep') {
                     {
@@ -321,14 +319,7 @@ const HomeScreen: React.FC = ({}) => {
               {t('property')}
             </Text>
           </View>
-          <TouchableOpacity
-            style={{ padding: 10, alignSelf: 'flex-end' }}
-            onPress={() => setLangModalVisible(true)}
-          >
-            <Text style={[AppStyles.text, { color: Colors.primary }]}>{`🌐 ${t(
-              text.language,
-            )}`}</Text>
-          </TouchableOpacity>
+
           <TouchableOpacity
             onPress={() => setModalSortVisible(true)}
             style={{
@@ -341,7 +332,9 @@ const HomeScreen: React.FC = ({}) => {
               alignItems: 'center',
             }}
           >
-            <Text style={AppStyles.text}>{selectedSort.label || 'Sort'}</Text>
+            <Text style={AppStyles.text}>
+              {selectedSort.label || `${t(text.sort)}`}
+            </Text>
             <Image
               source={ICONS.sort_down}
               style={{ width: 20, height: 20, marginLeft: Spacing.small }}
@@ -352,7 +345,7 @@ const HomeScreen: React.FC = ({}) => {
           data={filteredData}
           ListEmptyComponent={
             <Text style={[AppStyles.label, { flex: 1, textAlign: 'center' }]}>
-              Không có dữ liệu phù hợp
+              {t(text.no_data)}
             </Text>
           }
           keyExtractor={item =>
@@ -388,19 +381,7 @@ const HomeScreen: React.FC = ({}) => {
           selected={selectedValue[modalTitleKey] || ''} // ✅ fix đúng kiểu
           onClose={() => setModalVisible(false)}
           onReset={() => handleReset()}
-          // onApplyFilter={
-          //   value => {
-          //   setSelectedValue(prev => ({
-          //     ...prev,
-          //     [modalTitleKey]: value,
-          //   }));
-          //   setModalVisible(false);
-          // }}
           onApplyFilter={value => {
-            // Kiểm tra nếu giá trị là 'deal', bạn có thể xử lý theo cách đặc biệt
-
-            console.log('Giá trị đã chọn:', value);
-
             // Cập nhật giá trị được chọn vào selectedValue
             setSelectedValue(prev => ({
               ...prev,
@@ -411,18 +392,12 @@ const HomeScreen: React.FC = ({}) => {
           }}
         />
       )}
-      <LanguageSelector
-        visible={langModalVisible}
-        selectedLang={selectedLang}
-        onSelect={lang => {
-          handleLanguageChange(lang);
-        }}
-        onClose={() => setLangModalVisible(false)}
-      />
+
       <SortModal
+        key={selectedLang} // Thêm key để buộc component render lại khi ngôn ngữ thay đổi
         visible={modalSortVisible}
         selected={selectedSort}
-        onSelect={handleSortChange}
+        onSelect={selectedSort => handleSortChange(selectedSort)}
         onClose={() => setModalSortVisible(false)}
       />
       <SearchModal

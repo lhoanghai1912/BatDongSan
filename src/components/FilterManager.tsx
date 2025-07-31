@@ -34,8 +34,6 @@ const FilterManager: React.FC<FilterManagerProps> = ({
   //   'filtermanger',
   //   title.toLowerCase().includes(`${t(text.bedrooms)}`),
   // );
-  console.log('filtermanger', title.toLocaleLowerCase());
-  console.log('include', t(text.bedrooms).toLocaleLowerCase());
 
   if (!visible) return null;
 

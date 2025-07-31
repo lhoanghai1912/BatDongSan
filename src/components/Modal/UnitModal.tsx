@@ -196,7 +196,7 @@ const UnitSelectionModal: React.FC<Props> = ({
               onPress={onClose}
             />
             <AppButton
-              title={t(text.accept)}
+              title={t(text.submit)}
               disabled={!selected}
               customStyle={[{ width: '40%' }]}
               onPress={handleSubmit}

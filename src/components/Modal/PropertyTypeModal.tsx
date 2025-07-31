@@ -98,7 +98,7 @@ const PropertyTypeModal: React.FC<Props> = ({
               onPress={onClose}
             />
             <AppButton
-              title={t(text.accept)}
+              title={t(text.submit)}
               customStyle={[{ width: '40%' }]}
               onPress={handleSubmit}
             />

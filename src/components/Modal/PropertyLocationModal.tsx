@@ -82,7 +82,6 @@ const PropertyLocationModal: React.FC<Props> = ({
           setOptions([]);
         }
       } catch (error) {
-        console.error('Fetch error:', error);
         setOptions([]);
       } finally {
         setLoading(false);
@@ -92,11 +91,6 @@ const PropertyLocationModal: React.FC<Props> = ({
     fetchData();
   }, [field, visible, selected]);
 
-  const houseTypeData = Object.keys(HOUSE_TYPE_CATEGORY_MAP).map(key => ({
-    label: t(text[key]), // Dùng t để dịch tên loại nhà (có thể phải cập nhật thêm key trong `text`)
-    value: HOUSE_TYPE_CATEGORY_MAP[key],
-    icon: ICONS[key], // Sử dụng tên từ HOUSE_TYPE_CATEGORY_MAP hoặc icon của bạn
-  }));
   const filteredOptions = options.filter(item =>
     item.name.toLowerCase().includes(searchText.toLowerCase()),
   );
@@ -196,7 +190,7 @@ const PropertyLocationModal: React.FC<Props> = ({
             <AppButton
               customStyle={[{ width: '45%' }]}
               onPress={handleAccept}
-              title={t(text.accept)}
+              title={t(text.submit)}
             />
           </View>
         </View>

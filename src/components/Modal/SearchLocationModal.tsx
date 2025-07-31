@@ -14,9 +14,7 @@ import { ICONS, text } from '../../utils/constants';
 import AppButton from '../AppButton';
 import AppStyles from '../AppStyle';
 import { useTranslation } from 'react-i18next';
-import AppInput from '../AppInput';
 import PropertyLocationModal from './PropertyLocationModal';
-import Toast from 'react-native-toast-message';
 
 interface Props {
   visible: boolean;
@@ -68,6 +66,7 @@ const SearchLocationModal: React.FC<Props> = ({
     setLocationModalField(field);
     setLocationModalVisible(true);
   };
+  console.log('abcvaswawdwad', selectedLocation);
 
   const handleLocationSelect = (location: any) => {
     if (locationModalField === 'province') {
@@ -185,6 +184,11 @@ const SearchLocationModal: React.FC<Props> = ({
                 <TextInput
                   style={styles.searchInput}
                   value={selectedLocation.street}
+                  editable={
+                    !!selectedLocation.province?.name &&
+                    !!selectedLocation.district?.name &&
+                    !!selectedLocation.commune?.name
+                  }
                   onChangeText={text =>
                     setSelectedLocation(prev => ({ ...prev, street: text }))
                   }
@@ -203,7 +207,7 @@ const SearchLocationModal: React.FC<Props> = ({
             />
             <AppButton
               customStyle={[{ width: '40%' }]}
-              title={t(text.accept)}
+              title={t(text.submit)}
               onPress={handleSubmit}
             />
           </View>

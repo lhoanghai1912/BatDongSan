@@ -13,23 +13,53 @@ import { ICONS, text } from '../../utils/constants';
 import AppButton from '../AppButton';
 import AppStyles from '../AppStyle';
 import { useTranslation } from 'react-i18next';
+import SearchLocationModal from './SearchLocationModal';
 
 interface Props {
   visible: boolean;
   onClose: () => void;
-  onSearch: (value: number) => void;
+  onSearch: (value: number, location: any) => void;
 }
 
 const SearchModal: React.FC<Props> = ({ visible, onClose, onSearch }) => {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<'forSale' | 'forRent'>('forSale');
+  const [modalLocationSearchVisible, setModalLocationSearchVisible] =
+    useState(false);
+  const [locationText, setLocationText] = useState('');
+  const [location, setLocation] = useState<any>(null);
+  const handleReset = () => {
+    setLocationText('');
+    setLocation([]);
+  };
 
   const handleSubmit = () => {
     const result = selected === 'forSale' ? 1 : 2;
-    onSearch(result); // 👈 Trả về 1 hoặc 2
+    onSearch(result, location || {}); // Truyền về 1 hoặc 2 và location
     onClose();
   };
 
+  const handleSearchLocation = (location: any) => {
+    setLocation(location);
+    console.log('location: ', location);
+    console.log(
+      'province: ',
+      location?.province?.id,
+      'distric: ',
+      location?.district?.id,
+      'commnue: ',
+      location?.commnue?.id,
+    );
+
+    setLocationText(location);
+    const parts = [
+      location?.street,
+      location?.commune?.name || '',
+      location?.district?.name,
+      location?.province?.name,
+    ].filter(Boolean); // lọc null/undefined
+    setLocationText(parts.join(', ')); // Ví dụ: "Phường Bến Nghé, Quận 1, TP.HCM"
+  };
   return (
     <Modal visible={visible} animationType="slide" transparent>
       <View style={styles.overlay}>
@@ -91,24 +121,57 @@ const SearchModal: React.FC<Props> = ({ visible, onClose, onSearch }) => {
               </View>
               <View style={styles.icon}></View>
             </View>
-            <View style={[styles.headerItem, { alignSelf: 'center' }]}>
-              <Text style={[AppStyles.label]}>{`Tìm BĐS ở ...`}</Text>
+            <View style={[styles.body]}>
+              <TouchableOpacity
+                onPress={() => {
+                  setModalLocationSearchVisible(true);
+                }}
+                style={{
+                  flexDirection: 'row',
+                  paddingHorizontal: Spacing.small,
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Image style={AppStyles.icon} />
+                <Text
+                  style={[
+                    AppStyles.text,
+                    {
+                      textAlign: 'center',
+                      color: Colors.black,
+                    },
+                  ]}
+                >
+                  {`${t(text.find_location)}:\n ${locationText || '...'} `}
+                </Text>
+                <Image source={ICONS.edit} style={AppStyles.icon} />
+              </TouchableOpacity>
             </View>
           </View>
 
           {/* Body */}
-          <View style={styles.body}>
-            <Text style={{ color: Colors.darkGray }}>
-              Nội dung tuỳ chọn ở đây
-            </Text>
-          </View>
+          {/* <View style={styles.body}></View> */}
 
           {/* Footer */}
           <View style={styles.footer}>
-            <AppButton title="Tìm kiếm" onPress={handleSubmit} />
+            <AppButton
+              customStyle={[{ width: '45%' }]}
+              title={t(text.reset)}
+              onPress={() => handleReset()}
+            />
+            <AppButton
+              customStyle={[{ width: '45%' }]}
+              title={t(text.find)}
+              onPress={() => handleSubmit()}
+            />
           </View>
         </View>
       </View>
+      <SearchLocationModal
+        visible={modalLocationSearchVisible}
+        onClose={() => setModalLocationSearchVisible(false)}
+        onSearch={handleSearchLocation}
+      />
     </Modal>
   );
 };
@@ -122,11 +185,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#00000088',
   },
   modal: {
-    flex: 1,
+    maxHeight: '80%',
     backgroundColor: 'white',
   },
   header: {
-    flex: 0.5,
     paddingHorizontal: Spacing.medium,
     backgroundColor: Colors.lightGray,
     justifyContent: 'space-between',
@@ -163,15 +225,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   body: {
-    flex: 2,
-
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: Spacing.large,
   },
   footer: {
-    flex: 0.2,
-
     paddingBottom: Spacing.medium,
+    paddingHorizontal: Spacing.medium,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 });

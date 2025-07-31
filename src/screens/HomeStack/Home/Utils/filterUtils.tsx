@@ -6,6 +6,7 @@ export const buildGridifyFilter = (
     khoangGia?: string;
     dienTich?: string;
     soPhongNgu?: string;
+    location?: string;
   },
   orderby?: string, // Thêm tham số orderby
 ) => {

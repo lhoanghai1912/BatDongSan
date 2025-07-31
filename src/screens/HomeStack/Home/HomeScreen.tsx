@@ -77,6 +77,7 @@ const HomeScreen: React.FC = ({}) => {
   const [houseType, setHouseType] = useState([]);
   const numberResults = filteredData.length.toString();
   const [selectedLang, setSelectedLang] = useState('en');
+  const [location, setLocation] = useState<any>({});
   const [selectedSort, setSelectedSort] = useState<{
     label: string;
     value: string;
@@ -90,9 +91,38 @@ const HomeScreen: React.FC = ({}) => {
     try {
       const userFilters = buildGridifyFilter(selectedValue, selectedSort.value); // Thêm selectedSort.value cho sắp xếp
       const typeFilter = `type=${searchValue}`;
+      let locationFilter = '';
+
+      // Check for province, district, commune, and street
+      if (location) {
+        const { province, district, commune, street } = location;
+
+        // If there's a province, add it to the filter
+        if (province?.id) {
+          locationFilter += `,provinceId=${province.id}`;
+        }
+
+        // If there's a district, add it to the filter
+        if (district?.id) {
+          locationFilter += `,districtId=${district.id}`;
+        }
+
+        // If there's a commune, add it to the filter
+        if (commune?.id) {
+          locationFilter += `,communeId=${commune.id}`;
+        }
+        console.log('Location Filter', locationFilter);
+
+        // If there's a street, add it to the filter
+        if (street?.id) {
+          locationFilter += `,streetId=${street.name}`;
+        }
+      }
       const fullFilter = userFilters
-        ? `${typeFilter},${userFilters}`
-        : typeFilter;
+        ? `${typeFilter},${userFilters}${locationFilter}`
+        : `${typeFilter}${locationFilter}`;
+
+      console.log('fullFilter', fullFilter);
 
       const res = await getAllPosts(fullFilter, selectedSort.value);
       setFilteredData(res.result);
@@ -105,7 +135,7 @@ const HomeScreen: React.FC = ({}) => {
 
   useEffect(() => {
     fetchFilteredData();
-  }, [selectedValue, searchValue, selectedSort]);
+  }, [selectedValue, searchValue, selectedSort, location]);
 
   const loadMenu = async () => {
     const data = await menu(selectedLang);
@@ -196,6 +226,7 @@ const HomeScreen: React.FC = ({}) => {
   const onRefresh = useCallback(() => {
     setSelectedValue({});
     setSelectedSort({ value: '', label: '' });
+    setLocation({});
     fetchFilteredData();
   }, [searchValue]);
 
@@ -234,7 +265,16 @@ const HomeScreen: React.FC = ({}) => {
           >
             <Text style={[styles.searchLabel]}>{t(text.search)}</Text>
             <Text style={[AppStyles.text]}>
-              {placeholderTexts[currentIndex]}
+              {[
+                location?.province?.name,
+                location?.district?.name,
+                location?.commune?.name,
+                location?.street?.name,
+              ]
+                .filter(Boolean) // Lọc các giá trị null, undefined hoặc empty
+                .map(item => item) // Đảm bảo rằng các giá trị đã lọc được giữ nguyên
+                .join(', ') || placeholderTexts[currentIndex]}{' '}
+              {/* Hiển thị nếu không có giá trị, sẽ fallback về placeholder */}
             </Text>
           </TouchableOpacity>
         </View>
@@ -403,7 +443,11 @@ const HomeScreen: React.FC = ({}) => {
       <SearchModal
         visible={searchModalVisible}
         onClose={() => setSearchModalVisible(false)}
-        onSearch={value => setSearchValue(value)}
+        onSearch={(value, locationSearchValue) => {
+          console.log('searchlocation', locationSearchValue),
+            setLocation(locationSearchValue),
+            setSearchValue(value);
+        }}
       />
     </View>
   );

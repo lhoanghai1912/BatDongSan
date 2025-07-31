@@ -57,7 +57,7 @@ export const getPriceData = (t: (key: string) => string) => [
   { label: `30 - 40 ${t(text.bilion)}`, value: `30-40` },
   { label: `40 - 60 ${t(text.bilion)}`, value: `40-60` },
   { label: `trên 60 ${t(text.bilion)}`, value: `60-100` },
-  { label: `Thỏa thuận`, value: `Deal` }, // Thêm lựa chọn "Thỏa thuận"
+  { label: `${t(text.deal)}`, value: `Deal` }, // Thêm lựa chọn "Thỏa thuận"
 ];
 
 export const getAcreageData = (t: (key: string) => string) => [

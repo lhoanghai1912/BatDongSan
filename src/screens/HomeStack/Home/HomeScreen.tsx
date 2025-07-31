@@ -85,6 +85,17 @@ const HomeScreen: React.FC = ({}) => {
     label: '', // giá trị mặc định
     value: '', // giá trị mặc định
   });
+  useEffect(() => {
+    // Cập nhật lại selectedSort khi ngôn ngữ thay đổi
+    const newSortData = getSortData(t);
+    setSelectedSort(prevSort => {
+      // Kiểm tra nếu lựa chọn hiện tại không tồn tại trong dữ liệu mới
+      const validOption = newSortData.find(
+        option => option.value === prevSort.value,
+      );
+      return validOption || { value: '', label: '' }; // Trả về giá trị mặc định nếu không tìm thấy
+    });
+  }, [t]); // `t` là hàm dùng để lấy các giá trị ngôn ngữ từ `i18next`
 
   const fetchFilteredData = async () => {
     setLoading(true);
@@ -143,9 +154,10 @@ const HomeScreen: React.FC = ({}) => {
   };
   useEffect(() => {
     loadMenu();
+    selectedSort;
   }, [selectedLang]);
 
-  const openFilterModal = async (type: string) => {
+  const openFilterModal = (type: string) => {
     console.log('key:', type);
 
     setModalTitleKey(type);
@@ -180,17 +192,17 @@ const HomeScreen: React.FC = ({}) => {
         setModalTitle(t(text.enter_area));
         break;
       case 'soPhongNgu':
-        await setModalType('radioButtonModal');
-        await console.log('chay den modal type', modalType);
+        setModalType('radioButtonModal');
+        console.log('chay den modal type', modalType);
 
-        await setModalData(getBedRoomData(t));
-        await console.log('chay den modal dataa', modalData);
+        setModalData(getBedRoomData(t));
+        console.log('chay den modal dataa', modalData);
 
-        await setModalTitle(t(text.bedrooms));
-        await console.log('chay den modal title', modalTitle);
+        setModalTitle(t(text.bedrooms));
+        console.log('chay den modal title', modalTitle);
 
-        await setIsSingleValue(true);
-        await console.log('chay den issinglevalue', isSingleValue);
+        setIsSingleValue(true);
+        console.log('chay den issinglevalue', isSingleValue);
 
         // ✅ thêm biến flag
         break;
@@ -307,10 +319,6 @@ const HomeScreen: React.FC = ({}) => {
                   } else if (item.key === 'soPhongNgu') {
                     {
                       label = `${selected} ${t(text.bedrooms)}`;
-                    }
-                  } else if (item.key === 'sapXep') {
-                    {
-                      label = `${selected} `;
                     }
                   }
                 }

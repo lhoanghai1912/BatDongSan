@@ -257,7 +257,7 @@ const HomeScreen: React.FC = ({}) => {
                   label = valueToLabel(item.key, selected);
                 } else {
                   if (item.key === 'khoangGia' && selected !== 'Deal') {
-                    label = `${selected}${t(text.bilion)}`;
+                    label = `${selected} ${t(text.bilion)}`;
                   } else if (item.key === 'khoangGia' && selected === 'Deal') {
                     label = `${selected}`;
                   } else if (item.key === 'dienTich') {
@@ -266,7 +266,7 @@ const HomeScreen: React.FC = ({}) => {
                     }
                   } else if (item.key === 'soPhongNgu') {
                     {
-                      label = `${selected}${t(text.bedrooms)}`;
+                      label = `${selected} ${t(text.bedrooms)}`;
                     }
                   } else if (item.key === 'sapXep') {
                     {
@@ -387,7 +387,6 @@ const HomeScreen: React.FC = ({}) => {
               ...prev,
               [modalTitleKey]: value,
             }));
-
             setModalVisible(false); // Đóng modal
           }}
         />

@@ -8,6 +8,7 @@ import {
   Text,
   Animated,
   ScrollView,
+  Linking,
 } from 'react-native';
 import AppStyles from '../../../components/AppStyle';
 import { ICONS, link, text } from '../../../utils/constants';
@@ -21,6 +22,8 @@ import { Screen_Name } from '../../../navigation/ScreenName';
 import { navigate } from '../../../navigation/RootNavigator';
 import apiClient from '../../../service/apiClient';
 import { checkLike, likePost, unlikePost } from '../../../service';
+import { useSelector } from 'react-redux';
+import AppButton from '../../../components/AppButton';
 
 const { width } = Dimensions.get('window');
 interface Props {
@@ -33,6 +36,14 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
   const { t } = useTranslation();
   const { post } = route.params; // mảng các URL ảnh
   const [liked, setLiked] = useState(false);
+
+  const { userData: reduxUserData, token: reduxToken } = useSelector(
+    (state: any) => state.user,
+  );
+
+  const [userData, setUserData] = useState(reduxUserData || null);
+  const [token, setToken] = useState(reduxToken || '');
+
   console.log('route', route);
   console.log('data', post);
   const IMAGE_HEIGHT = 300; // chiều cao ảnh
@@ -47,26 +58,28 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
   });
 
   const formatPriceToTy = (price: number): string => {
-    if (!price || isNaN(price)) return '0 đồng';
+    if (!price || isNaN(price)) return t(text.deal);
 
     if (price >= 1_000_000_000) {
-      return `${(price / 1_000_000_000).toFixed(2)} tỷ`;
+      return `${(price / 1_000_000_000).toFixed(2)} ${t(text.bilion)}`;
     }
 
     if (price >= 1_000_000) {
-      return `${(price / 1_000_000).toFixed(0)} triệu`;
+      return `${(price / 1_000_000).toFixed(0)} ${t(text.milion)}`;
     }
 
     if (price >= 1_000) {
-      return `${(price / 1_000).toFixed(0)} nghìn`;
+      return `${(price / 1_000).toFixed(0)} ${t(text.thousand)}`;
     }
 
-    return `${price.toFixed(0)} đồng`;
+    return `${price.toFixed(0)} `;
   };
   console.log(post.id);
   const handleCheckLike = async () => {
-    const res = await checkLike(post.id);
-    setLiked(res.liked);
+    if (token) {
+      const res = await checkLike(post.id);
+      setLiked(res.liked);
+    }
   };
   useEffect(() => {
     handleCheckLike();
@@ -77,11 +90,9 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
     try {
       if (liked === false) {
         const res = await likePost(post.id);
-        console.log('liked', res);
         setLiked(true); // cập nhật lại state nếu cần
       } else {
         const res = await unlikePost(post.id);
-        console.log('unliked', res);
         setLiked(false); // cập nhật lại state nếu cần
       }
     } catch (error) {
@@ -176,7 +187,7 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
               {post.bedrooms ? (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Text style={[AppStyles.text, { color: Colors.darkGray }]}>
-                    {`${post.bedrooms} phòng ngủ `}
+                    {`${post.bedrooms} ${t(text.bedrooms)} `}
                   </Text>
                   <Image source={ICONS.bed} style={styles.icon} />
                 </View>
@@ -198,7 +209,7 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
               {post.bathrooms ? (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Text style={[AppStyles.text, { color: Colors.darkGray }]}>
-                    {`${post.bathrooms} phòng tắm `}
+                    {`${post.bathrooms} ${t(text.bathrooms)} `}
                   </Text>
                   <Image source={ICONS.bath} style={styles.icon} />
                 </View>
@@ -232,6 +243,25 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
           </View>
         </View>
       </ScrollView>
+      <AppButton
+        title={post.contactPhone}
+        leftIcon={ICONS.phone}
+        customStyle={[
+          {
+            alignItems: 'center',
+            marginBottom: Spacing.medium,
+            marginHorizontal: Spacing.medium,
+          },
+        ]}
+        onPress={() => {
+          Linking.openURL(`tel:${post.contactPhone}`).catch(err =>
+            console.error(
+              'An error occurred while attempting to make a call',
+              err,
+            ),
+          );
+        }}
+      />
     </View>
   );
 };

@@ -42,6 +42,7 @@
   "version": "ຫົວຖານ 1.0",
   "description": "ລາຍລະອຽດ",
   "property_features": "ລະຄາຂອງອະສັງຫາ",
+  "created":"ປະກາດທີ່",
   "create_post": "ສ້າງບົດບັນທຶກ",
   "upload_image": "ອັບຮູບ",
   "exit": "ອອກ",
@@ -114,6 +115,9 @@
   "cancel" : "ຍົກເລີກ",
   "from": "ຈາກ",
   "to": "ຫາ",
+  "today": "ມື້ນີ້",
+  "expand" : "ຂະຫຍາຍ",
+  "collapse" : "ຫຍໍ້ລົງ",
   "modal": {
     "chooseHouseType": "ຫຼັກປະເພດອະສັງຫາ",
     "chooseDirection": "ເລືອກທິດ",

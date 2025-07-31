@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Dimensions,
   Text,
+  Linking,
 } from 'react-native';
 import { navigate } from '../../navigation/RootNavigator';
 import { Screen_Name } from '../../navigation/ScreenName';
@@ -43,7 +44,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
   const updated =
     moment(post.createdAt).format('DD/MM/YYYY') ===
     moment().format('DD/MM/YYYY')
-      ? 'Hôm nay'
+      ? t(text.today)
       : moment(post.createdAt).format('DD/MM/YYYY');
 
   const fetchUserData = async () => {
@@ -68,32 +69,32 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
   }, [fetchUserData]);
   if (imageslink.length === 0) return null;
   const formatPriceToTy = (price: number): string => {
-    if (!price || isNaN(price)) return '0 đồng';
+    if (!price || isNaN(price)) return t(text.deal);
 
     if (price >= 1_000_000_000) {
       const billion = price / 1_000_000_000;
       return billion % 1 === 0
-        ? `${billion.toFixed(0)} tỷ` // Hiển thị số nguyên nếu chia hết
-        : `${billion.toFixed(2)} tỷ`; // Hiển thị 2 chữ số thập phân nếu không chia hết
+        ? `${billion.toFixed(0)} ${t(text.bilion)}` // Hiển thị số nguyên nếu chia hết
+        : `${billion.toFixed(2)} ${t(text.bilion)}`; // Hiển thị 2 chữ số thập phân nếu không chia hết
     }
 
     if (price >= 1_000_000) {
       const million = price / 1_000_000;
       return million % 1 === 0
-        ? `${million.toFixed(0)} triệu`
-        : `${million.toFixed(2)} triệu`;
+        ? `${million.toFixed(0)} ${t(text.milion)}`
+        : `${million.toFixed(2)} ${t(text.milion)}`;
     }
 
     if (price >= 1_000) {
       const thousand = price / 1_000;
       return thousand % 1 === 0
-        ? `${thousand.toFixed(0)} nghìn`
-        : `${thousand.toFixed(2)} nghìn`;
+        ? `${thousand.toFixed(0)} ${t(text.thousand)}`
+        : `${thousand.toFixed(2)} ${t(text.thousand)}`;
     }
     if (price === 0) {
       return `${t(text.deal)}`;
     }
-    return `${price.toFixed(0)} đồng`; // Trả về giá trị nếu không thuộc các loại trên
+    return `${price.toFixed(0)} `; // Trả về giá trị nếu không thuộc các loại trên
   };
 
   const handleCheckLike = async () => {
@@ -330,7 +331,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
                 { fontSize: Fonts.small, color: Colors.darkGray },
               ]}
             >
-              {`Đăng : ${updated}`}
+              {`${t(text.created)}: ${updated}`}
             </Text>
           </View>
         </View>
@@ -346,7 +347,14 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
           <AppButton
             leftIcon={ICONS.phone}
             title={post.contactPhone}
-            onPress={() => console.log('phone pressed')}
+            onPress={() => {
+              Linking.openURL(`tel:${post.contactPhone}`).catch(err =>
+                console.error(
+                  'An error occurred while attempting to make a call',
+                  err,
+                ),
+              );
+            }}
             customStyle={[{ height: 50 }]}
           />
           <TouchableOpacity
@@ -372,7 +380,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
   );
 };
 
-export default ImageCard;
+export default React.memo(ImageCard);
 
 const styles = StyleSheet.create({
   container: {
@@ -388,6 +396,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 250,
     resizeMode: 'cover',
+    borderRadius: 20,
   },
   topImage: {
     // width: '100%',

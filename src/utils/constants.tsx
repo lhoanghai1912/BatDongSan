@@ -59,6 +59,7 @@ export const text = {
   version: 'version',
   description: 'description',
   property_features: 'property_features',
+  created: 'created',
   create_post: 'create_post',
   upload_image: 'upload_image',
   exit: 'exit',
@@ -126,6 +127,9 @@ export const text = {
   cancel: 'cancel',
   from: 'from',
   to: 'to',
+  today: 'today',
+  expand: 'expand',
+  collapse: 'collapse',
   //modal
   modal: {
     chooseHouseType: 'modal.chooseHouseType',

@@ -42,6 +42,7 @@
   "version": "Phiên bản 1.0",
   "description": "Mô tả",
   "property_features": "Đặc điểm bất động sản",
+  "created" : "Đăng lúc",
   "create_post": "Tạo bài đăng",
   "upload_image": "Tải ảnh lên",
   "exit": "Thoát",
@@ -114,6 +115,9 @@
   "cancel" : "Hủy bỏ",
   "from":"Từ",
   "to": "Đến",
+  "today":"Hôm nay",
+  "expand" : "Mở rộng",
+  "collapse" : "Collapse",
 
   "modal": {
     "chooseHouseType": "Chọn loại nhà",

@@ -7,78 +7,83 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { ICONS } from '../utils/constants'; // Thêm ICONS vào đúng đường dẫn
+import { ICONS, text } from '../utils/constants'; // Thêm ICONS vào đúng đường dẫn
 import { Fonts } from '../utils/fontSize';
 import { Colors } from '../utils/color';
 import { Spacing } from '../utils/spacing';
 import AppStyles from './AppStyle';
 import AppButton from './AppButton';
+import { useTranslation } from 'react-i18next';
+import { Linking } from 'react-native';
 
 const PropertyDetailsView = ({ data }: { data: any }) => {
   const [expanded, setExpanded] = useState(false);
+  const { t } = useTranslation();
 
   // Mảng các đặc điểm cần hiển thị
   const features = [
     {
       key: 'price',
-      title: 'Mức giá',
+      title: t(text.price),
       icon: ICONS.price,
-      value: data.price ? `${(data.price / 1e9).toFixed(2)} tỷ` : null,
+      value: data.price
+        ? `${(data.price / 1e9).toFixed(2)} ${t(text.bilion)}`
+        : null,
     },
     {
       id: data.id,
 
       key: 'area',
-      title: 'Diện tích',
+      title: t(text.acreage),
       icon: ICONS.expand,
       value: data.area ? `${data.area} m²` : null,
     },
     {
       key: 'houseOrientation',
-      title: 'Hướng nhà',
+      title: t(text.modal.houseDirection),
       icon: ICONS.direction,
       value:
         data.houseOrientation === 1
-          ? 'Đông'
+          ? t(text.modal.direction.east)
           : data.houseOrientation === 2
-          ? 'Tây'
+          ? t(text.modal.direction.west)
           : data.houseOrientation === 3
-          ? 'Nam'
+          ? t(text.modal.direction.south)
           : data.houseOrientation === 4
-          ? 'Bắc'
+          ? t(text.modal.direction.north)
           : data.houseOrientation === 5
-          ? 'Đông Bắc'
+          ? t(text.modal.direction.northeast)
           : data.houseOrientation === 6
-          ? 'Tây Bắc'
+          ? t(text.modal.direction.southeast)
           : data.houseOrientation === 7
-          ? 'Đông Nam'
+          ? t(text.modal.direction.northwest)
           : data.houseOrientation === 8
-          ? 'Tây Nam'
+          ? t(text.modal.direction.southwest)
           : null,
     },
     {
       key: 'bedrooms',
-      title: 'Phòng ngủ',
+      title: t(text.bedrooms),
       icon: ICONS.bed,
       value: data.bedrooms ? `${data.bedrooms}` : null,
     },
     {
       key: 'bathrooms',
-      title: 'Phòng tắm',
+      title: t(text.bathrooms),
       icon: ICONS.bath,
       value: data.bathrooms ? `${data.bathrooms}` : null,
     },
     {
       key: 'furnishing',
-      title: 'Nội thất',
+      title: t(text.furnishing),
       icon: ICONS.furniture,
       value:
         data.furnishing === 1
-          ? 'Chưa có'
+          ? t(text.nothave)
           : data.furnishing === 2
-          ? 'Có'
+          ? t(text.have)
           : data.furnishing === 3
-          ? 'Đầy đủ'
+          ? t(text.full)
           : null,
     },
   ];
@@ -127,7 +132,7 @@ const PropertyDetailsView = ({ data }: { data: any }) => {
       {visibleFeatures.length > 5 && (
         <AppButton
           onPress={() => setExpanded(!expanded)}
-          title={expanded ? 'Thu gọn ▲' : 'Xem thêm ▼'}
+          title={expanded ? `${t(text.collapse)} ▲` : `${t(text.expand)} ▼`}
           customStyle={[
             {
               width: 150,

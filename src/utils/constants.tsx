@@ -69,7 +69,6 @@ export const text = {
   enter_location: 'enter_location',
   enter_area: 'enter_area',
   enter_price: 'enter_price',
-  enter_bedrooms: 'enter_bedrooms',
   enter_sort: 'enter_sort',
   enter_unit: 'enter_unit',
   pick_location: 'pick_location',

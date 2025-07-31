@@ -18,16 +18,11 @@ import { Colors } from '../../../utils/color';
 import { Fonts } from '../../../utils/fontSize';
 import ImageCard from '../ImageCard';
 import { getAllPosts } from '../../../service';
-import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../../../store/reducers/userSlice';
-import AppButton from '../../../components/AppButton';
-import { setLoading } from '../../../store/reducers/loadingSlice';
+
 import FilterManager from '../../../components/FilterManager';
 import SearchModal from '../../../components/Modal/SearchModal';
 import { menu } from '../../../service/menu';
-import LanguageSelector from '../../../components/LanguageSelector';
 import { useTranslation } from 'react-i18next';
-import i18n from '../../../i18n/i18n';
 import {
   getAcreageData,
   getBedRoomData,
@@ -89,7 +84,6 @@ const HomeScreen: React.FC = ({}) => {
     label: '', // giá trị mặc định
     value: '', // giá trị mặc định
   });
-  console.log('selectedSort.value', selectedSort.value);
 
   const fetchFilteredData = async () => {
     setLoading(true);
@@ -99,13 +93,6 @@ const HomeScreen: React.FC = ({}) => {
       const fullFilter = userFilters
         ? `${typeFilter},${userFilters}`
         : typeFilter;
-
-      console.log(
-        '🧪 Final Filter: Filter: ',
-        fullFilter,
-        'orderBy: ',
-        selectedSort?.value,
-      );
 
       const res = await getAllPosts(fullFilter, selectedSort.value);
       setFilteredData(res.result);
@@ -128,7 +115,9 @@ const HomeScreen: React.FC = ({}) => {
     loadMenu();
   }, [selectedLang]);
 
-  const openFilterModal = (type: string) => {
+  const openFilterModal = async (type: string) => {
+    console.log('key:', type);
+
     setModalTitleKey(type);
     switch (type) {
       case 'loaiNha':
@@ -161,10 +150,19 @@ const HomeScreen: React.FC = ({}) => {
         setModalTitle(t(text.enter_area));
         break;
       case 'soPhongNgu':
-        setModalType('radioButtonModal');
-        setModalData(getBedRoomData(t));
-        setModalTitle(t(text.enter_bedrooms));
-        setIsSingleValue(true); // ✅ thêm biến flag
+        await setModalType('radioButtonModal');
+        await console.log('chay den modal type', modalType);
+
+        await setModalData(getBedRoomData(t));
+        await console.log('chay den modal dataa', modalData);
+
+        await setModalTitle(t(text.bedrooms));
+        await console.log('chay den modal title', modalTitle);
+
+        await setIsSingleValue(true);
+        await console.log('chay den issinglevalue', isSingleValue);
+
+        // ✅ thêm biến flag
         break;
       case 'sapXep':
         setModalType('radioButtonModal');
@@ -173,6 +171,7 @@ const HomeScreen: React.FC = ({}) => {
     }
     setModalVisible(true);
   };
+
   const valueToLabel = (key: string, value: string | string[]) => {
     const mapping: Record<string, any[]> = {
       loaiNha: getHouseTypeData(t),
@@ -220,7 +219,6 @@ const HomeScreen: React.FC = ({}) => {
   };
   const handleSortChange = (selected: any) => {
     setSelectedSort(selected);
-    console.log('aaaaaaa', selected);
 
     // TODO: logic sắp xếp filteredData
   };
@@ -253,6 +251,8 @@ const HomeScreen: React.FC = ({}) => {
 
               let label = item.label;
               if (selected) {
+                console.log('selected', selected);
+
                 if (Array.isArray(selected)) {
                   label = valueToLabel(item.key, selected);
                 } else {
@@ -280,7 +280,9 @@ const HomeScreen: React.FC = ({}) => {
                 <TouchableOpacity
                   key={index}
                   style={styles.filterInput}
-                  onPress={() => openFilterModal(item.key)}
+                  onPress={() => {
+                    console.log('pressss', item), openFilterModal(item.key);
+                  }}
                 >
                   <Text
                     style={[AppStyles.text, { flexShrink: 1 }]}
@@ -357,7 +359,6 @@ const HomeScreen: React.FC = ({}) => {
           renderItem={renderPost}
         />
       </View>
-      {/* <AppButton title="Logout" onPress={() => handleLogout()}></AppButton> */}
       {loading && (
         <View
           style={{

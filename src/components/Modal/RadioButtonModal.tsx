@@ -42,8 +42,9 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
   onClose,
   onReset,
   onSubmit,
-  isSingleValue = false,
+  isSingleValue,
 }) => {
+  console.log('isSingleValue:', isSingleValue);
   const extractMaxValue = (): number => {
     const values = data
       .map(d => d.value.split('-')[1])
@@ -102,7 +103,7 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
         setMaxInput(maxValue.toString());
       }
     }
-  }, [selected, visible]); // 👈 rất quan trọng: thêm cả `visible`
+  }, [selected, visible, isSingleValue]); // 👈 rất quan trọng: thêm cả `visible`
 
   const handleSubmit = () => {
     if (isSingleValue) {
@@ -184,7 +185,6 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
       }
     }
   };
-  console.log('selectedValue', selectedValue);
 
   return (
     <Modal visible={visible} animationType="slide" transparent>

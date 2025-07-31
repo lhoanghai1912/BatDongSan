@@ -1,6 +1,8 @@
 import React from 'react';
 import CheckBoxModal from './Modal/CheckBoxModal';
 import RadioButtonModal from './Modal/RadioButtonModal';
+import { text } from '../utils/constants';
+import { useTranslation } from 'react-i18next';
 
 // Kiểu dữ liệu input
 type FilterModalType = 'checkBoxModal' | 'radioButtonModal';
@@ -16,7 +18,6 @@ interface FilterManagerProps {
   onApplyFilter: (value: string[] | string) => void;
   isSingleValue?: boolean; // 👈 THÊM DÒNG NÀY
 }
-
 const FilterManager: React.FC<FilterManagerProps> = ({
   visible,
   type,
@@ -28,7 +29,17 @@ const FilterManager: React.FC<FilterManagerProps> = ({
   onApplyFilter,
   isSingleValue,
 }) => {
+  const { t } = useTranslation();
+  // console.log(
+  //   'filtermanger',
+  //   title.toLowerCase().includes(`${t(text.bedrooms)}`),
+  // );
+  console.log('filtermanger', title.toLocaleLowerCase());
+  console.log('include', t(text.bedrooms).toLocaleLowerCase());
+
   if (!visible) return null;
+
+  // console.log("FilterMng" + );
 
   if (type === 'checkBoxModal') {
     return (
@@ -56,7 +67,9 @@ const FilterManager: React.FC<FilterManagerProps> = ({
         selected={selected as string}
         onClose={onClose}
         onReset={onReset}
-        isSingleValue={title.toLowerCase().includes('phòng ngủ')} // ✅ chỉ true với "Số phòng ngủ"
+        isSingleValue={title
+          .toLowerCase()
+          .includes(`${t(text.bedrooms).toLocaleLowerCase()}`)} // ✅ chỉ true với "Số phòng ngủ" à đây r :) có khi ở đây
         onSubmit={onApplyFilter}
       />
     );

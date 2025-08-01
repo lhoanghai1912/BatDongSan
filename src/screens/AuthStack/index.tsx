@@ -8,7 +8,7 @@ import {
   Linking,
   ActivityIndicator,
 } from 'react-native';
-import { ICONS, IMAGES, text } from '../../utils/constants';
+import { ICONS, IMAGES, message, text } from '../../utils/constants';
 import AppStyles from '../../components/AppStyle';
 import AppInput from '../../components/AppInput';
 import { Spacing } from '../../utils/spacing';
@@ -29,7 +29,7 @@ const LoginScreen = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const [email, setEmail] = useState('hoanghai281zzz@gmail.com');
-  const [password, setPassWord] = useState('123456789Ab@');
+  const [password, setPassWord] = useState('123456Ab@');
   const [checked, setchecked] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -95,22 +95,22 @@ const LoginScreen = () => {
           }}
         />
         <Text style={[AppStyles.title, { marginBottom: Spacing.small }]}>
-          {text.login}
+          {t(text.login)}
         </Text>
         <Text style={[AppStyles.text, { textAlign: 'center' }]}>
-          {text.welcome}
+          {t(text.welcome)}
         </Text>
       </View>
       <View>
         <AppInput
           leftIcon={ICONS.username}
-          placeholder="Nhập SDT chính hoặc email"
+          placeholder={t(message.enter_userName)}
           onChangeText={setEmail}
           value={email}
         ></AppInput>
         <AppInput
           leftIcon={ICONS.password}
-          placeholder="Nhập mật khẩu"
+          placeholder={t(message.enter_password)}
           onChangeText={setPassWord}
           value={password}
           secureTextEntry={true}
@@ -132,7 +132,7 @@ const LoginScreen = () => {
             />
           </TouchableOpacity>
           <Text style={[AppStyles.text, { marginLeft: Spacing.small }]}>
-            Nhớ tài khoản
+            {t(text.remember)}
           </Text>
         </View>
         <TouchableOpacity onPress={() => handleForgotPassword}>
@@ -144,13 +144,13 @@ const LoginScreen = () => {
               fontWeight: 'bold',
             }}
           >
-            Quên mật khẩu
+            {t(text.forgot)}
           </Text>
         </TouchableOpacity>
       </View>
       <View style={{ marginBottom: Spacing.xlarge }}>
         <AppButton
-          title={text.login}
+          title={t(text.login)}
           onPress={() => handleLogin()}
           disabled={!email || !password}
         />
@@ -176,7 +176,7 @@ const LoginScreen = () => {
             color: Colors.Gray,
           }}
         >
-          Hoặc đăng nhập với
+          {t(message.other_login)}
         </Text>
         <View
           style={{
@@ -209,15 +209,19 @@ const LoginScreen = () => {
           marginBottom: Spacing.large,
         }}
       >
-        <Text style={AppStyles.text}>Bạn chưa có tài khoản? </Text>
+        <Text style={AppStyles.text}>{t(message.nothave_account)}</Text>
         <TouchableOpacity onPress={() => navigate(Screen_Name.Register_Screen)}>
           <Text
             style={[
               AppStyles.text,
-              { color: Colors.red, textDecorationLine: 'underline' },
+              {
+                color: Colors.red,
+                textDecorationLine: 'underline',
+                marginLeft: Spacing.small,
+              },
             ]}
           >
-            Đăng kí
+            {t(text.register)}
           </Text>
         </TouchableOpacity>
       </View>
@@ -239,7 +243,7 @@ const LoginScreen = () => {
             },
           ]}
         >
-          Bằng việc tiếp tục, bạn đồng ý với{' '}
+          {t(message.agree)}{' '}
           <Text
             onPress={() =>
               Linking.openURL(
@@ -253,7 +257,7 @@ const LoginScreen = () => {
               textDecorationLine: 'underline',
             }}
           >
-            Điều khoản sử dụng
+            {t(text.terms_and_conditions)}
           </Text>
           ,{' '}
           <Text
@@ -269,39 +273,9 @@ const LoginScreen = () => {
               textDecorationLine: 'underline',
             }}
           >
-            Chính sách bảo mật
-          </Text>
-          ,{' '}
-          <Text
-            onPress={() =>
-              Linking.openURL(
-                'https://trogiup.batdongsan.com.vn/docs/quy-che-hoat-dong',
-              )
-            }
-            style={{
-              color: Colors.black,
-              fontWeight: '500',
-              fontSize: Fonts.small,
-              textDecorationLine: 'underline',
-            }}
-          >
-            Quy chế
-          </Text>
-          ,{' '}
-          <Text
-            onPress={() =>
-              Linking.openURL('https://trogiup.batdongsan.com.vn/')
-            }
-            style={{
-              color: Colors.black,
-              fontWeight: '500',
-              fontSize: Fonts.small,
-              textDecorationLine: 'underline',
-            }}
-          >
-            Chính sách
+            {t(text.privacy_policy)}
           </Text>{' '}
-          của chúng tôi.
+          {t(text.of_us)}
         </Text>
       </View>
       {loading && (

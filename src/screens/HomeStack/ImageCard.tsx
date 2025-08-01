@@ -14,7 +14,7 @@ import { Spacing } from '../../utils/spacing';
 import AppStyles from '../../components/AppStyle';
 import { Colors } from '../../utils/color';
 import { Fonts } from '../../utils/fontSize';
-import { ICONS, IMAGES, link, MESSAGES, text } from '../../utils/constants';
+import { ICONS, IMAGES, link, message, text } from '../../utils/constants';
 import AppButton from '../../components/AppButton';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -130,8 +130,8 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
       console.log('token', token);
       Toast.show({
         type: `error`,
-        text1: `${t(MESSAGES.text1Error)}`,
-        text2: `${t(MESSAGES.requestLogin)}`,
+        text1: `${t(message.text1Error)}`,
+        text2: `${t(message.requestLogin)}`,
         visibilityTime: 1500,
       });
     }
@@ -166,7 +166,10 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
                   if (!img.imageUrl) return null;
 
                   return (
-                    <View key={idx} style={[styles.imageWrap, { flex: 1 }]}>
+                    <View
+                      key={`${img.imageUrl}-${idx}`}
+                      style={[styles.imageWrap, { flex: 1 }]}
+                    >
                       <Image
                         source={{ uri: `${link.url}${img.imageUrl}` }}
                         style={[
@@ -181,6 +184,17 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
                     </View>
                   );
                 })}
+                {post.images.length > 1 && (
+                  <View style={styles.imageCountBadge}>
+                    <Image
+                      source={ICONS.image}
+                      style={{ width: 20, height: 20, tintColor: Colors.white }}
+                    />
+                    <Text style={styles.imageCountText}>
+                      {post.images.length}
+                    </Text>
+                  </View>
+                )}
               </View>
             </>
           )
@@ -370,7 +384,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
             onPress={() => handleLike()}
           >
             <Image
-              source={liked ? ICONS.heart_focus : ICONS.heart}
+              source={liked ? ICONS.heart_like : ICONS.heart}
               style={AppStyles.icon}
             />
           </TouchableOpacity>
@@ -409,6 +423,22 @@ const styles = StyleSheet.create({
   bottomImage: {
     height: 100,
     resizeMode: 'cover',
+  },
+  imageCountBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: Spacing.small,
+    right: Spacing.small,
+    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+    borderRadius: 20,
+    paddingHorizontal: Spacing.small,
+    paddingVertical: Spacing.small,
+  },
+  imageCountText: {
+    color: '#fff',
+    paddingLeft: Spacing.small,
+    fontSize: Fonts.normal,
   },
   descriptionRow: {
     marginBottom: Spacing.small,

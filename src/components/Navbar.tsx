@@ -56,10 +56,7 @@ const NavBar = ({
         )}
         {icon2 && (
           <TouchableOpacity onPress={onRightPress2} style={styles.iconButton}>
-            <Image
-              source={icon2}
-              style={[AppStyles.icon, { tintColor: Colors.black }]}
-            />
+            <Image source={icon2} style={[AppStyles.icon, {}]} />
           </TouchableOpacity>
         )}
       </View>

@@ -30,18 +30,22 @@ export const createPost = async (formData: FormData) => {
 };
 
 export const getAllPosts = async (
-  filterString = '',
-  orderbyString = '',
-  page = 1,
-  limit = 10,
+  filterString?: string,
+  orderbyString?: string,
+  page?: number,
+  limit?: number,
 ) => {
   console.log('filterString', filterString);
 
   try {
-    const params: any = {
-      page,
-      limit,
-    };
+    const params: Record<string, any> = {};
+
+    if (page !== undefined && page !== null) {
+      params.Page = page;
+    }
+    if (limit !== undefined && limit !== null) {
+      params.PageSize = limit;
+    }
 
     if (filterString) {
       params.Filter = filterString;
@@ -85,11 +89,7 @@ export const likePost = async (id: number) => {
   const res = await apiClient.post(`posts/${id}/like`, {
     id: id,
   });
-  Toast.show({
-    type: 'success',
-    text1: 'Success',
-    text2: 'Saved Post',
-  });
+
   return res.data;
 };
 
@@ -97,11 +97,7 @@ export const unlikePost = async (id: number) => {
   const res = await apiClient.delete(`posts/${id}/like`, {
     data: { id: id },
   });
-  Toast.show({
-    type: 'success',
-    text1: 'Success',
-    text2: 'UnSaved Post',
-  });
+
   return res.data;
 };
 

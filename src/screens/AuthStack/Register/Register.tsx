@@ -6,9 +6,10 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import { Spacing } from '../../../utils/spacing';
-import { ICONS, IMAGES, text } from '../../../utils/constants';
+import { ICONS, IMAGES, message, text } from '../../../utils/constants';
 import AppStyles from '../../../components/AppStyle';
 import AppInput from '../../../components/AppInput';
 import AppButton from '../../../components/AppButton';
@@ -21,10 +22,13 @@ import EnterOtpModal from '../../../components/Modal/EnterOtpModal';
 import { register } from '../../../service';
 import { useDispatch } from 'react-redux';
 import { setLoading } from '../../../store/reducers/loadingSlice';
+import { useTranslation } from 'react-i18next';
 interface Props {
   navigation: any;
 }
 const RegisterScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
+
   const [contact, setContact] = useState('@gmail.com');
 
   const [isEnterOtpModalVisible, setIsEnterOtpModalVisible] = useState(false);
@@ -50,12 +54,12 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <NavBar title={text.register} onPress={() => navigation.goBack()} />
+      <NavBar title={t(message.register)} onPress={() => navigation.goBack()} />
       <View style={{ marginBottom: Spacing.xlarge }}>
         <Image
           source={IMAGES.logo}
           style={{
-            width: 170,
+            width: 200,
             height: 100,
             resizeMode: 'contain',
             alignSelf: 'center',
@@ -63,14 +67,14 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         />
 
         <Text style={[AppStyles.text, { textAlign: 'center' }]}>
-          Tạo tài khoản mới
+          {t(message.register)}
         </Text>
       </View>
 
       <View>
         <AppInput
           leftIcon={ICONS.username}
-          placeholder="Nhập số điện thoại hoặc contact"
+          placeholder={t(message.enter_userName)}
           onChangeText={setContact}
           value={contact}
         />
@@ -78,7 +82,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
 
       <View style={{ marginBottom: Spacing.xlarge }}>
         <AppButton
-          title="Tiếp tục"
+          title={t(text.submit)}
           onPress={() => handleRegister()}
           disabled={contact.length <= 10}
         />
@@ -104,7 +108,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
             color: Colors.Gray,
           }}
         >
-          Hoặc đăng kí với
+          {t(message.other_register)}
         </Text>
         <View
           style={{
@@ -137,7 +141,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
           marginBottom: Spacing.large,
         }}
       >
-        <Text style={AppStyles.text}>Đã có tài khoản? </Text>
+        <Text style={AppStyles.text}>{t(message.have_account)} </Text>
         <TouchableOpacity onPress={() => navigate(Screen_Name.Login_Screen)}>
           <Text
             style={[
@@ -145,7 +149,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
               { color: Colors.red, textDecorationLine: 'underline' },
             ]}
           >
-            Đăng nhập
+            {t(text.login)}
           </Text>
         </TouchableOpacity>
       </View>
@@ -161,12 +165,20 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         <Text
           style={[
             AppStyles.text,
-            { fontSize: Fonts.small, textAlign: 'center', color: Colors.Gray },
+            {
+              fontSize: Fonts.small,
+              textAlign: 'center', // ✅ Căn giữa toàn bộ dòng
+              color: Colors.Gray,
+            },
           ]}
         >
-          Bằng việc tiếp tục, bạn đồng ý với{' '}
+          {t(message.agree)}{' '}
           <Text
-            onPress={() => console.log('Điều khoản sử dụng')}
+            onPress={() =>
+              Linking.openURL(
+                'https://trogiup.batdongsan.com.vn/docs/dieu-khoan-thoa-thuan',
+              )
+            }
             style={{
               color: Colors.black,
               fontWeight: '500',
@@ -174,11 +186,15 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
               textDecorationLine: 'underline',
             }}
           >
-            Điều khoản sử dụng
+            {t(text.terms_and_conditions)}
           </Text>
           ,{' '}
           <Text
-            onPress={() => console.log('Chính sách bảo mật')}
+            onPress={() =>
+              Linking.openURL(
+                'https://trogiup.batdongsan.com.vn/docs/chinh-sach-bao-mat',
+              )
+            }
             style={{
               color: Colors.black,
               fontWeight: '500',
@@ -186,33 +202,9 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
               textDecorationLine: 'underline',
             }}
           >
-            Chính sách bảo mật
-          </Text>
-          ,{' '}
-          <Text
-            onPress={() => console.log('Quy chế')}
-            style={{
-              color: Colors.black,
-              fontWeight: '500',
-              fontSize: Fonts.small,
-              textDecorationLine: 'underline',
-            }}
-          >
-            Quy chế
-          </Text>
-          ,{' '}
-          <Text
-            onPress={() => console.log('Chính sách')}
-            style={{
-              color: Colors.black,
-              fontWeight: '500',
-              fontSize: Fonts.small,
-              textDecorationLine: 'underline',
-            }}
-          >
-            Chính sách
+            {t(text.privacy_policy)}
           </Text>{' '}
-          của chúng tôi.
+          {t(text.of_us)}
         </Text>
       </View>
       <EnterOtpModal
@@ -247,6 +239,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: Spacing.medium,
     backgroundColor: Colors.white,
+    paddingTop: 50,
   },
 });
 

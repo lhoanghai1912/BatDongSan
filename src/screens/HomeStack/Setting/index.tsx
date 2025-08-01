@@ -6,11 +6,12 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  Linking,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Spacing } from '../../../utils/spacing';
 import { Colors } from '../../../utils/color';
-import { ICONS, IMAGES, link, text } from '../../../utils/constants';
+import { ICONS, IMAGES, link, message, text } from '../../../utils/constants';
 import AppStyles from '../../../components/AppStyle';
 import { navigate } from '../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../navigation/ScreenName';
@@ -152,15 +153,15 @@ const SettingScreen = () => {
                     flex: 1, // Bắt buộc: cho phép chiếm phần còn lại
                     flexWrap: 'wrap', // Bắt dòng mới khi quá dài
                     minWidth: 0, // Tránh Text bị fix width 100%
+                    textAlign: 'auto',
                   },
                 ]}
               >
-                Đăng nhập tài khoản để xem thông tin và liên hệ người bán/ cho
-                thuê
+                {t(message.login_to_view)}
               </Text>
             </View>
             <AppButton
-              title={text.login}
+              title={t(text.login)}
               onPress={() => navigate(Screen_Name.Login_Screen)}
             />
           </View>
@@ -214,6 +215,7 @@ const SettingScreen = () => {
               <Text style={AppStyles.text}>{t('report_issue')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
+              onPress={() => Linking.openURL(link.company)}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -251,6 +253,11 @@ const SettingScreen = () => {
                 alignItems: 'center',
                 marginBottom: Spacing.medium,
               }}
+              onPress={() =>
+                Linking.openURL(
+                  'https://trogiup.batdongsan.com.vn/docs/dieu-khoan-thoa-thuan',
+                )
+              }
             >
               <Image
                 source={ICONS.clause}
@@ -264,6 +271,11 @@ const SettingScreen = () => {
                 alignItems: 'center',
                 marginBottom: Spacing.medium,
               }}
+              onPress={() =>
+                Linking.openURL(
+                  'https://trogiup.batdongsan.com.vn/docs/chinh-sach-bao-mat',
+                )
+              }
             >
               <Image
                 source={ICONS.privacy}
@@ -320,35 +332,49 @@ const SettingScreen = () => {
                 {t(text.notification_settings)}
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginBottom: Spacing.medium,
-              }}
-            >
-              <Image
-                source={ICONS.remove_user}
-                style={{ width: 20, height: 20, marginRight: Spacing.medium }}
-              />
-              <Text style={AppStyles.text}>
-                {t(text.delete_account_request)}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => dispactch(logout())}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginBottom: Spacing.medium,
-              }}
-            >
-              <Image
-                source={ICONS.logout}
-                style={{ width: 20, height: 20, marginRight: Spacing.medium }}
-              />
-              <Text style={AppStyles.text}>{t(text.logout)}</Text>
-            </TouchableOpacity>
+            {token ? (
+              <>
+                <TouchableOpacity
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginBottom: Spacing.medium,
+                  }}
+                >
+                  <Image
+                    source={ICONS.remove_user}
+                    style={{
+                      width: 20,
+                      height: 20,
+                      marginRight: Spacing.medium,
+                    }}
+                  />
+                  <Text style={AppStyles.text}>
+                    {t(text.delete_account_request)}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => dispactch(logout())}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginBottom: Spacing.medium,
+                  }}
+                >
+                  <Image
+                    source={ICONS.logout}
+                    style={{
+                      width: 20,
+                      height: 20,
+                      marginRight: Spacing.medium,
+                    }}
+                  />
+                  <Text style={AppStyles.text}>{t(text.logout)}</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <></>
+            )}
             <View
               style={{
                 borderColor: Colors.lightGray,

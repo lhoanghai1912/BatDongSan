@@ -66,7 +66,7 @@ const AppInput: React.FC<AppInputProps> = ({
           secureTextEntry={secureTextEntry && !isShow}
           keyboardType={keyboardType}
           style={[
-            styles.input,
+            editable === true ? styles.input : styles.disableTextInput,
             style,
             error && styles.errorBorder,
             isFocused && styles.focusedInput,
@@ -171,6 +171,15 @@ const styles = StyleSheet.create({
     color: '#ff5a5f',
     fontSize: Fonts.small,
     marginTop: Spacing.small,
+  },
+  disableTextInput: {
+    height: 50,
+    backgroundColor: Colors.lightGray,
+    borderRadius: 30,
+    paddingHorizontal: Spacing.xxlarge,
+    color: '#000',
+    borderColor: Colors.Gray,
+    borderWidth: 1,
   },
 });
 

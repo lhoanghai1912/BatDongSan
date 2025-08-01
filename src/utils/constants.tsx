@@ -1,28 +1,41 @@
+import { register } from '../service';
 import { logout } from '../store/reducers/userSlice';
 
-export const MESSAGES = {
+export const message = {
   loginSuccess: 'Login successful!',
   loginFailed: 'Login failed. Please try again.',
   networkError: 'Network error. Please check your internet connection.',
+  login_to_view: 'login_to_view',
   requestLogin: 'requestLogin',
   text1Error: 'text1Error',
   text1Success: 'text1Success',
   min_max: 'min_max',
+  enter_userName: 'enter_userName',
+  enter_password: 'enter_password',
+  register: 'register',
+  other_register: 'other_register',
+  other_login: 'other_login',
+  have_account: 'have_account',
+  nothave_account: 'nothave_account',
+  agree: 'agree',
+  otp_error: 'otp_error',
 };
 
 export const text = {
   login: 'login',
+  welcome: 'welcome',
   home: 'home',
   profile: 'profile',
   settings: 'settings',
   back: 'back',
+  remember: 'remember_me',
+  forgot: 'forgot_pw',
   logout: 'logout',
   menu: 'Menu',
-  register: 'Đăng kí tài khoản',
+  register: 'register',
   transaction: 'Transaction',
   report: 'Report',
   user: 'User',
-  welcome: 'Chào mừng quay trở lại',
   company_name: 'company_name',
   search: 'search',
   find: 'find',
@@ -47,6 +60,7 @@ export const text = {
   regulations: 'regulations',
   report_issue: 'report_issue',
   about_us: 'about_us',
+  of_us: 'of_us',
   terms_and_conditions: 'terms_and_conditions',
   privacy_policy: 'privacy_policy',
   account_management: 'account_management',
@@ -74,6 +88,7 @@ export const text = {
   enter_price: 'enter_price',
   enter_sort: 'enter_sort',
   enter_unit: 'enter_unit',
+  enter_otp: 'enter_otp',
   pick_location: 'pick_location',
   main_info: 'main_info',
   price: 'price',
@@ -169,6 +184,7 @@ export const ICONS = {
   search_focus: require('../assets/icons/search_focus.png'),
   heart: require('../assets/icons/heart.png'),
   heart_focus: require('../assets/icons/heart_focus.png'),
+  heart_like: require('../assets/icons/heart_like.png'),
   user: require('../assets/icons/user.png'),
   user_focus: require('../assets/icons/user_focus.png'),
   show: require('../assets/icons/show_pass.png'),
@@ -239,4 +255,5 @@ export const IMAGES = {
 
 export const link = {
   url: 'https://bds.foxai.com.vn:8441',
+  company: 'https://fox.ai.vn/',
 };

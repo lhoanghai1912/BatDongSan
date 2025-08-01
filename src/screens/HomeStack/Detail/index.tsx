@@ -41,7 +41,6 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
     (state: any) => state.user,
   );
 
-  const [userData, setUserData] = useState(reduxUserData || null);
   const [token, setToken] = useState(reduxToken || '');
 
   console.log('route', route);
@@ -106,23 +105,28 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
         onPress={() => navigation.goBack()}
         icon1={ICONS.share}
         onRightPress1={() => navigate(Screen_Name.Home_Screen)}
-        icon2={liked ? ICONS.heart_focus : ICONS.heart}
+        icon2={liked ? ICONS.heart_like : ICONS.heart}
         onRightPress2={() => handleLike()}
       />
       <ScrollView>
         <View style={styles.header}>
           <FlatList
             data={post.images.map(item => item.imageUrl)}
-            keyExtractor={item => item.toString()}
+            keyExtractor={(item, index) => `${item.imageUrl}-${index}`}
             horizontal
             pagingEnabled
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => (
+            renderItem={({ item, index }) => (
               <View style={{ flex: 1, height: 300 }}>
                 <Image
                   source={{ uri: `${link.url}${item}` }}
                   style={[styles.image, { flex: 1 }]}
                 />
+                <View style={styles.imageCountBadge}>
+                  <Text style={styles.imageCountText}>
+                    {index + 1}/{post.images.length}
+                  </Text>
+                </View>
               </View>
             )}
           />
@@ -291,5 +295,19 @@ const styles = StyleSheet.create({
   icon: {
     width: 20,
     height: 20,
+  },
+  imageCountBadge: {
+    position: 'absolute',
+    bottom: Spacing.small,
+    right: Spacing.small,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    // backgroundColor: 'red',
+    borderRadius: 20,
+    paddingHorizontal: Spacing.small,
+    paddingVertical: Spacing.small,
+  },
+  imageCountText: {
+    color: '#fff',
+    fontSize: Fonts.normal,
   },
 });

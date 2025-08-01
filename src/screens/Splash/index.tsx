@@ -31,10 +31,7 @@ const SplashScreen = ({ onAnimationEnd }: { onAnimationEnd: () => void }) => {
     <Animated.View
       style={[styles.container, { transform: [{ translateY: fadeAnim }] }]}
     >
-      <ImageBackground
-        source={IMAGES.logo}
-        style={styles.splash}
-      ></ImageBackground>
+      <Image source={IMAGES.logo} style={styles.splash}></Image>
     </Animated.View>
   );
 };
@@ -46,9 +43,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   splash: {
-    width: '100%',
-    height: '100%',
     resizeMode: 'contain',
+    width: '100%', // điều chỉnh chiều rộng
+    height: '100%',
   },
 });
 

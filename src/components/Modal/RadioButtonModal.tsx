@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Colors } from '../../utils/color';
 import { Spacing } from '../../utils/spacing';
-import { ICONS, MESSAGES, text } from '../../utils/constants';
+import { ICONS, message, text } from '../../utils/constants';
 import AppStyles from '../AppStyle';
 import AppButton from '../AppButton';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
@@ -119,8 +119,8 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
       if (parseFloat(minInput) >= parseFloat(maxInput)) {
         Toast.show({
           type: 'error',
-          text1: `${t(MESSAGES.text1Error)}`,
-          text2: `${t(MESSAGES.min_max)}`,
+          text1: `${t(message.text1Error)}`,
+          text2: `${t(message.min_max)}`,
         });
         return;
       }

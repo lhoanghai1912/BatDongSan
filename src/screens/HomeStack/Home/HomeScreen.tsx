@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -36,7 +36,13 @@ import SortModal from '../../../components/Modal/SortModal';
 const HomeScreen: React.FC = ({}) => {
   const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState<boolean>(false);
-
+  // Add these state variables after your existing state declarations
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMoreData, setHasMoreData] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [totalResults, setTotalResults] = useState(0);
+  const ITEMS_PER_PAGE = 10; // Number of items to load per page
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [modalType, setModalType] = useState<
     'checkBoxModal' | 'radioButtonModal' | null
@@ -63,6 +69,7 @@ const HomeScreen: React.FC = ({}) => {
     // add other properties as needed
     [key: string]: any;
   };
+  const flatListRef = useRef<FlatList>(null);
   const [modalTitleKey, setModalTitleKey] = useState<string>('');
   const [modalData, setModalData] = useState<any[]>([]);
   const [modalTitle, setModalTitle] = useState<string>('');
@@ -97,56 +104,83 @@ const HomeScreen: React.FC = ({}) => {
     });
   }, [t]); // `t` là hàm dùng để lấy các giá trị ngôn ngữ từ `i18next`
 
-  const fetchFilteredData = async () => {
-    setLoading(true);
+  const fetchFilteredData = async (
+    page: number = 1,
+    append: boolean = false,
+  ) => {
+    if (page === 1) {
+      setLoading(true);
+    } else {
+      setLoadingMore(true);
+    }
+
     try {
-      const userFilters = buildGridifyFilter(selectedValue, selectedSort.value); // Thêm selectedSort.value cho sắp xếp
+      const userFilters = buildGridifyFilter(selectedValue, selectedSort.value);
       const typeFilter = `type=${searchValue}`;
       let locationFilter = '';
 
-      // Check for province, district, commune, and street
+      // Your existing location filter logic...
       if (location) {
         const { province, district, commune, street } = location;
-
-        // If there's a province, add it to the filter
         if (province?.id) {
           locationFilter += `,provinceId=${province.id}`;
         }
-
-        // If there's a district, add it to the filter
         if (district?.id) {
           locationFilter += `,districtId=${district.id}`;
         }
-
-        // If there's a commune, add it to the filter
         if (commune?.id) {
           locationFilter += `,communeId=${commune.id}`;
         }
-        console.log('Location Filter', locationFilter);
-
-        // If there's a street, add it to the filter
         if (street?.id) {
           locationFilter += `,streetId=${street.name}`;
         }
       }
+
       const fullFilter = userFilters
         ? `${typeFilter},${userFilters}${locationFilter}`
         : `${typeFilter}${locationFilter}`;
 
-      console.log('fullFilter', fullFilter);
+      const res = await getAllPosts(
+        fullFilter,
+        selectedSort.value,
+        page,
+        ITEMS_PER_PAGE,
+      );
 
-      const res = await getAllPosts(fullFilter, selectedSort.value);
-      setFilteredData(res.result);
+      if (append) {
+        setFilteredData(prevData => [...prevData, ...res.result]);
+      } else {
+        setFilteredData(res.result);
+      }
+
+      // Update pagination state
+      setTotalResults(res.total || res.result.length);
+      setHasMoreData(res.result.length === ITEMS_PER_PAGE);
+      setCurrentPage(page);
+      setIsInitialLoad(false); // Đánh dấu đã load lần đầu
     } catch (err) {
       console.error('❌ Lỗi khi tải dữ liệu có filter:', err);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
   useEffect(() => {
-    fetchFilteredData();
+    // Reset pagination when filters change
+    setCurrentPage(1);
+    setHasMoreData(true);
+    setIsInitialLoad(true); // Reset về true khi filter thay đổi
+    fetchFilteredData(1, false);
   }, [selectedValue, searchValue, selectedSort, location]);
+
+  // Handle infinite scroll
+  const handleLoadMore = useCallback(() => {
+    if (!loadingMore && hasMoreData && !loading) {
+      const nextPage = currentPage + 1;
+      fetchFilteredData(nextPage, true);
+    }
+  }, [loadingMore, hasMoreData, loading, currentPage]);
 
   const loadMenu = async () => {
     const data = await menu(selectedLang);
@@ -236,10 +270,15 @@ const HomeScreen: React.FC = ({}) => {
     }
   };
   const onRefresh = useCallback(() => {
+    flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+
     setSelectedValue({});
     setSelectedSort({ value: '', label: '' });
     setLocation({});
-    fetchFilteredData();
+    setCurrentPage(1);
+    setHasMoreData(true);
+    setIsInitialLoad(true); // Reset về true khi refresh
+    fetchFilteredData(1, false);
   }, [searchValue]);
 
   const renderPost = ({ item }: { item: PostType }) => {
@@ -264,6 +303,28 @@ const HomeScreen: React.FC = ({}) => {
     setSelectedSort(selected);
 
     // TODO: logic sắp xếp filteredData
+  };
+  // Render footer for loading indicator
+  const renderFooter = () => {
+    if (loadingMore) {
+      return (
+        <View style={styles.footerLoader}>
+          <ActivityIndicator size="small" color="#E53935" />
+          <Text style={styles.loadingText}>{t('Loading more...')}</Text>
+        </View>
+      );
+    }
+
+    // Hiển thị "Hết bài viết" khi không còn dữ liệu và không phải lần load đầu
+    if (!hasMoreData && !isInitialLoad && filteredData.length > 0) {
+      return (
+        <View style={styles.noMorePostsContainer}>
+          <Text style={styles.noMorePostsText}>Hết bài viết</Text>
+        </View>
+      );
+    }
+
+    return null;
   };
 
   return (
@@ -363,7 +424,7 @@ const HomeScreen: React.FC = ({}) => {
                 { color: Colors.darkGray, fontWeight: 'bold' },
               ]}
             >
-              {`${numberResults} `}
+              {`${totalResults || numberResults} `}
             </Text>
             <Text style={[AppStyles.text, { color: Colors.darkGray }]}>
               {t('property')}
@@ -392,6 +453,7 @@ const HomeScreen: React.FC = ({}) => {
           </TouchableOpacity>
         </View>
         <FlatList
+          ref={flatListRef}
           data={filteredData}
           ListEmptyComponent={
             <Text style={[AppStyles.label, { flex: 1, textAlign: 'center' }]}>
@@ -400,11 +462,19 @@ const HomeScreen: React.FC = ({}) => {
           }
           keyExtractor={item =>
             item._id ? item._id.toString() : `${Math.random()}`
-          } // Sử dụng key ngẫu nhiên nếu _id không có
+          }
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           renderItem={renderPost}
+          // Infinite scroll props
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.1}
+          ListFooterComponent={renderFooter}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={10}
+          windowSize={10}
+          initialNumToRender={10}
         />
       </View>
       {loading && (
@@ -464,11 +534,11 @@ const HomeScreen: React.FC = ({}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 70,
+    paddingTop: 50,
   },
   header: {
-    flex: 0.2,
     paddingHorizontal: Spacing.medium,
+    marginBottom: Spacing.medium,
   },
   body: {
     flex: 1,
@@ -525,6 +595,28 @@ const styles = StyleSheet.create({
     borderColor: Colors.Gray,
     marginVertical: Spacing.medium,
     width: '100%',
+  },
+  // Add these to your styles object
+  footerLoader: {
+    paddingVertical: Spacing.medium,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginTop: Spacing.small,
+    fontSize: Fonts.small,
+    color: Colors.darkGray,
+  },
+
+  noMorePostsContainer: {
+    paddingVertical: Spacing.large,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  noMorePostsText: {
+    fontSize: Fonts.normal,
+    color: Colors.darkGray,
+    fontWeight: '500',
   },
 });
 

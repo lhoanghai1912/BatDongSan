@@ -93,13 +93,14 @@ const PropertyDetailsView = ({ data }: { data: any }) => {
   const displayedFeatures = expanded
     ? visibleFeatures
     : visibleFeatures.slice(0, 5);
+  console.log('displayedFeatures', displayedFeatures);
 
   return (
     <View style={styles.container}>
       {displayedFeatures.map((feature, index) => (
         <>
           <View
-            key={feature.key + index}
+            key={`${feature.key + index}`}
             style={[styles.item, { marginBottom: Spacing.medium }]}
           >
             <View

@@ -17,6 +17,8 @@ import { Screen_Name } from '../../navigation/ScreenName';
 import { enterOtp } from '../../service';
 import { useDispatch } from 'react-redux';
 import { setVerificationToken } from '../../store/reducers/userSlice';
+import { message, text } from '../../utils/constants';
+import { useTranslation } from 'react-i18next';
 
 interface EnterOtpProp {
   visible: boolean;
@@ -32,7 +34,7 @@ const EnterOtpModal: React.FC<EnterOtpProp> = ({
   contact,
 }) => {
   const dispatch = useDispatch();
-
+  const { t } = useTranslation();
   const [otp, setOtp] = useState(['', '', '', '', '', '']); // Lưu trữ 6 ký tự OTP
   const [error, setError] = useState(false); // Lỗi nếu mã OTP không hợp lệ
   const lastValueRef = useRef(['', '', '', '', '', '']);
@@ -106,7 +108,7 @@ const EnterOtpModal: React.FC<EnterOtpProp> = ({
         }}
       >
         <View style={styles.modalContent}>
-          <Text style={styles.title}>Nhập mã OTP</Text>
+          <Text style={styles.title}>{t(text.enter_otp)}</Text>
 
           <View style={styles.otpContainer}>
             {otp.map((digit, index) => (
@@ -115,18 +117,6 @@ const EnterOtpModal: React.FC<EnterOtpProp> = ({
                 style={[styles.otpInput, error && styles.errorInput]}
                 value={digit}
                 onChangeText={text => handleOtpChange(text, index)}
-                // onKeyPress={({ nativeEvent }) => {
-                //   if (nativeEvent.key === 'Backspace') {
-                //     const newOtp = [...otp];
-
-                //     if (otp[index] !== '') {
-                //       newOtp[index] = '';
-                //       setOtp(newOtp);
-                //     } else if (index > 0) {
-                //       inputRefs.current[index - 1]?.focus();
-                //     }
-                //   }
-                // }}
                 onKeyPress={e => handleKeyPress(e, index)}
                 keyboardType="numeric"
                 maxLength={1}
@@ -139,7 +129,7 @@ const EnterOtpModal: React.FC<EnterOtpProp> = ({
           </View>
 
           {error && (
-            <Text style={styles.errorText}>Mã OTP phải có 6 chữ số.</Text>
+            <Text style={styles.errorText}>{t(message.otp_error)}</Text>
           )}
           <View
             style={{

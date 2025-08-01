@@ -138,91 +138,104 @@ const UserScreen: React.FC<Props> = ({ navigation }) => {
         title="Thông tin khách hàng"
         onPress={() => navigation.goBack()}
       />
-      <TouchableOpacity
-        style={{ alignItems: 'center' }}
-        onPress={pickImage}
-        disabled={!isEditing}
-      >
-        <Image
-          source={imageUri ? { uri: `${link.url}` } : IMAGES.avartar}
-          style={[
-            AppStyles.avartar,
-            { width: 150, height: 150, resizeMode: 'cover' },
-          ]}
-        />
-      </TouchableOpacity>
-      <AppInput label="Tên đăng nhập" value={email} editable={false} />
-      <AppInput
-        label="Họ và tên"
-        placeholder="Nhập họ và tên"
-        value={fullName}
-        onChangeText={text => setFullName(text)}
-        editable={isEditing}
-      />
-      <AppInput
-        label="Địa chỉ"
-        placeholder="Nhập địa chỉ"
-        value={address}
-        onChangeText={text => setAddress(text)}
-        editable={isEditing}
-      />
-      <View style={styles.buttonGroup}>
-        {!isEditing ? (
-          <AppButton
-            title="Chỉnh sửa thông tin"
-            onPress={() => setIsEditing(true)}
+      <ScrollView style={{}}>
+        <TouchableOpacity
+          style={{ alignItems: 'center' }}
+          onPress={pickImage}
+          disabled={!isEditing}
+        >
+          <Image
+            source={imageUri ? { uri: `${link.url}` } : IMAGES.avartar}
+            style={[
+              AppStyles.avartar,
+              { width: 150, height: 150, resizeMode: 'cover' },
+            ]}
           />
-        ) : (
+        </TouchableOpacity>
+        <AppInput label="Tên đăng nhập" value={email} editable={false} />
+        <AppInput
+          label="Họ và tên"
+          placeholder="Nhập họ và tên"
+          value={fullName}
+          onChangeText={text => setFullName(text)}
+          editable={isEditing}
+        />
+        <AppInput
+          label="Địa chỉ"
+          placeholder="Nhập địa chỉ"
+          value={address}
+          onChangeText={text => setAddress(text)}
+          editable={isEditing}
+        />
+        <AppInput
+          label="Số điện thoại"
+          placeholder="Nhập số điện thoại"
+          value={phoneNumber}
+          onChangeText={text => setPhoneNumber(text)}
+          editable={isEditing}
+        />
+        <View>
+          {!isEditing ? (
+            <AppButton
+              title="Chỉnh sửa thông tin"
+              onPress={() => setIsEditing(true)}
+            />
+          ) : (
+            <>
+              <AppButton
+                title="Lưu thông tin"
+                onPress={handleUpdateUser}
+                customStyle={[{ marginBottom: Spacing.medium }]}
+              />
+              <AppButton title="Hủy" onPress={() => setIsEditing(false)} />
+            </>
+          )}
+        </View>
+        <View style={styles.divider} />
+        <Text style={styles.title}>Đổi mật khẩu</Text>
+        {changePassword ? (
           <>
-            <AppButton
-              title="Lưu thông tin"
-              onPress={handleUpdateUser}
-              customStyle={[{ marginBottom: Spacing.medium }]}
+            <AppInput
+              label="Mật khẩu cũ"
+              placeholder="Nhập mật khẩu cũ"
+              value={oldPassword}
+              secureTextEntry={true}
+              onChangeText={text => setOldPassword(text)}
             />
-            <AppButton title="Hủy" onPress={() => setIsEditing(false)} />
+            <AppInput
+              label="Mật khẩu mới"
+              placeholder="Nhập mật khẩu mới"
+              value={newPassword}
+              secureTextEntry={true}
+              onChangeText={text => setNewPassword(text)}
+            />
+            <AppInput
+              label="Xác nhận mật khẩu "
+              placeholder="Nhập lại mật khẩu mới"
+              value={confirmPassword}
+              secureTextEntry={true}
+              onChangeText={text => setConfirmPassword(text)}
+            />
+            <View>
+              <AppButton
+                title="Đổi mật khẩu"
+                onPress={handleChangePassword}
+                customStyle={[{ marginBottom: Spacing.medium }]}
+              />
+              <AppButton
+                title="Hủy"
+                onPress={() => setChangePassword(false)}
+                customStyle={[{ marginBottom: Spacing.xxxxlarge }]}
+              />
+            </View>
           </>
+        ) : (
+          <AppButton
+            title="Đổi mật khẩu"
+            onPress={() => setChangePassword(true)}
+          />
         )}
-      </View>
-      <View style={styles.divider} />
-      <Text style={styles.title}>Đổi mật khẩu</Text>
-      {changePassword ? (
-        <>
-          <AppInput
-            label="Mật khẩu cũ"
-            placeholder="Nhập mật khẩu cũ"
-            value={oldPassword}
-            secureTextEntry={true}
-            onChangeText={text => setOldPassword(text)}
-          />
-          <AppInput
-            label="Mật khẩu mới"
-            placeholder="Nhập mật khẩu mới"
-            value={newPassword}
-            secureTextEntry={true}
-            onChangeText={text => setNewPassword(text)}
-          />
-          <AppInput
-            label="Xác nhận mật khẩu "
-            placeholder="Nhập lại mật khẩu mới"
-            value={confirmPassword}
-            secureTextEntry={true}
-            onChangeText={text => setConfirmPassword(text)}
-          />
-          <View style={styles.buttonGroup}>
-            <AppButton
-              title="Đổi mật khẩu"
-              onPress={handleChangePassword}
-              customStyle={[{ marginBottom: Spacing.medium }]}
-            />
-            <AppButton title="Hủy" onPress={() => setChangePassword(false)} />
-          </View>
-        </>
-      ) : (
-        <AppButton
-          title="Đổi mật khẩu"
-          onPress={() => setChangePassword(true)}
-        />
-      )}
+      </ScrollView>
     </View>
   );
 };
@@ -253,10 +266,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     fontSize: 16,
     backgroundColor: Colors.white,
-  },
-  buttonGroup: {
-    marginTop: 20,
-    marginBottom: 10,
   },
   cancelText: {
     color: Colors.red,

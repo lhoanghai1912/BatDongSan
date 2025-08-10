@@ -52,7 +52,7 @@
   "description": "ລາຍລະອຽດ",
   "property_features": "ລະຄາຂອງອະສັງຫາ",
   "created":"ປະກາດທີ່",
-  "create_post": "ສ້າງບົດບັນທຶກ",
+  "created_desc": "ສ້າງຂື້ນມາ",  "create_post": "ສ້າງບົດບັນທຶກ",
   "upload_image": "ອັບຮູບ",
   "exit": "ອອກ",
   "step": "ຂັ້ນຕອນ",

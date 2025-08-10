@@ -186,8 +186,8 @@ const SearchLocationModal: React.FC<Props> = ({
                   value={selectedLocation.street}
                   editable={
                     !!selectedLocation.province?.name &&
-                    !!selectedLocation.district?.name &&
-                    !!selectedLocation.commune?.name
+                    !!selectedLocation.district?.name
+                    // &&                    !!selectedLocation.commune?.name
                   }
                   onChangeText={text =>
                     setSelectedLocation(prev => ({ ...prev, street: text }))

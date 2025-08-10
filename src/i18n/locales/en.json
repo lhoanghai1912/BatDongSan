@@ -51,6 +51,7 @@
   "description": "Description",
   "property_features": "Property features",
   "created":"Created",
+  "created_desc": "Created descending",
   "create_post": "Create Post",
   "upload_image" :"Upload Images",
   "exit": "Exit",
@@ -116,6 +117,7 @@
   "area_desc": "Area descending ",
   "price_asc": "Price ascending ",
   "price_des": "Price descending ",
+
   "sort": "Sort",
   "under": "Under",
   "min" : "Min",

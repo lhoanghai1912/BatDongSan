@@ -133,6 +133,7 @@ export const text = {
   area_desc: 'area_desc',
   price_asc: 'price_asc',
   price_des: 'price_des',
+  created_desc: 'created_desc',
   sort: 'sort',
   under: 'under',
   min: 'min',

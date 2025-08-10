@@ -438,6 +438,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
   const removeImage = (uri: string) => {
     setImageUris(prevState => prevState.filter(item => item !== uri));
   };
+  console.log('picked iamge', imageUris);
 
   return (
     <View style={styles.container}>
@@ -1466,7 +1467,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                             if (index === 0) {
                               // Ảnh đầu tiên sẽ chiếm hết chiều rộng
                               return (
-                                <>
+                                <View key={uniqueKey}>
                                   <Image
                                     key={uniqueKey}
                                     source={{ uri }}
@@ -1485,13 +1486,13 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                                       style={styles.clearImageIcon}
                                     />
                                   </TouchableOpacity>
-                                </>
+                                </View>
                               );
                             } else {
                               // Các ảnh sau sẽ chia thành 2 cột
                               return (
                                 <View
-                                  key={index}
+                                  key={uniqueKey}
                                   style={{ width: '50%', padding: 5 }}
                                 >
                                   <Image
@@ -1614,6 +1615,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
         </View>
         <AppButton
           title={t(text.create_post)}
+          customStyle={[{ display: imageUpload.length > 1 ? 'flex' : 'none' }]}
           onPress={() => handleCreatePost()}
         />
       </ScrollView>

@@ -20,7 +20,7 @@ import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { checkLike, likePost, unlikePost } from '../../service';
+// import { checkLike, likePost, unlikePost } from '../../service';
 import { useFocusEffect } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 
@@ -97,45 +97,45 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
     return `${price.toFixed(0)} `; // Trả về giá trị nếu không thuộc các loại trên
   };
 
-  const handleCheckLike = async () => {
-    if (token) {
-      const res = await checkLike(post.id);
-      setLiked(res.liked);
-    }
-  };
-  useFocusEffect(
-    React.useCallback(() => {
-      handleCheckLike(); // gọi lại API khi màn hình được focus
-    }, [token]),
-  );
-  const handleLike = async () => {
-    if (token) {
-      console.log('token', token);
+  // const handleCheckLike = async () => {
+  //   if (token) {
+  //     const res = await checkLike(post.id);
+  //     setLiked(res.liked);
+  //   }
+  // };
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     handleCheckLike(); // gọi lại API khi màn hình được focus
+  //   }, [token]),
+  // );
+  // const handleLike = async () => {
+  //   if (token) {
+  //     console.log('token', token);
 
-      try {
-        if (!liked) {
-          const res = await likePost(post.id);
-          setLiked(true); // cập nhật lại state nếu cần
-        } else {
-          const res = await unlikePost(post.id);
-          setLiked(false); // cập nhật lại state nếu cần
-          if (onReload) {
-            onReload();
-          }
-        }
-      } catch (error) {
-        console.error('Lỗi like/unlike:', error);
-      }
-    } else {
-      console.log('token', token);
-      Toast.show({
-        type: `error`,
-        text1: `${t(message.text1Error)}`,
-        text2: `${t(message.requestLogin)}`,
-        visibilityTime: 1500,
-      });
-    }
-  };
+  //     try {
+  //       if (!liked) {
+  //         const res = await likePost(post.id);
+  //         setLiked(true); // cập nhật lại state nếu cần
+  //       } else {
+  //         const res = await unlikePost(post.id);
+  //         setLiked(false); // cập nhật lại state nếu cần
+  //         if (onReload) {
+  //           onReload();
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error('Lỗi like/unlike:', error);
+  //     }
+  //   } else {
+  //     console.log('token', token);
+  //     Toast.show({
+  //       type: `error`,
+  //       text1: `${t(message.text1Error)}`,
+  //       text2: `${t(message.requestLogin)}`,
+  //       visibilityTime: 1500,
+  //     });
+  //   }
+  // };
   return (
     <TouchableOpacity
       style={styles.container}
@@ -381,7 +381,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
               alignItems: 'center',
               justifyContent: 'center',
             }}
-            onPress={() => handleLike()}
+            // onPress={() => handleLike()}
           >
             <Image
               source={liked ? ICONS.heart_like : ICONS.heart}

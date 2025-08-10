@@ -85,30 +85,30 @@ export const getPostById = async (id: number) => {
   }
 };
 
-export const likePost = async (id: number) => {
-  const res = await apiClient.post(`posts/${id}/like`, {
-    id: id,
-  });
+// export const likePost = async (id: number) => {
+//   const res = await apiClient.post(`posts/${id}/like`, {
+//     id: id,
+//   });
 
-  return res.data;
-};
+//   return res.data;
+// };
 
-export const unlikePost = async (id: number) => {
-  const res = await apiClient.delete(`posts/${id}/like`, {
-    data: { id: id },
-  });
+// export const unlikePost = async (id: number) => {
+//   const res = await apiClient.delete(`posts/${id}/like`, {
+//     data: { id: id },
+//   });
 
-  return res.data;
-};
+//   return res.data;
+// };
 
-export const checkLike = async (id: number) => {
-  const res = await apiClient.get(`posts/${id}/like/check`, {
-    data: { id: id },
-  });
-  return res.data;
-};
+// export const checkLike = async (id: number) => {
+//   const res = await apiClient.get(`posts/${id}/like/check`, {
+//     data: { id: id },
+//   });
+//   return res.data;
+// };
 
-export const listLikedPost = async () => {
-  const res = await apiClient.get(`posts/My_liked`);
-  return res.data;
-};
+// export const listLikedPost = async () => {
+//   const res = await apiClient.get(`posts/My_liked`);
+//   return res.data;
+// };

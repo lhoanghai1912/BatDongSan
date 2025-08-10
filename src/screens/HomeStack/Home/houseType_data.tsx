@@ -87,6 +87,8 @@ export const getSortData = (t: (key: string) => string) => [
   { label: t(text.price_des), value: `price desc` },
   { label: t(text.area_asc), value: `area` },
   { label: t(text.area_desc), value: `area desc` },
+  { label: t(text.created), value: `createdAt` },
+  { label: t(text.created_desc), value: `createdAt desc` },
 ];
 // src/screens/Home/utils/houseType_data.ts
 

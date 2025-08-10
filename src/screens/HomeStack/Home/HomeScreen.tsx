@@ -32,8 +32,11 @@ import {
 } from './houseType_data';
 import { buildGridifyFilter } from './Utils/filterUtils';
 import SortModal from '../../../components/Modal/SortModal';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 
 const HomeScreen: React.FC = ({}) => {
+  const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState<boolean>(false);
   // Add these state variables after your existing state declarations
@@ -89,9 +92,14 @@ const HomeScreen: React.FC = ({}) => {
     label: string;
     value: string;
   }>({
-    label: '', // giá trị mặc định
-    value: '', // giá trị mặc định
+    label: t(text.created_desc), // giá trị mặc định
+    value: `createdAt desc`, // giá trị mặc định
   });
+  useFocusEffect(
+    useCallback(() => {
+      onRefresh(); // gọi hàm load lại data
+    }, []), // nếu onRefresh là 1 function stable
+  );
   useEffect(() => {
     // Cập nhật lại selectedSort khi ngôn ngữ thay đổi
     const newSortData = getSortData(t);
@@ -273,7 +281,7 @@ const HomeScreen: React.FC = ({}) => {
     flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
 
     setSelectedValue({});
-    setSelectedSort({ value: '', label: '' });
+    setSelectedSort({ value: 'createdAt desc', label: t(text.created_desc) });
     setLocation({});
     setCurrentPage(1);
     setHasMoreData(true);
@@ -328,7 +336,7 @@ const HomeScreen: React.FC = ({}) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <View style={styles.searchBox}>
           <Image source={ICONS.search} style={styles.searchIcon} />
@@ -534,7 +542,6 @@ const HomeScreen: React.FC = ({}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50,
   },
   header: {
     paddingHorizontal: Spacing.medium,

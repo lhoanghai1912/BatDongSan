@@ -12,6 +12,7 @@ import AppStyles from './AppStyle';
 import { Fonts } from '../utils/fontSize';
 import { Colors } from '../utils/color';
 import { Spacing } from '../utils/spacing';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface NavBarProps {
   title?: string;
@@ -32,8 +33,9 @@ const NavBar = ({
   onRightPress2,
   customStyle = [],
 }: NavBarProps) => {
+  const insets = useSafeAreaInsets();
   return (
-    <View style={[styles.navBar, ...customStyle]}>
+    <View style={[styles.navBar, ...customStyle, { paddingTop: insets.top }]}>
       {/* Back button */}
       <TouchableOpacity onPress={onPress} style={styles.iconButton}>
         <Image source={ICONS.back} style={AppStyles.icon} />
@@ -69,7 +71,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingBottom: Spacing.small,
   },
   navTitle: {
     flex: 1,

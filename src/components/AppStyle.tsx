@@ -76,7 +76,7 @@ const AppStyles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 50,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
   },
   text: {
     fontSize: Fonts.normal,

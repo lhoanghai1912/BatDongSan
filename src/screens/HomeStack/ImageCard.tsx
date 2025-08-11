@@ -14,7 +14,14 @@ import { Spacing } from '../../utils/spacing';
 import AppStyles from '../../components/AppStyle';
 import { Colors } from '../../utils/color';
 import { Fonts } from '../../utils/fontSize';
-import { ICONS, IMAGES, link, message, text } from '../../utils/constants';
+import {
+  formatAddress,
+  ICONS,
+  IMAGES,
+  link,
+  message,
+  text,
+} from '../../utils/constants';
 import AppButton from '../../components/AppButton';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +30,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { checkLike, likePost, unlikePost } from '../../service';
 import { useFocusEffect } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
+import { likePost } from '../../service/likeService';
 
 type ImageCardProps = {
   post: any;
@@ -40,7 +48,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
   const [userData, setUserData] = useState(reduxUserData || null);
 
   const [token, setToken] = useState(reduxToken || '');
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState<boolean>(post?.isLiked);
   const updated =
     moment(post.createdAt).format('DD/MM/YYYY') ===
     moment().format('DD/MM/YYYY')
@@ -64,6 +72,11 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
       console.log('error', error);
     }
   };
+
+  useEffect(() => {
+    onReload;
+  }, [liked]);
+
   useEffect(() => {
     fetchUserData();
   }, [fetchUserData]);
@@ -108,34 +121,43 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
   //     handleCheckLike(); // gọi lại API khi màn hình được focus
   //   }, [token]),
   // );
-  // const handleLike = async () => {
-  //   if (token) {
-  //     console.log('token', token);
+  // console.log('likeeeeeeeeeeeeeeeeee', liked);
 
-  //     try {
-  //       if (!liked) {
-  //         const res = await likePost(post.id);
-  //         setLiked(true); // cập nhật lại state nếu cần
-  //       } else {
-  //         const res = await unlikePost(post.id);
-  //         setLiked(false); // cập nhật lại state nếu cần
-  //         if (onReload) {
-  //           onReload();
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.error('Lỗi like/unlike:', error);
-  //     }
-  //   } else {
-  //     console.log('token', token);
-  //     Toast.show({
-  //       type: `error`,
-  //       text1: `${t(message.text1Error)}`,
-  //       text2: `${t(message.requestLogin)}`,
-  //       visibilityTime: 1500,
-  //     });
-  //   }
-  // };
+  const handleLike = async () => {
+    if (token) {
+      console.log('token', token);
+      console.log('post', post);
+      console.log('post like? ', post.isLiked);
+      try {
+        if (liked === false) {
+          const res = await likePost(post.id, true);
+          setLiked(true); // cập nhật lại state nếu cần
+          console.log('like after = ', liked);
+          console.log('res', res);
+          onReload;
+        } else if (liked === true) {
+          const res = await likePost(post.id, false);
+          setLiked(false); // cập nhật lại state nếu cần
+          console.log('like after = ', liked);
+          console.log('res', res);
+          onReload;
+        }
+        if (onReload) {
+          onReload();
+        }
+      } catch (error) {
+        console.error('Lỗi like/unlike:', error);
+      }
+    } else {
+      console.log('token', token);
+      Toast.show({
+        type: `error`,
+        text1: `${t(message.text1Error)}`,
+        text2: `${t(message.requestLogin)}`,
+        visibilityTime: 1500,
+      });
+    }
+  };
   return (
     <TouchableOpacity
       style={styles.container}
@@ -298,14 +320,13 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
             </>
           )}
         </View>
-        <View style={[styles.descriptionItem]}>
+        <View style={[styles.descriptionItem, {}]}>
           <Image source={ICONS.location} style={styles.icon} />
-          <Text style={[AppStyles.text, { color: Colors.darkGray }]}>
-            {post.street
-              ? `${post.street}, ${post.communeName}`
-              : post.communeName
-              ? post.communeName
-              : post.districtName}
+          <Text
+            numberOfLines={1}
+            style={[AppStyles.text, { color: Colors.darkGray }]}
+          >
+            {formatAddress(post)}
           </Text>
         </View>
       </View>
@@ -381,7 +402,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
               alignItems: 'center',
               justifyContent: 'center',
             }}
-            // onPress={() => handleLike()}
+            onPress={() => handleLike()}
           >
             <Image
               source={liked ? ICONS.heart_like : ICONS.heart}

@@ -6,8 +6,8 @@ const languageDetector: LanguageDetectorAsyncModule = {
   async: true,
   detect: callback => {
     const locales = RNLocalize.getLocales();
-    const lang = locales[0]?.languageCode || 'vi';
-    callback(['vi', 'en', 'lo'].includes(lang) ? lang : 'vi');
+    const lang = locales[0]?.languageCode || 'en';
+    callback(['vi', 'en', 'lo'].includes(lang) ? lang : 'en');
   },
   init: () => {},
   cacheUserLanguage: () => {},

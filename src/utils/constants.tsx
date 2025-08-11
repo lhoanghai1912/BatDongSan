@@ -21,6 +21,18 @@ export const message = {
   otp_error: 'otp_error',
 };
 
+export const formatAddress = (post: {
+  street?: string;
+  communeName?: string;
+  districtName?: string;
+  provinceName?: string;
+}) => {
+  return [post.street, post.communeName, post.districtName, post.provinceName]
+    .map(s => (typeof s === 'string' ? s.trim() : ''))
+    .filter(s => s.length > 0)
+    .join(', ');
+};
+
 export const text = {
   login: 'login',
   welcome: 'welcome',

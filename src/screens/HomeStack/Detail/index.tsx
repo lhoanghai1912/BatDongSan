@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import AppStyles from '../../../components/AppStyle';
-import { ICONS, link, text } from '../../../utils/constants';
+import { formatAddress, ICONS, link, text } from '../../../utils/constants';
 import NavBar from '../../../components/Navbar';
 import { Spacing } from '../../../utils/spacing';
 import { Fonts } from '../../../utils/fontSize';
@@ -26,6 +26,7 @@ import { useSelector } from 'react-redux';
 import AppButton from '../../../components/AppButton';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ImagePreviewModal from '../../../components/Modal/ImagePreviewModal';
+import { likePost } from '../../../service/likeService';
 
 const { width } = Dimensions.get('window');
 interface Props {
@@ -38,7 +39,7 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
   const scrollY = useRef(new Animated.Value(0)).current;
   const { t } = useTranslation();
   const { post } = route.params; // mảng các URL ảnh
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState<boolean>(post?.isLiked);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
   const { userData: reduxUserData, token: reduxToken } = useSelector(
@@ -89,19 +90,24 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
   // }, []);
   // console.log('liked', liked);
 
-  // const handleLike = async () => {
-  //   try {
-  //     if (liked === false) {
-  //       const res = await likePost(post.id);
-  //       setLiked(true); // cập nhật lại state nếu cần
-  //     } else {
-  //       const res = await unlikePost(post.id);
-  //       setLiked(false); // cập nhật lại state nếu cần
-  //     }
-  //   } catch (error) {
-  //     console.error('Lỗi like/unlike:', error);
-  //   }
-  // };
+  const handleLike = async () => {
+    console.log('liked', liked);
+    console.log('post', post);
+
+    try {
+      if (liked === false) {
+        const res = await likePost(post.id, true);
+        setLiked(true); // cập nhật lại state nếu cần
+        console.log('databack: ', res);
+      } else if (liked === true) {
+        const res = await likePost(post.id, false);
+        setLiked(false); // cập nhật lại state nếu cần
+        console.log('databack: ', res);
+      }
+    } catch (error) {
+      console.error('Lỗi like/unlike:', error);
+    }
+  };
 
   return (
     <View style={[styles.container]}>
@@ -110,7 +116,7 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
         icon1={ICONS.share}
         onRightPress1={() => navigate(Screen_Name.Home_Screen)}
         icon2={liked ? ICONS.heart_like : ICONS.heart}
-        // onRightPress2={() => handleLike()}
+        onRightPress2={() => handleLike()}
       />
       <ScrollView style={{ paddingTop: Spacing.medium }}>
         <View style={styles.header}>
@@ -242,9 +248,9 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
           >
             {post.title}
           </Text>
-          <Text
-            style={[AppStyles.text, { marginBottom: Spacing.medium }]}
-          >{`${post.street}, ${post.communeName}, ${post.districtName}`}</Text>
+          <Text style={[AppStyles.text, { marginBottom: Spacing.medium }]}>
+            {formatAddress(post)}
+          </Text>
           <View style={AppStyles.line} />
           <View style={styles.description}>
             <Text style={AppStyles.label}>{t(text.description)}</Text>

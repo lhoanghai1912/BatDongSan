@@ -54,8 +54,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
       ? t(text.today)
       : moment(post.createdAt).format('DD/MM/YYYY');
 
-  // Memoize fetchUserData so useEffect only runs once
-  const fetchUserData = React.useCallback(async () => {
+  const fetchUserData = async () => {
     try {
       const storedToken = await AsyncStorage.getItem('accessToken');
       const storedUser = await AsyncStorage.getItem('userData');
@@ -69,12 +68,12 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
     } catch (error) {
       console.log('error', error);
     }
-  }, [reduxToken, reduxUserData]);
+  };
 
   useEffect(() => {
     fetchUserData();
     // Only run once on mount
-  }, [fetchUserData]);
+  }, []);
   if (imageslink.length === 0) return null;
   const formatPriceToTy = (price: number): string => {
     if (!price || isNaN(price)) return t(text.deal);
@@ -104,20 +103,6 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
     }
     return `${price.toFixed(0)} `; // Trả về giá trị nếu không thuộc các loại trên
   };
-
-  // const handleCheckLike = async () => {
-  //   if (token) {
-  //     const res = await checkLike(post.id);
-  //     setLiked(res.liked);
-  //   }
-  // };
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     handleCheckLike(); // gọi lại API khi màn hình được focus
-  //   }, [token]),
-  // );
-  // console.log('likeeeeeeeeeeeeeeeeee', liked);
-
   const handleLike = React.useCallback(async () => {
     if (token) {
       try {
@@ -174,7 +159,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
 
                   return (
                     <View
-                      key={`${img.imageUrl}-${idx}`}
+                      key={img.displayOrder}
                       style={[styles.imageWrap, { flex: 1 }]}
                     >
                       <Image
@@ -400,7 +385,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
   );
 };
 
-export default React.memo(ImageCard);
+export default ImageCard;
 
 const styles = StyleSheet.create({
   container: {

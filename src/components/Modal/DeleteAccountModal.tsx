@@ -12,50 +12,52 @@ interface DeleteAccountModalProps {
   onCancel: () => void;
 }
 
-const DeleteAccountModal: React.FC<DeleteAccountModalProps> = React.memo(
-  ({ visible, onConfirm, onCancel }) => {
-    const { t } = useTranslation();
-    const handleCancel = useCallback(() => {
-      onCancel();
-    }, [onCancel]);
-    const handleConfirm = useCallback(() => {
-      onConfirm();
-    }, [onConfirm]);
-    return (
-      <Modal
-        visible={visible}
-        transparent
-        animationType="fade"
-        onRequestClose={handleCancel}
-      >
-        <View style={styles.overlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.title}>
-              {t(message.delete_account_confirm_title)}
-            </Text>
-            <Text style={styles.message}>
-              {t(message.delete_account_confirm_message)}
-            </Text>
-            <View style={styles.buttonRow}>
-              <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={handleCancel}
-              >
-                <Text style={styles.cancelText}>{t(text.cancel)}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.confirmButton}
-                onPress={handleConfirm}
-              >
-                <Text style={styles.confirmText}>{t(text.submit)}</Text>
-              </TouchableOpacity>
-            </View>
+const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
+  visible,
+  onConfirm,
+  onCancel,
+}) => {
+  const { t } = useTranslation();
+  const handleCancel = useCallback(() => {
+    onCancel();
+  }, [onCancel]);
+  const handleConfirm = useCallback(() => {
+    onConfirm();
+  }, [onConfirm]);
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={handleCancel}
+    >
+      <View style={styles.overlay}>
+        <View style={styles.modalContainer}>
+          <Text style={styles.title}>
+            {t(message.delete_account_confirm_title)}
+          </Text>
+          <Text style={styles.message}>
+            {t(message.delete_account_confirm_message)}
+          </Text>
+          <View style={styles.buttonRow}>
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={handleCancel}
+            >
+              <Text style={styles.cancelText}>{t(text.cancel)}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.confirmButton}
+              onPress={handleConfirm}
+            >
+              <Text style={styles.confirmText}>{t(text.submit)}</Text>
+            </TouchableOpacity>
           </View>
         </View>
-      </Modal>
-    );
-  },
-);
+      </View>
+    </Modal>
+  );
+};
 
 const styles = StyleSheet.create({
   overlay: {

@@ -146,7 +146,7 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
         <View style={styles.header}>
           <FlatList
             data={post.images.map(item => item.imageUrl)}
-            keyExtractor={item => item.displayOrder}
+            keyExtractor={item => item.displayOrder?.toString?.() ?? ''}
             horizontal
             pagingEnabled
             showsHorizontalScrollIndicator={false}

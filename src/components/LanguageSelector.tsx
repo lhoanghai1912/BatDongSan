@@ -25,7 +25,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   onSelect,
   onClose,
 }) => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
@@ -33,7 +33,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
           <Text style={styles.title}>Chọn ngôn ngữ</Text>
           {languages.map((item, idx) => (
             <TouchableOpacity
-              key={idx}
+              key={item.value || idx}
               style={[
                 styles.option,
                 item.value === selectedLang && styles.selected,

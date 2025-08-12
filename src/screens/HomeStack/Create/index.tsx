@@ -1335,7 +1335,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                   <View style={styles.body_itemBody}>
                     {/* Hiển thị các phần tử đầu tiên khi thu gọn */}
                     {visibleItems.map((item, index) => (
-                      <View key={index} style={styles.item}>
+                      <View key={item.label || index} style={styles.item}>
                         <Text style={styles.text}>{item.label}:</Text>
                         <Text style={styles.text}>
                           {typeof item.value === 'object' && item.value !== null
@@ -1462,7 +1462,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                           style={{ flexDirection: 'row', flexWrap: 'wrap' }}
                         >
                           {imageUris.map((uri, index) => {
-                            const uniqueKey = `image-${index}-${uri}`; // Tạo key duy nhất cho mỗi phần tử
+                            const uniqueKey = `image-${uri}`;
 
                             if (index === 0) {
                               // Ảnh đầu tiên sẽ chiếm hết chiều rộng

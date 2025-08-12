@@ -87,9 +87,7 @@ const HeartScreen = () => {
                   Chưa lưu bài viết nào
                 </Text>
               }
-              keyExtractor={item =>
-                item._id ? item._id.toString() : `${Math.random()}`
-              } // Sử dụng key ngẫu nhiên nếu _id không có
+              keyExtractor={item => item._id?.toString?.() ?? ''}
               refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
               }

@@ -49,27 +49,21 @@ const HomeScreen: React.FC = ({}) => {
     'checkBoxModal' | 'radioButtonModal' | null
   >(null);
 
-  const dataFilter = React.useMemo(
-    () => [
-      { label: t(text.property_type), key: caseType.PROPERTY_TYPE },
-      { label: t(text.price_range), key: 'khoangGia' },
-      { label: t(text.acreage), key: 'dienTich' },
-      { label: t(text.bedrooms), key: 'soPhongNgu' },
-    ],
-    [t],
-  );
-  const placeholderTexts = React.useMemo(
-    () => [
-      t(text.find_project),
-      t(text.find_district),
-      t(text.find_ward),
-      t(text.find_street),
-    ],
-    [t],
-  );
+  const dataFilter = [
+    { label: t(text.property_type), key: caseType.PROPERTY_TYPE },
+    { label: t(text.price_range), key: 'khoangGia' },
+    { label: t(text.acreage), key: 'dienTich' },
+    { label: t(text.bedrooms), key: 'soPhongNgu' },
+  ];
+  const placeholderTexts = [
+    t(text.find_project),
+    t(text.find_district),
+    t(text.find_ward),
+    t(text.find_street),
+  ];
 
   type PostType = {
-    _id: string;
+    id: string;
     [key: string]: any;
   };
   const flatListRef = useRef<FlatList>(null);
@@ -171,16 +165,12 @@ const HomeScreen: React.FC = ({}) => {
         break;
       case caseType.BEDROOMS:
         setModalType('radioButtonModal');
-        console.log('chay den modal type', modalType);
 
         setModalData(getBedRoomData(t));
-        console.log('chay den modal dataa', modalData);
 
         setModalTitle(t(text.bedrooms));
-        console.log('chay den modal title', modalTitle);
 
         setIsSingleValue(true);
-        console.log('chay den issinglevalue', isSingleValue);
 
         break;
       case caseType.SORT:
@@ -190,6 +180,7 @@ const HomeScreen: React.FC = ({}) => {
     }
     setModalVisible(true);
   };
+  console.log('a================', filteredData);
 
   const valueToLabel = React.useCallback(
     (key: string, value: string | string[]) => {
@@ -225,16 +216,11 @@ const HomeScreen: React.FC = ({}) => {
     // Removed fetchFilteredData to avoid double API call
   }, [searchValue]);
 
-  const MemoImageCard = React.memo(ImageCard, (prevProps, nextProps) => {
-    // So sánh shallow post
-    return (
-      prevProps.post._id === nextProps.post._id &&
-      JSON.stringify(prevProps.post) === JSON.stringify(nextProps.post)
-    );
-  });
-  const renderPost = React.useCallback(
-    ({ item }: { item: PostType }) => <MemoImageCard post={item} />,
-    [],
+  const renderPost = ({ item }: { item: PostType }) => (
+    <>
+      <ImageCard post={item} />
+      <View style={styles.underLine} />
+    </>
   );
   const handleReset = () => {
     setSelectedValue(prev => {
@@ -326,7 +312,7 @@ const HomeScreen: React.FC = ({}) => {
 
               return (
                 <TouchableOpacity
-                  key={index}
+                  key={item.key || index}
                   style={styles.filterInput}
                   onPress={() => {
                     console.log('pressss', item), openFilterModal(item.key);
@@ -399,10 +385,7 @@ const HomeScreen: React.FC = ({}) => {
               {t(text.no_data)}
             </Text>
           }
-          keyExtractor={useCallback(
-            item => (item._id ? item._id.toString() : `${Math.random()}`),
-            [],
-          )}
+          keyExtractor={(item, index) => item._id?.toString?.() ?? String(index)}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
@@ -410,18 +393,11 @@ const HomeScreen: React.FC = ({}) => {
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.1}
           ListFooterComponent={renderFooter}
-          removeClippedSubviews
-          maxToRenderPerBatch={10}
-          windowSize={10}
-          initialNumToRender={10}
-          getItemLayout={useCallback(
-            (data, index) => ({
-              length: 120,
-              offset: 120 * index,
-              index,
-            }),
-            [],
-          )}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={5}
+          windowSize={5}
+          initialNumToRender={5}
+          // Đã loại bỏ getItemLayout để tránh lỗi layout nếu item không cố định
         />
       </View>
 

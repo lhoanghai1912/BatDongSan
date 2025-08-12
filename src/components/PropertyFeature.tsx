@@ -100,7 +100,7 @@ const PropertyDetailsView = ({ data }: { data: any }) => {
       {displayedFeatures.map((feature, index) => (
         <>
           <View
-            key={`${feature.key + index}`}
+            key={feature.key || index}
             style={[styles.item, { marginBottom: Spacing.medium }]}
           >
             <View

@@ -272,7 +272,7 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
           <View style={[AppStyles.line, { marginTop: 0, marginBottom: 0 }]} />
           <ScrollView style={styles.body}>
             {data.map((item, idx) => (
-              <React.Fragment key={idx}>
+              <React.Fragment key={item.value || idx}>
                 <TouchableOpacity
                   onPress={() => handleRadioSelected(item.value)}
                   style={styles.option}

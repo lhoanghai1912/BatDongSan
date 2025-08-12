@@ -94,7 +94,7 @@ const SortModal: React.FC<SortModalProps> = ({
           <View style={{ paddingHorizontal: 20 }}>
             {options.map((opt, index) => (
               <TouchableOpacity
-                key={`${opt.value}-${index}`} // Ensure the key is unique by appending the index
+                key={opt.value || index}
                 style={styles.item}
                 onPress={() => handleSelect(opt)} // Lưu đối tượng opt
               >

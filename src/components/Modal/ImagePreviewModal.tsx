@@ -69,7 +69,7 @@ const ImagePreviewModal: React.FC<Props> = ({
             const index = Math.round(e.nativeEvent.contentOffset.x / width);
             setCurrentIndex(index);
           }}
-          keyExtractor={(_, index) => index.toString()}
+          keyExtractor={(_, index) => `image-${index}`}
         />
 
         {/* Số lượng ảnh */}

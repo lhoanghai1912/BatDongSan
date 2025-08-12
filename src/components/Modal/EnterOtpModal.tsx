@@ -113,7 +113,7 @@ const EnterOtpModal: React.FC<EnterOtpProp> = ({
           <View style={styles.otpContainer}>
             {otp.map((digit, index) => (
               <TextInput
-                key={index}
+                key={`otp-${index}`}
                 style={[styles.otpInput, error && styles.errorInput]}
                 value={digit}
                 onChangeText={text => handleOtpChange(text, index)}

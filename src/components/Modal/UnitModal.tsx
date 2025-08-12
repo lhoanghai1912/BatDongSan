@@ -173,7 +173,7 @@ const UnitSelectionModal: React.FC<Props> = ({
           <ScrollView contentContainerStyle={styles.body}>
             {options.map((option, index) => (
               <TouchableOpacity
-                key={index}
+                key={option.value || index}
                 style={[
                   styles.radioItem,
                   selected?.value === option.value && styles.radioItemSelected,

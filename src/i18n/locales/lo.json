@@ -129,6 +129,10 @@
   "today": "ມື້ນີ້",
   "expand" : "ຂະຫຍາຍ",
   "collapse" : "ຫຍໍ້ລົງ",
+    "delete_account_confirm_title": "ທ່ານແນ່ໃຈບໍທີ່ຈະລຶບບັນຊີ?",
+  "delete_account_confirm_message": "ການດຳເນີນການນີ້ບໍ່ສາມາດກັບຄືນໄດ້. ທ່ານຕ້ອງການສືບຕໍ່ບໍ?",
+  "delete_account_request_sent": "ຄຳຂໍລຶບບັນຊີໄດ້ຖືກສົ່ງແລ້ວ.",
+  "delete_account_request_soon": "ຄຳຂໍຂອງທ່ານຈະໄດ້ຮັບການຕອບກັບໃນໄວໆນີ້.",
   "modal": {
     "chooseHouseType": "ຫຼັກປະເພດອະສັງຫາ",
     "chooseDirection": "ເລືອກທິດ",
@@ -160,4 +164,7 @@
     "Tây Nam": "ພິຄດັບ"
     }
   }
+  
+
+
 }

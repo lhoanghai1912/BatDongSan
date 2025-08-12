@@ -18,15 +18,19 @@ import { Screen_Name } from '../../../navigation/ScreenName';
 import { Fonts } from '../../../utils/fontSize';
 import { logout } from '../../../store/reducers/userSlice';
 import AppButton from '../../../components/AppButton';
+import DeleteAccountModal from '../../../components/Modal/DeleteAccountModal';
+import { ToastAndroid, Platform, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { menu } from '../../../service/menu';
 import i18n from '../../../i18n/i18n';
 import LanguageSelector from '../../../components/LanguageSelector';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 const SettingScreen = () => {
   const { t } = useTranslation();
-
+  const insets = useSafeAreaInsets();
   const dispactch = useDispatch();
   const { userData: reduxUserData, token: reduxToken } = useSelector(
     (state: any) => state.user,
@@ -36,6 +40,19 @@ const SettingScreen = () => {
   const [token, setToken] = useState(reduxToken || '');
   const [langModalVisible, setLangModalVisible] = useState(false);
   const [selectedLang, setSelectedLang] = useState('en');
+  const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
+
+  // dùng Toast.show()
+  const handleDeleteAccountRequest = () => {
+    setShowDeleteAccountModal(false);
+    Toast.show({
+      type: 'success',
+      text1: 'Delete Account Request',
+      text2: t(message.delete_account_request_soon),
+    });
+
+    // TODO: Gửi request xóa tài khoản lên server tại đây nếu cần
+  };
 
   const fetchUserData = async () => {
     try {
@@ -72,7 +89,9 @@ const SettingScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[styles.container, { paddingTop: insets.top + Spacing.medium }]}
+    >
       <View style={styles.header}>
         {token ? (
           <View
@@ -340,6 +359,7 @@ const SettingScreen = () => {
                     alignItems: 'center',
                     marginBottom: Spacing.medium,
                   }}
+                  onPress={() => setShowDeleteAccountModal(true)}
                 >
                   <Image
                     source={ICONS.remove_user}
@@ -420,6 +440,11 @@ const SettingScreen = () => {
         }}
         onClose={() => setLangModalVisible(false)}
       />
+      <DeleteAccountModal
+        visible={showDeleteAccountModal}
+        onCancel={() => setShowDeleteAccountModal(false)}
+        onConfirm={handleDeleteAccountRequest}
+      />
     </View>
   );
 };
@@ -432,7 +457,6 @@ const styles = StyleSheet.create({
   header: {
     justifyContent: 'center',
     backgroundColor: Colors.white,
-    marginTop: 50,
   },
   body: {
     flex: 1,

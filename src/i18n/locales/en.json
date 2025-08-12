@@ -130,7 +130,10 @@
   "today":"Today",
   "expand" : "Expand",
   "collapse" : "Collapse",
-
+  "delete_account_confirm_title": "Are you sure you want to delete your account?",
+  "delete_account_confirm_message": "This action cannot be undone. Do you want to proceed?",
+  "delete_account_request_sent": "Account deletion request has been sent.",
+  "delete_account_request_soon": "Your request will be responded to soon.",
 
   "modal": {
     "chooseHouseType": "Choose house type",
@@ -148,6 +151,9 @@
       "shophouse": "Shophouse, commercial townhouse",
       "projectLand": "Project land",
       "land": "Land",
+  
+
+
       "farm": "Farm, resort",
       "condotel": "Condotel",
       "warehouse": "Warehouse, factory",

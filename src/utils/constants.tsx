@@ -19,6 +19,10 @@ export const message = {
   nothave_account: 'nothave_account',
   agree: 'agree',
   otp_error: 'otp_error',
+  delete_account_confirm_title: 'delete_account_confirm_title',
+  delete_account_confirm_message: 'delete_account_confirm_message',
+  delete_account_request_sent: 'delete_account_request_sent',
+  delete_account_request_soon: 'delete_account_request_soon',
 };
 
 export const formatAddress = (post: {

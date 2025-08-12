@@ -337,7 +337,7 @@ const HomeScreen: React.FC = ({}) => {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: Spacing.medium }]}>
         <View style={styles.searchBox}>
           <Image source={ICONS.search} style={styles.searchIcon} />
           <TouchableOpacity
@@ -421,7 +421,7 @@ const HomeScreen: React.FC = ({}) => {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: Spacing.xxlarge,
+            marginBottom: Spacing.medium,
             paddingHorizontal: Spacing.medium,
           }}
         >

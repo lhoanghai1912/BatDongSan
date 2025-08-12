@@ -25,11 +25,14 @@ import {
 import moment from 'moment';
 import AppInput from '../../../components/AppInput';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
   navigation: any;
 }
 const UserScreen: React.FC<Props> = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
+
   const [isEditing, setIsEditing] = useState(false);
   const [changePassword, setChangePassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -133,7 +136,9 @@ const UserScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[styles.container, { paddingTop: insets.top + Spacing.medium }]}
+    >
       <NavBar
         title="Thông tin khách hàng"
         onPress={() => navigation.goBack()}
@@ -244,7 +249,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     backgroundColor: Colors.white,
-    paddingTop: 50,
   },
   title: {
     fontSize: 20,

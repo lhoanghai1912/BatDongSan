@@ -80,7 +80,7 @@ const AppStyles = StyleSheet.create({
   },
   text: {
     fontSize: Fonts.normal,
-    color: Colors.Gray,
+    color: Colors.black,
   },
   text_bold: {
     fontSize: Fonts.normal,

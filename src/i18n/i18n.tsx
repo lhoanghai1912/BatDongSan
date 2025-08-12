@@ -11,7 +11,7 @@ i18n
   .use(languageDetector)
   .use(initReactI18next)
   .init({
-    fallbackLng: 'vi',
+    fallbackLng: 'en',
     resources: {
       en: { translation: (en as any).default || en },
       vi: { translation: (vi as any).default || vi },

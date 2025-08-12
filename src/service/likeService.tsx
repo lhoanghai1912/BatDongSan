@@ -24,7 +24,7 @@ export const likePost = async (id: number, isLiked: boolean) => {
 //   return res.data;
 // };
 
-// export const listLikedPost = async () => {
-//   const res = await apiClient.get(`posts/My_liked`);
-//   return res.data;
-// };
+export const listLikedPost = async () => {
+  const res = await apiClient.get(`posts/My_liked`);
+  return res.data;
+};

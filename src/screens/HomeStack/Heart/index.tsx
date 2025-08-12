@@ -12,7 +12,6 @@ import {
 import { text } from '../../../utils/constants';
 import { Spacing } from '../../../utils/spacing';
 import AppStyles from '../../../components/AppStyle';
-import { likePost, listLikedPost, unlikePost } from '../../../service';
 import ImageCard from '../ImageCard';
 import { Colors } from '../../../utils/color';
 import { useSelector } from 'react-redux';
@@ -20,6 +19,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { navigate } from '../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../navigation/ScreenName';
 import AppButton from '../../../components/AppButton';
+import { listLikedPost } from '../../../service/likeService';
 
 type PostType = {
   _id: string;

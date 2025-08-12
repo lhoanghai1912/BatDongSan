@@ -131,7 +131,10 @@
   "today":"Hôm nay",
   "expand" : "Mở rộng",
   "collapse" : "Collapse",
-
+  "delete_account_confirm_title": "Bạn chắc chắn muốn xóa tài khoản chứ?",
+  "delete_account_confirm_message": "Hành động này không thể hoàn tác. Bạn có muốn tiếp tục không?",
+  "delete_account_request_sent": "Yêu cầu xóa tài khoản đã được gửi.",
+  "delete_account_request_soon": "Yêu cầu của bạn sẽ sớm được phản hồi.",
   "modal": {
     "chooseHouseType": "Chọn loại nhà",
     "chooseDirection": "Chọn hướng",
@@ -164,4 +167,7 @@
       "Tây Nam": "Tây Nam"
     }
   }
+    
+
+
 }

@@ -46,7 +46,6 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
   );
 
   const [userData, setUserData] = useState(reduxUserData || null);
-
   const [token, setToken] = useState(reduxToken || '');
   const [liked, setLiked] = useState<boolean>(post?.isLiked);
   const updated =
@@ -55,30 +54,26 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
       ? t(text.today)
       : moment(post.createdAt).format('DD/MM/YYYY');
 
-  const fetchUserData = async () => {
+  // Memoize fetchUserData so useEffect only runs once
+  const fetchUserData = React.useCallback(async () => {
     try {
       const storedToken = await AsyncStorage.getItem('accessToken');
       const storedUser = await AsyncStorage.getItem('userData');
-
       if (storedToken && storedUser) {
-        setToken(storedToken); // Store token
-        setUserData(JSON.parse(storedUser)); // Store user data
+        setToken(storedToken);
+        setUserData(JSON.parse(storedUser));
       } else {
-        // If no data in AsyncStorage, use Redux data
         setToken(reduxToken);
         setUserData(reduxUserData);
       }
     } catch (error) {
       console.log('error', error);
     }
-  };
-
-  useEffect(() => {
-    onReload;
-  }, [liked]);
+  }, [reduxToken, reduxUserData]);
 
   useEffect(() => {
     fetchUserData();
+    // Only run once on mount
   }, [fetchUserData]);
   if (imageslink.length === 0) return null;
   const formatPriceToTy = (price: number): string => {
@@ -123,24 +118,15 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
   // );
   // console.log('likeeeeeeeeeeeeeeeeee', liked);
 
-  const handleLike = async () => {
+  const handleLike = React.useCallback(async () => {
     if (token) {
-      console.log('token', token);
-      console.log('post', post);
-      console.log('post like? ', post.isLiked);
       try {
         if (liked === false) {
-          const res = await likePost(post.id, true);
-          setLiked(true); // cập nhật lại state nếu cần
-          console.log('like after = ', liked);
-          console.log('res', res);
-          onReload;
+          await likePost(post.id, true);
+          setLiked(true);
         } else if (liked === true) {
-          const res = await likePost(post.id, false);
-          setLiked(false); // cập nhật lại state nếu cần
-          console.log('like after = ', liked);
-          console.log('res', res);
-          onReload;
+          await likePost(post.id, false);
+          setLiked(false);
         }
         if (onReload) {
           onReload();
@@ -149,7 +135,6 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
         console.error('Lỗi like/unlike:', error);
       }
     } else {
-      console.log('token', token);
       Toast.show({
         type: `error`,
         text1: `${t(message.text1Error)}`,
@@ -157,7 +142,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
         visibilityTime: 1500,
       });
     }
-  };
+  }, [token, liked, post.id, t, message, onReload]);
   return (
     <TouchableOpacity
       style={styles.container}

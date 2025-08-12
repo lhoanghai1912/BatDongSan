@@ -11,14 +11,12 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { ICONS, text } from '../../../utils/constants';
+import { caseType, ICONS, text } from '../../../utils/constants';
 import { Spacing } from '../../../utils/spacing';
 import AppStyles from '../../../components/AppStyle';
 import { Colors } from '../../../utils/color';
 import { Fonts } from '../../../utils/fontSize';
 import ImageCard from '../ImageCard';
-import ReactMemo from 'react';
-import { getAllPosts } from '../../../service';
 
 import FilterManager from '../../../components/FilterManager';
 import SearchModal from '../../../components/Modal/SearchModal';
@@ -31,21 +29,20 @@ import {
   getPriceData,
   getSortData,
 } from './houseType_data';
-import { buildGridifyFilter } from './Utils/filterUtils';
 import SortModal from '../../../components/Modal/SortModal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
+import { fetchFilteredData as fetchFilteredDataLogic } from './filterLogic';
 
 const HomeScreen: React.FC = ({}) => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  // Add these state variables after your existing state declarations
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [totalResults, setTotalResults] = useState(0);
-  const ITEMS_PER_PAGE = 10; // Number of items to load per page
+  const ITEMS_PER_PAGE = 10;
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [modalType, setModalType] = useState<
@@ -54,7 +51,7 @@ const HomeScreen: React.FC = ({}) => {
 
   const dataFilter = React.useMemo(
     () => [
-      { label: t(text.property_type), key: 'loaiNha' },
+      { label: t(text.property_type), key: caseType.PROPERTY_TYPE },
       { label: t(text.price_range), key: 'khoangGia' },
       { label: t(text.acreage), key: 'dienTich' },
       { label: t(text.bedrooms), key: 'soPhongNgu' },
@@ -73,7 +70,6 @@ const HomeScreen: React.FC = ({}) => {
 
   type PostType = {
     _id: string;
-    // add other properties as needed
     [key: string]: any;
   };
   const flatListRef = useRef<FlatList>(null);
@@ -87,7 +83,7 @@ const HomeScreen: React.FC = ({}) => {
   const [loading, setLoading] = useState(false);
   const [isSingleValue, setIsSingleValue] = useState(false);
   const [filteredData, setFilteredData] = useState<PostType[]>([]);
-  const [searchValue, setSearchValue] = useState<number>(1); // mặc định là 'Mua'
+  const [searchValue, setSearchValue] = useState<number>(1);
   const [houseType, setHouseType] = useState([]);
   const numberResults = filteredData.length.toString();
   const [selectedLang, setSelectedLang] = useState('en');
@@ -96,97 +92,46 @@ const HomeScreen: React.FC = ({}) => {
     label: string;
     value: string;
   }>({
-    label: t(text.created_desc), // giá trị mặc định
-    value: `createdAt desc`, // giá trị mặc định
+    label: t(text.created_desc),
+    value: `createdAt desc`,
   });
-  useFocusEffect(
-    useCallback(() => {
-      onRefresh(); // gọi hàm load lại data
-    }, []), // nếu onRefresh là 1 function stable
-  );
+  // Removed useFocusEffect to prevent duplicate API call on mount
   useEffect(() => {
-    // Cập nhật lại selectedSort khi ngôn ngữ thay đổi
     const newSortData = getSortData(t);
     setSelectedSort(prevSort => {
-      // Kiểm tra nếu lựa chọn hiện tại không tồn tại trong dữ liệu mới
       const validOption = newSortData.find(
         option => option.value === prevSort.value,
       );
-      return validOption || { value: '', label: '' }; // Trả về giá trị mặc định nếu không tìm thấy
+      return validOption || { value: '', label: '' };
     });
-  }, [t]); // `t` là hàm dùng để lấy các giá trị ngôn ngữ từ `i18next`
+  }, [t]);
 
-  const fetchFilteredData = async (
-    page: number = 1,
-    append: boolean = false,
-  ) => {
-    if (page === 1) {
-      setLoading(true);
-    } else {
-      setLoadingMore(true);
-    }
-
-    try {
-      const userFilters = buildGridifyFilter(selectedValue, selectedSort.value);
-      const typeFilter = `type=${searchValue}`;
-      let locationFilter = '';
-
-      // Your existing location filter logic...
-      if (location) {
-        const { province, district, commune, street } = location;
-        if (province?.id) {
-          locationFilter += `,provinceId=${province.id}`;
-        }
-        if (district?.id) {
-          locationFilter += `,districtId=${district.id}`;
-        }
-        if (commune?.id) {
-          locationFilter += `,communeId=${commune.id}`;
-        }
-        if (street?.id) {
-          locationFilter += `,streetId=${street.name}`;
-        }
-      }
-
-      const fullFilter = userFilters
-        ? `${typeFilter},${userFilters}${locationFilter}`
-        : `${typeFilter}${locationFilter}`;
-
-      const res = await getAllPosts(
-        fullFilter,
-        selectedSort.value,
-        page,
-        ITEMS_PER_PAGE,
-      );
-
-      if (append) {
-        setFilteredData(prevData => [...prevData, ...res.result]);
-      } else {
-        setFilteredData(res.result);
-      }
-
-      // Update pagination state
-      setTotalResults(res.total || res.result.length);
-      setHasMoreData(res.result.length === ITEMS_PER_PAGE);
-      setCurrentPage(page);
-      setIsInitialLoad(false); // Đánh dấu đã load lần đầu
-    } catch (err) {
-      console.error('❌ Lỗi khi tải dữ liệu có filter:', err);
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-    }
+  const fetchFilteredData = (page: number = 1, append: boolean = false) => {
+    fetchFilteredDataLogic({
+      selectedValue,
+      selectedSort,
+      searchValue,
+      location,
+      page,
+      ITEMS_PER_PAGE,
+      append,
+      setFilteredData,
+      setTotalResults,
+      setHasMoreData,
+      setCurrentPage,
+      setIsInitialLoad,
+      setLoading,
+      setLoadingMore,
+    });
   };
 
   useEffect(() => {
-    // Reset pagination when filters change
     setCurrentPage(1);
     setHasMoreData(true);
-    setIsInitialLoad(true); // Reset về true khi filter thay đổi
+    setIsInitialLoad(true);
     fetchFilteredData(1, false);
   }, [selectedValue, searchValue, selectedSort, location]);
 
-  // Handle infinite scroll
   const handleLoadMore = useCallback(() => {
     if (!loadingMore && hasMoreData && !loading) {
       const nextPage = currentPage + 1;
@@ -208,36 +153,23 @@ const HomeScreen: React.FC = ({}) => {
 
     setModalTitleKey(type);
     switch (type) {
-      case 'loaiNha':
+      case caseType.PROPERTY_TYPE:
         setModalType('checkBoxModal');
         setModalData(getHouseTypeData(t));
         setModalTitle(t(text.modal.chooseHouseType));
         break;
-      case 'huongNha':
-        setModalType('checkBoxModal');
-        setModalData([
-          'Đông',
-          'Tây',
-          'Nam',
-          'Bắc',
-          'Đông Bắc',
-          'Đông Nam',
-          'Tây Bắc',
-          'Tây Nam',
-        ]);
-        setModalTitle('Chọn hướng nhà');
-        break;
-      case 'khoangGia':
+
+      case caseType.PRICE_RANGE:
         setModalType('radioButtonModal');
         setModalData(getPriceData(t));
         setModalTitle(t(text.enter_price));
         break;
-      case 'dienTich':
+      case caseType.ACREAGE:
         setModalType('radioButtonModal');
         setModalData(getAcreageData(t));
         setModalTitle(t(text.enter_area));
         break;
-      case 'soPhongNgu':
+      case caseType.BEDROOMS:
         setModalType('radioButtonModal');
         console.log('chay den modal type', modalType);
 
@@ -250,9 +182,8 @@ const HomeScreen: React.FC = ({}) => {
         setIsSingleValue(true);
         console.log('chay den issinglevalue', isSingleValue);
 
-        // ✅ thêm biến flag
         break;
-      case 'sapXep':
+      case caseType.SORT:
         setModalType('radioButtonModal');
         setModalData(getSortData(t));
         setModalTitle(t(text.enter_sort));
@@ -290,34 +221,32 @@ const HomeScreen: React.FC = ({}) => {
     setLocation({});
     setCurrentPage(1);
     setHasMoreData(true);
-    setIsInitialLoad(true); // Reset về true khi refresh
-    fetchFilteredData(1, false);
+    setIsInitialLoad(true);
+    // Removed fetchFilteredData to avoid double API call
   }, [searchValue]);
 
-  const MemoImageCard = ReactMemo.memo(ImageCard);
-  const renderPost = useCallback(
-    ({ item }: { item: PostType }) => (
-      <>
-        <MemoImageCard post={item} key={item._id ? item._id.toString() : `${Math.random()}`} />
-        <View style={styles.underLine} />
-      </>
-    ),
+  const MemoImageCard = React.memo(ImageCard, (prevProps, nextProps) => {
+    // So sánh shallow post
+    return (
+      prevProps.post._id === nextProps.post._id &&
+      JSON.stringify(prevProps.post) === JSON.stringify(nextProps.post)
+    );
+  });
+  const renderPost = React.useCallback(
+    ({ item }: { item: PostType }) => <MemoImageCard post={item} />,
     [],
   );
   const handleReset = () => {
     setSelectedValue(prev => {
       const updated = { ...prev };
-      delete updated[modalTitleKey]; // Xoá giá trị filter hiện tại
+      delete updated[modalTitleKey];
       return updated;
     });
     setModalVisible(false);
   };
   const handleSortChange = (selected: any) => {
     setSelectedSort(selected);
-
-    // TODO: logic sắp xếp filteredData
   };
-  // Render footer for loading indicator
   const renderFooter = () => {
     if (loadingMore) {
       return (
@@ -328,7 +257,6 @@ const HomeScreen: React.FC = ({}) => {
       );
     }
 
-    // Hiển thị "Hết bài viết" khi không còn dữ liệu và không phải lần load đầu
     if (!hasMoreData && !isInitialLoad && filteredData.length > 0) {
       return (
         <View style={styles.noMorePostsContainer}>
@@ -357,15 +285,13 @@ const HomeScreen: React.FC = ({}) => {
                 location?.commune?.name,
                 location?.street?.name,
               ]
-                .filter(Boolean) // Lọc các giá trị null, undefined hoặc empty
-                .map(item => item) // Đảm bảo rằng các giá trị đã lọc được giữ nguyên
+                .filter(Boolean)
+                .map(item => item)
                 .join(', ') || placeholderTexts[currentIndex]}{' '}
-              {/* Hiển thị nếu không có giá trị, sẽ fallback về placeholder */}
             </Text>
           </TouchableOpacity>
         </View>
 
-        {/* 🔽 Bộ lọc */}
         <View>
           <ScrollView
             horizontal
@@ -473,7 +399,10 @@ const HomeScreen: React.FC = ({}) => {
               {t(text.no_data)}
             </Text>
           }
-          keyExtractor={useCallback(item => item._id ? item._id.toString() : `${Math.random()}`, [])}
+          keyExtractor={useCallback(
+            item => (item._id ? item._id.toString() : `${Math.random()}`),
+            [],
+          )}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
@@ -485,49 +414,39 @@ const HomeScreen: React.FC = ({}) => {
           maxToRenderPerBatch={10}
           windowSize={10}
           initialNumToRender={10}
-          getItemLayout={useCallback((data, index) => ({
-            length: 120,
-            offset: 120 * index,
-            index,
-          }), [])}
+          getItemLayout={useCallback(
+            (data, index) => ({
+              length: 120,
+              offset: 120 * index,
+              index,
+            }),
+            [],
+          )}
         />
       </View>
-      {/* {loading && (
-        <View
-          style={{
-            ...StyleSheet.absoluteFillObject,
-            backgroundColor: 'rgba(0,0,0,0.3)',
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 10,
-          }}
-        >
-          <ActivityIndicator size="large" color="#E53935" />
-        </View>
-      )} */}
+
       {modalType && (
         <FilterManager
           visible={modalVisible}
           type={modalType}
           title={modalTitle}
           data={modalData}
-          isSingleValue={isSingleValue} // ✅ Thêm dòng này
-          selected={selectedValue[modalTitleKey] || ''} // ✅ fix đúng kiểu
+          isSingleValue={isSingleValue} //
+          selected={selectedValue[modalTitleKey] || ''}
           onClose={() => setModalVisible(false)}
           onReset={() => handleReset()}
           onApplyFilter={value => {
-            // Cập nhật giá trị được chọn vào selectedValue
             setSelectedValue(prev => ({
               ...prev,
               [modalTitleKey]: value,
             }));
-            setModalVisible(false); // Đóng modal
+            setModalVisible(false);
           }}
         />
       )}
 
       <SortModal
-        key={selectedLang} // Thêm key để buộc component render lại khi ngôn ngữ thay đổi
+        key={selectedLang}
         visible={modalSortVisible}
         selected={selectedSort}
         onSelect={selectedSort => handleSortChange(selectedSort)}

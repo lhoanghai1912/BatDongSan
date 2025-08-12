@@ -88,7 +88,7 @@ const CheckBoxModal: React.FC<CheckBoxModalProps> = ({
               const isChecked = localSelected.includes(item.value);
               return (
                 <TouchableOpacity
-                  key={idx}
+                  key={item.value}
                   onPress={() => toggleValue(item.value)}
                   style={styles.option}
                 >

@@ -22,7 +22,6 @@ import DeleteAccountModal from '../../../components/Modal/DeleteAccountModal';
 import { ToastAndroid, Platform, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { menu } from '../../../service/menu';
 import i18n from '../../../i18n/i18n';
 import LanguageSelector from '../../../components/LanguageSelector';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

@@ -14,7 +14,7 @@ import { Spacing } from '../../utils/spacing';
 import { ICONS, message, text } from '../../utils/constants';
 import AppStyles from '../AppStyle';
 import AppButton from '../AppButton';
-import MultiSlider from '@ptomasroos/react-native-multi-slider';
+const MultiSlider = require('@ptomasroos/react-native-multi-slider');
 import Toast from 'react-native-toast-message';
 import { useTranslation } from 'react-i18next';
 

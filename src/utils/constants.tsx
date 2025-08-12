@@ -36,6 +36,22 @@ export const formatAddress = (post: {
     .filter(s => s.length > 0)
     .join(', ');
 };
+export const ModalType = {
+  CHECKBOX: 'checkboxModal',
+  RADIO: 'radioButtonModal',
+};
+export const caseType = {
+  PROPERTY_TYPE: 'property_type',
+  PRICE_RANGE: 'price_range',
+  ACREAGE: 'acreage',
+  BEDROOMS: 'bedrooms',
+  BATHROOMS: 'bathrooms',
+  FLOORS: 'floors',
+  DIRECTION: 'direction',
+  FURNISHING: 'furnishing',
+  LEGAL: 'legal',
+  SORT: 'sort',
+};
 
 export const text = {
   login: 'login',
@@ -168,8 +184,8 @@ export const text = {
     chooseDirection: 'modal.chooseDirection',
     houseDirection: 'modal.houseDirection',
     balconyDirection: 'modal.balconyDirection',
-
     chooseUnit: 'modal.chooseUnit',
+
     houseType: {
       apartment: 'modal.houseType.apartment',
       mini_apartment: 'modal.houseType.mini_apartment',

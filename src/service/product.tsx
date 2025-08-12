@@ -35,8 +35,6 @@ export const getAllPosts = async (
   page?: number,
   limit?: number,
 ) => {
-  console.log('filterString', filterString);
-
   try {
     const params: Record<string, any> = {};
 
@@ -63,7 +61,6 @@ export const getAllPosts = async (
     });
     console.log('ress=====================================', response);
 
-    console.log('Property Posts:', response.data);
     return response.data;
   } catch (error: any) {
     console.error('API Error:', error.message);

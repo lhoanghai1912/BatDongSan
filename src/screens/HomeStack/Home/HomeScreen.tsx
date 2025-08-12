@@ -17,6 +17,7 @@ import AppStyles from '../../../components/AppStyle';
 import { Colors } from '../../../utils/color';
 import { Fonts } from '../../../utils/fontSize';
 import ImageCard from '../ImageCard';
+import ReactMemo from 'react';
 import { getAllPosts } from '../../../service';
 
 import FilterManager from '../../../components/FilterManager';
@@ -51,21 +52,24 @@ const HomeScreen: React.FC = ({}) => {
     'checkBoxModal' | 'radioButtonModal' | null
   >(null);
 
-  const dataFilter = [
-    { label: t(text.property_type), key: 'loaiNha' },
-    { label: t(text.price_range), key: 'khoangGia' },
-    { label: t(text.acreage), key: 'dienTich' },
-    { label: t(text.bedrooms), key: 'soPhongNgu' },
-    // 'Hướng nhà',
-    // 'Hướng ban công',
-    // 'Tin có ảnh / video',
-  ];
-  const placeholderTexts = [
-    t(text.find_project),
-    t(text.find_district),
-    t(text.find_ward),
-    t(text.find_street),
-  ];
+  const dataFilter = React.useMemo(
+    () => [
+      { label: t(text.property_type), key: 'loaiNha' },
+      { label: t(text.price_range), key: 'khoangGia' },
+      { label: t(text.acreage), key: 'dienTich' },
+      { label: t(text.bedrooms), key: 'soPhongNgu' },
+    ],
+    [t],
+  );
+  const placeholderTexts = React.useMemo(
+    () => [
+      t(text.find_project),
+      t(text.find_district),
+      t(text.find_ward),
+      t(text.find_street),
+    ],
+    [t],
+  );
 
   type PostType = {
     _id: string;
@@ -256,27 +260,28 @@ const HomeScreen: React.FC = ({}) => {
     setModalVisible(true);
   };
 
-  const valueToLabel = (key: string, value: string | string[]) => {
-    const mapping: Record<string, any[]> = {
-      loaiNha: getHouseTypeData(t),
-      khoangGia: getPriceData(t),
-      dienTich: getAcreageData(t),
-      soPhongNgu: getBedRoomData(t),
-      sapXep: getSortData(t),
-    };
-    const list = mapping[key];
-
-    if (!list) return typeof value === 'string' ? value : value.join(', ');
-    if (value === 'deal') return 'Thỏa thuận';
-
-    if (Array.isArray(value)) {
-      return value
-        .map(v => list.find(item => item.value === v)?.label || v)
-        .join(', ');
-    } else {
-      return list.find(item => item.value === value)?.label || value;
-    }
-  };
+  const valueToLabel = React.useCallback(
+    (key: string, value: string | string[]) => {
+      const mapping: Record<string, any[]> = {
+        loaiNha: getHouseTypeData(t),
+        khoangGia: getPriceData(t),
+        dienTich: getAcreageData(t),
+        soPhongNgu: getBedRoomData(t),
+        sapXep: getSortData(t),
+      };
+      const list = mapping[key];
+      if (!list) return typeof value === 'string' ? value : value.join(', ');
+      if (value === 'deal') return 'Thỏa thuận';
+      if (Array.isArray(value)) {
+        return value
+          .map(v => list.find(item => item.value === v)?.label || v)
+          .join(', ');
+      } else {
+        return list.find(item => item.value === value)?.label || value;
+      }
+    },
+    [t],
+  );
   const onRefresh = useCallback(() => {
     flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
 
@@ -289,16 +294,16 @@ const HomeScreen: React.FC = ({}) => {
     fetchFilteredData(1, false);
   }, [searchValue]);
 
-  const renderPost = ({ item }: { item: PostType }) => {
-    const key = item._id ? item._id.toString() : `${Math.random()}`; // Đảm bảo key hợp lệ
-
-    return (
+  const MemoImageCard = ReactMemo.memo(ImageCard);
+  const renderPost = useCallback(
+    ({ item }: { item: PostType }) => (
       <>
-        <ImageCard post={item} key={key} />
+        <MemoImageCard post={item} key={item._id ? item._id.toString() : `${Math.random()}`} />
         <View style={styles.underLine} />
       </>
-    );
-  };
+    ),
+    [],
+  );
   const handleReset = () => {
     setSelectedValue(prev => {
       const updated = { ...prev };
@@ -468,24 +473,26 @@ const HomeScreen: React.FC = ({}) => {
               {t(text.no_data)}
             </Text>
           }
-          keyExtractor={item =>
-            item._id ? item._id.toString() : `${Math.random()}`
-          }
+          keyExtractor={useCallback(item => item._id ? item._id.toString() : `${Math.random()}`, [])}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           renderItem={renderPost}
-          // Infinite scroll props
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.1}
           ListFooterComponent={renderFooter}
-          removeClippedSubviews={true}
+          removeClippedSubviews
           maxToRenderPerBatch={10}
           windowSize={10}
           initialNumToRender={10}
+          getItemLayout={useCallback((data, index) => ({
+            length: 120,
+            offset: 120 * index,
+            index,
+          }), [])}
         />
       </View>
-      {loading && (
+      {/* {loading && (
         <View
           style={{
             ...StyleSheet.absoluteFillObject,
@@ -497,7 +504,7 @@ const HomeScreen: React.FC = ({}) => {
         >
           <ActivityIndicator size="large" color="#E53935" />
         </View>
-      )}
+      )} */}
       {modalType && (
         <FilterManager
           visible={modalVisible}

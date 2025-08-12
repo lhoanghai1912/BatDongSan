@@ -20,10 +20,11 @@ import { navigate } from '../../navigation/RootNavigator';
 import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
 import { setToken, setUserData } from '../../store/reducers/userSlice';
-import { likePost, login } from '../../service';
+import { login } from '../../service';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
+import { likePost } from '../../service/likeService';
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
@@ -72,7 +73,7 @@ const LoginScreen = () => {
 
     for (const id of likesArray) {
       try {
-        await likePost(id);
+        await likePost(id, true);
       } catch (err) {
         console.log('Sync like fail', id);
       }

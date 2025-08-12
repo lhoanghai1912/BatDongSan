@@ -48,7 +48,7 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const [token, setToken] = useState(reduxToken || '');
 
-  console.log('route', route);
+  console.log('route1112341234242134', route?.params);
   console.log('data', post);
   const IMAGE_HEIGHT = 300; // chiều cao ảnh
   const headerBackgroundColor = scrollY.interpolate({
@@ -109,6 +109,30 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
     }
   };
 
+  const renderItem = ({ item, index }) => {
+    return (
+      <TouchableOpacity
+        key={item.displayOrder}
+        style={{ flex: 1, height: 300 }}
+        activeOpacity={0.9}
+        onPress={() => {
+          setPreviewIndex(index);
+          setPreviewVisible(true);
+        }}
+      >
+        <Image
+          source={{ uri: `${link.url}${item}` }}
+          style={[styles.image, { flex: 1 }]}
+        />
+        <View style={styles.imageCountBadge}>
+          <Text style={styles.imageCountText}>
+            {index + 1}/{post.images.length}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <View style={[styles.container]}>
       <NavBar
@@ -126,27 +150,7 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
             horizontal
             pagingEnabled
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item, index }) => (
-              <TouchableOpacity
-                key={item.displayOrder}
-                style={{ flex: 1, height: 300 }}
-                activeOpacity={0.9}
-                onPress={() => {
-                  setPreviewIndex(index);
-                  setPreviewVisible(true);
-                }}
-              >
-                <Image
-                  source={{ uri: `${link.url}${item}` }}
-                  style={[styles.image, { flex: 1 }]}
-                />
-                <View style={styles.imageCountBadge}>
-                  <Text style={styles.imageCountText}>
-                    {index + 1}/{post.images.length}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            )}
+            renderItem={renderItem}
           />
           {post.unit === 3 ? (
             <Text

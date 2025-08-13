@@ -32,7 +32,7 @@ const BottomTabNavigator = () => {
           const iconMap = {
             Home_Screen: focused ? ICONS.search_focus : ICONS.search,
             Create_Screen: focused ? ICONS.plus_focus : ICONS.plus,
-            Document_Screen: focused ? ICONS.clause_focus : ICONS.clause,
+            // Document_Screen: focused ? ICONS.clause_focus : ICONS.clause,
             Heart_Screen: focused ? ICONS.heart_focus : ICONS.heart,
             Setting_Screen: focused ? ICONS.user_focus : ICONS.user,
           };
@@ -53,10 +53,10 @@ const BottomTabNavigator = () => {
       {/* ✅ Thêm 2 tab mới nếu có token */}
       {token && (
         <>
-          <Tab.Screen
+          {/* <Tab.Screen
             name={Screen_Name.Document_Screen}
             component={DocumentScreen}
-          />
+          /> */}
           <Tab.Screen
             name={Screen_Name.Create_Screen}
             component={CreateScreen}

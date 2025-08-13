@@ -38,6 +38,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
   const [userData, setUserData] = useState(reduxUserData || null);
   const [isShowDemand, setIsShowDemand] = useState(true);
   const [isShowMainInfo, setIsShowMainInfo] = useState(true);
+  const [isShowContactInfo, setIsShowContactInfo] = useState(true);
   const [isShowOtherInfo, setIsShowOtherInfo] = useState(true);
   const [isShowTitDes, setIshowTitDes] = useState(true);
   const [isShowImageUpload, setIsShowImagesUpdaload] = useState(true);
@@ -70,7 +71,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
   const [price, setPrice] = useState<number>(0);
   const [unit, setUnit] = useState<{ label: string; value: number }>({
     label: 'VND',
-    value: 0,
+    value: 1,
   });
   const [bedrooms, setBedroom] = useState(0);
   const [bathrooms, setBathroom] = useState(0);
@@ -209,6 +210,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
       setImageUris([]);
       setIsShowDemand(true);
       setIsShowMainInfo(true);
+      setIsShowContactInfo(true);
       setIsShowOtherInfo(true);
       setIshowTitDes(true);
       setIsShowImagesUpdaload(true);
@@ -273,7 +275,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
         setUserData(parsedUser); // Store user data
         setContactEmail(parsedUser.email);
         setContactName(parsedUser.fullName);
-        setContactPhone(parsedUser.phone);
+        setContactPhone(parsedUser.phoneNumber);
       } else {
         // If no data in AsyncStorage, use Redux data
         setUserData(reduxUserData);
@@ -453,16 +455,6 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
           >
             <Text style={styles.text}>{t(text.exit)}</Text>
           </TouchableOpacity>
-        </View>
-        <View>
-          <Text style={AppStyles.text}>{`${t(text.step)} 1: ${t(
-            text.property_info,
-          )}`}</Text>
-          <View style={styles.processLine}>
-            <View style={[styles.line, { borderColor: Colors.red }]} />
-            <View style={styles.line} />
-            <View style={styles.line} />
-          </View>
         </View>
       </View>
       <ScrollView>
@@ -724,18 +716,48 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                           {t(text.price)}
                         </Text>
                         <View
-                          style={[styles.searchBox, { paddingVertical: 0 }]}
+                          style={[
+                            styles.searchBox,
+                            {
+                              paddingVertical: 0,
+                              backgroundColor:
+                                unit.label === t(text.deal)
+                                  ? Colors.Gray
+                                  : undefined,
+                            },
+                          ]}
                         >
                           <TextInput
-                            style={[styles.text, { flex: 1 }]}
-                            value={price !== undefined ? price.toString() : ''}
+                            // style={[styles.text, { flex: 1 }]}
+                            value={
+                              unit.label === t(text.deal)
+                                ? '0'
+                                : price
+                                ? price.toLocaleString('vi-VN')
+                                : ''
+                            }
                             keyboardType="number-pad"
-                            onChangeText={text => setPrice(Number(text))}
+                            editable={unit.label !== t(text.deal)}
+                            style={[
+                              styles.text,
+                              {
+                                flex: 1,
+                              },
+                            ]}
+                            onChangeText={textChange => {
+                              if (unit.label === t(text.deal)) {
+                                setPrice(0);
+                                return;
+                              }
+                              const raw = textChange.replace(/\./g, '');
+                              const num = Number(raw);
+                              setPrice(isNaN(num) ? 0 : num);
+                            }}
                             placeholder={t(text.enter_price)}
                           />
 
                           {area.length > 0 && (
-                            <TouchableOpacity onPress={() => setArea('')}>
+                            <TouchableOpacity onPress={() => setPrice(0)}>
                               <Image
                                 source={ICONS.clear}
                                 style={[
@@ -778,6 +800,13 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                         </TouchableOpacity>
                       </View>
                     </View>
+                    <Text style={AppStyles.text}>
+                      {unit.value == 1 && price
+                        ? `${t(text.value)}: ${formatPriceToTy(price)}`
+                        : unit.value == 2 && price
+                        ? `${price.toLocaleString('vi-VN')}/m²`
+                        : null}
+                    </Text>
                   </View>
                 ) : (
                   <>
@@ -798,80 +827,113 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
             <></>
           )}
 
-          <View style={styles.body_item}>
-            <View style={styles.body_itemHeader}>
-              <View style={{ flexDirection: 'row' }}>
-                <Text
-                  style={[
-                    AppStyles.text_bold,
-                    { marginBottom: Spacing.medium },
-                  ]}
-                >
-                  {t(text.contact_info)}
-                </Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => setIsShowImagesUpdaload(!isShowImageUpload)}
-              >
-                <Image
-                  source={isShowImageUpload ? ICONS.down : ICONS.up}
-                  style={AppStyles.icon}
-                />
-              </TouchableOpacity>
-            </View>
-            {/* fullname */}
-            <View>
-              <Text
-                style={[AppStyles.text_bold, { marginBottom: Spacing.medium }]}
-              >
-                {t(text.fullname)}
-              </Text>
-              <View style={[styles.searchBox, { paddingVertical: 0 }]}>
-                <TextInput
-                  style={[styles.text, { flex: 1 }]}
-                  value={contactName}
-                  keyboardType="number-pad"
-                  onChangeText={text => setContactName(text)}
-                  placeholder={t(text.fullname)}
-                />
-              </View>
-            </View>
-            {/* email */}
-            <View>
-              <Text
-                style={[AppStyles.text_bold, { marginBottom: Spacing.medium }]}
-              >
-                {t(text.email)}
-              </Text>
-              <View style={[styles.searchBox, { paddingVertical: 0 }]}>
-                <TextInput
-                  style={[styles.text, { flex: 1 }]}
-                  value={contactEmail}
-                  keyboardType="number-pad"
-                  onChangeText={text => setContactEmail(text)}
-                  placeholder={t(text.email)}
-                />
-              </View>
-            </View>
+          {/* Contact Information */}
+          {propertyType && area && price && unit ? (
+            <>
+              <View style={styles.body_item}>
+                <View style={styles.body_itemHeader}>
+                  <Text
+                    style={[
+                      AppStyles.text_bold,
+                      { marginBottom: Spacing.medium },
+                    ]}
+                  >
+                    {t(text.contact_info)}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => setIsShowContactInfo(!isShowContactInfo)}
+                  >
+                    <Image
+                      source={isShowContactInfo ? ICONS.down : ICONS.up}
+                      style={AppStyles.icon}
+                    />
+                  </TouchableOpacity>
+                </View>
+                {isShowContactInfo ? (
+                  <View style={styles.body_itemBody}>
+                    {/* fullname */}
+                    <View>
+                      <Text
+                        style={[
+                          AppStyles.text_bold,
+                          { marginBottom: Spacing.medium },
+                        ]}
+                      >
+                        {t(text.fullname)}
+                      </Text>
+                      <View style={[styles.searchBox, { paddingVertical: 0 }]}>
+                        <TextInput
+                          style={[styles.text, { flex: 1 }]}
+                          value={contactName}
+                          keyboardType="number-pad"
+                          onChangeText={text => setContactName(text)}
+                          placeholder={t(text.fullname)}
+                        />
+                      </View>
+                    </View>
+                    {/* email */}
+                    <View>
+                      <Text
+                        style={[
+                          AppStyles.text_bold,
+                          { marginBottom: Spacing.medium },
+                        ]}
+                      >
+                        {t(text.email)}
+                      </Text>
+                      <View style={[styles.searchBox, { paddingVertical: 0 }]}>
+                        <TextInput
+                          style={[styles.text, { flex: 1 }]}
+                          value={contactEmail}
+                          keyboardType="number-pad"
+                          onChangeText={text => setContactEmail(text)}
+                          placeholder={t(text.email)}
+                        />
+                      </View>
+                    </View>
 
-            {/* phoneNumber */}
-            <View>
-              <Text
-                style={[AppStyles.text_bold, { marginBottom: Spacing.medium }]}
-              >
-                {t(text.phone)}
-              </Text>
-              <View style={[styles.searchBox, { paddingVertical: 0 }]}>
-                <TextInput
-                  style={[styles.text, { flex: 1 }]}
-                  value={contactPhone}
-                  keyboardType="number-pad"
-                  onChangeText={text => setContactPhone(text)}
-                  placeholder={t(text.phone)}
-                />
+                    {/* phoneNumber */}
+                    <View>
+                      <Text
+                        style={[
+                          AppStyles.text_bold,
+                          { marginBottom: Spacing.medium },
+                        ]}
+                      >
+                        {t(text.phone)}
+                      </Text>
+                      <View style={[styles.searchBox, { paddingVertical: 0 }]}>
+                        <TextInput
+                          style={[styles.text, { flex: 1 }]}
+                          value={contactPhone}
+                          keyboardType="number-pad"
+                          onChangeText={text => setContactPhone(text)}
+                          placeholder={t(text.phone)}
+                        />
+                      </View>
+                    </View>
+                  </View>
+                ) : (
+                  <>
+                    {contactName && contactPhone && contactEmail ? (
+                      <Text
+                        style={styles.text}
+                      >{`${contactName} • ${contactPhone} • ${contactEmail}`}</Text>
+                    ) : (
+                      <TouchableOpacity
+                        onPress={() => setIsShowContactInfo(true)}
+                      >
+                        <Text style={styles.text}>{t(text.more_info)}</Text>
+                      </TouchableOpacity>
+                    )}
+                  </>
+                )}
               </View>
-            </View>
-          </View>
+            </>
+          ) : (
+            <></>
+          )}
+
           {/* Other Info */}
           {propertyType && area && price && unit ? (
             <>

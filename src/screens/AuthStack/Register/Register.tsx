@@ -9,7 +9,7 @@ import {
   Linking,
 } from 'react-native';
 import { Spacing } from '../../../utils/spacing';
-import { ICONS, IMAGES, message, text } from '../../../utils/constants';
+import { ICONS, IMAGES, link, message, text } from '../../../utils/constants';
 import AppStyles from '../../../components/AppStyle';
 import AppInput from '../../../components/AppInput';
 import AppButton from '../../../components/AppButton';
@@ -20,8 +20,6 @@ import { Fonts } from '../../../utils/fontSize';
 import NavBar from '../../../components/Navbar';
 import EnterOtpModal from '../../../components/Modal/EnterOtpModal';
 import { register } from '../../../service';
-import { useDispatch } from 'react-redux';
-import { setLoading } from '../../../store/reducers/loadingSlice';
 import { useTranslation } from 'react-i18next';
 interface Props {
   navigation: any;
@@ -40,10 +38,8 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
     try {
       setLoading(true);
       const registerData = await register(contact);
-      console.log('resgisterData', registerData);
 
       setIsEnterOtpModalVisible(true);
-      console.log('register pressed');
       setResetcontact(contact);
     } catch (error) {
       console.log('error', error);
@@ -174,11 +170,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         >
           {t(message.agree)}{' '}
           <Text
-            onPress={() =>
-              Linking.openURL(
-                'https://trogiup.batdongsan.com.vn/docs/dieu-khoan-thoa-thuan',
-              )
-            }
+            onPress={() => Linking.openURL(`${link.company}`)}
             style={{
               color: Colors.black,
               fontWeight: '500',
@@ -190,11 +182,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
           </Text>
           ,{' '}
           <Text
-            onPress={() =>
-              Linking.openURL(
-                'https://trogiup.batdongsan.com.vn/docs/chinh-sach-bao-mat',
-              )
-            }
+            onPress={() => Linking.openURL(`${link.company}`)}
             style={{
               color: Colors.black,
               fontWeight: '500',
@@ -239,7 +227,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: Spacing.medium,
     backgroundColor: Colors.white,
-    paddingTop: 50,
   },
 });
 

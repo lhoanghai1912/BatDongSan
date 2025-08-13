@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import AppInput from '../../../components/AppInput';
-import { ICONS, IMAGES, text } from '../../../utils/constants';
+import { ICONS, IMAGES, message, text } from '../../../utils/constants';
 import AppStyles from '../../../components/AppStyle';
 import { Spacing } from '../../../utils/spacing';
 import AppButton from '../../../components/AppButton';
@@ -22,13 +22,14 @@ import NavBar from '../../../components/Navbar';
 import { useDispatch, useSelector } from 'react-redux';
 import { setToken, setUserData } from '../../../store/reducers/userSlice';
 import { create_password } from '../../../service';
+import { useTranslation } from 'react-i18next';
 interface Props {
   navigation: any;
 }
 const SetPasswordScreen: React.FC<Props> = ({ navigation }) => {
   const dispatch = useDispatch();
   const { token } = useSelector((state: any) => state.user);
-
+  const { t } = useTranslation();
   const { verificationToken } = useSelector((state: any) => state.user);
   const [password, SetPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -45,8 +46,8 @@ const SetPasswordScreen: React.FC<Props> = ({ navigation }) => {
     if (!isMatch) {
       Toast.show({
         type: 'error',
-        text1: 'Error',
-        text2: 'Mật khẩu và xác nhận mật khẩu chưa trùng khớp',
+        text1: `${message.text1Error}`,
+        text2: `${message.not_match}`,
       });
     } else {
       try {
@@ -63,8 +64,8 @@ const SetPasswordScreen: React.FC<Props> = ({ navigation }) => {
 
         Toast.show({
           type: 'success',
-          text1: 'Thành công',
-          text2: 'Tài khoản đã được tạo và đăng nhập thành công',
+          text1: `${t(message.text1Success)}`,
+          text2: `${t(message.registerSuccess)}`,
         });
       } catch (error) {
         console.log(error);
@@ -77,7 +78,10 @@ const SetPasswordScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={[styles.container]}>
-      <NavBar title={'Tạo mật khẩu'} onPress={() => navigation.goBack()} />
+      <NavBar
+        title={t(message.enter_password)}
+        onPress={() => navigation.goBack()}
+      />
       <View style={{ marginBottom: Spacing.large }}>
         <Image
           source={IMAGES.logo}
@@ -92,9 +96,9 @@ const SetPasswordScreen: React.FC<Props> = ({ navigation }) => {
 
       <View>
         <AppInput
-          label="Mật khẩu"
+          label={t(text.new_password)}
           leftIcon={ICONS.password}
-          placeholder="Nhập số mật khẩu"
+          placeholder={t(text.new_password)}
           onChangeText={SetPassword}
           secureTextEntry={true}
           value={password}
@@ -102,9 +106,9 @@ const SetPasswordScreen: React.FC<Props> = ({ navigation }) => {
       </View>
       <View>
         <AppInput
-          label="Xác nhận mật khẩu"
+          label={t(text.confirm_password)}
           leftIcon={ICONS.password}
-          placeholder="Xác nhận mật khẩu"
+          placeholder={t(text.confirm_password)}
           onChangeText={setConfirmPassword}
           secureTextEntry={true}
           value={confirmPassword}
@@ -126,7 +130,7 @@ const SetPasswordScreen: React.FC<Props> = ({ navigation }) => {
                 : Colors.red,
             }}
           >
-            Mật khẩu tối thiểu 8 ký tự
+            {t(message.password_min_length)}
           </Text>
         </View>
         <View style={{ flexDirection: 'row' }}>
@@ -143,7 +147,7 @@ const SetPasswordScreen: React.FC<Props> = ({ navigation }) => {
                 : Colors.red,
             }}
           >
-            Chứa ít nhất 1 ký tự viết hoa
+            {t(message.password_uppercase)}
           </Text>
         </View>
         <View style={{ flexDirection: 'row' }}>
@@ -160,7 +164,7 @@ const SetPasswordScreen: React.FC<Props> = ({ navigation }) => {
                 : Colors.red,
             }}
           >
-            Chứa ít nhất 1 ký tự số
+            {t(message.password_number)}
           </Text>
         </View>
       </View>
@@ -173,7 +177,7 @@ const SetPasswordScreen: React.FC<Props> = ({ navigation }) => {
       />
       <View style={{ marginBottom: Spacing.xlarge }}>
         <AppButton
-          title="Đăng ký"
+          title={t(message.register)}
           onPress={handleRegister}
           disabled={!password || !confirmPassword || !isValid}
         />

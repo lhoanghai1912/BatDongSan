@@ -9,7 +9,7 @@ import {
   Touchable,
   TouchableOpacity,
 } from 'react-native';
-import { text } from '../../../utils/constants';
+import { message, text } from '../../../utils/constants';
 import { Spacing } from '../../../utils/spacing';
 import AppStyles from '../../../components/AppStyle';
 import ImageCard from '../ImageCard';
@@ -36,7 +36,6 @@ const HeartScreen = () => {
   const getPost = async () => {
     if (token) {
       const res = await listLikedPost();
-      console.log('list Liked: ', res);
       setListLiked(res);
     }
   };
@@ -50,7 +49,7 @@ const HeartScreen = () => {
   }, []);
 
   const renderPost = ({ item }: { item: PostType }) => {
-    const key = item._id ? item._id.toString() : `${Math.random()}`;
+    const key = item.id;
     return (
       <>
         <ImageCard post={item} key={key} onReload={getPost} />
@@ -84,10 +83,10 @@ const HeartScreen = () => {
                 <Text
                   style={[AppStyles.label, { flex: 1, textAlign: 'center' }]}
                 >
-                  Chưa lưu bài viết nào
+                  {t(message.no_saved_post)}
                 </Text>
               }
-              keyExtractor={item => item._id?.toString?.() ?? ''}
+              keyExtractor={item => item.id}
               refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
               }
@@ -98,10 +97,10 @@ const HeartScreen = () => {
       ) : (
         <View style={{ alignItems: 'center' }}>
           <Text style={[AppStyles.text, { marginBottom: Spacing.medium }]}>
-            Đăng nhập để xem thêm các tin đăng
+            {t(message.login_to_view)}
           </Text>
           <AppButton
-            title="Đăng nhập"
+            title={t(text.login)}
             onPress={() => navigate(Screen_Name.Login_Screen)}
           ></AppButton>
         </View>

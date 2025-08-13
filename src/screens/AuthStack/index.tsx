@@ -8,7 +8,7 @@ import {
   Linking,
   ActivityIndicator,
 } from 'react-native';
-import { ICONS, IMAGES, message, text } from '../../utils/constants';
+import { ICONS, IMAGES, link, message, text } from '../../utils/constants';
 import AppStyles from '../../components/AppStyle';
 import AppInput from '../../components/AppInput';
 import { Spacing } from '../../utils/spacing';
@@ -74,9 +74,7 @@ const LoginScreen = () => {
     for (const id of likesArray) {
       try {
         await likePost(id, true);
-      } catch (err) {
-        console.log('Sync like fail', id);
-      }
+      } catch (err) {}
     }
 
     await AsyncStorage.removeItem('savedLikes');
@@ -246,11 +244,7 @@ const LoginScreen = () => {
         >
           {t(message.agree)}{' '}
           <Text
-            onPress={() =>
-              Linking.openURL(
-                'https://trogiup.batdongsan.com.vn/docs/dieu-khoan-thoa-thuan',
-              )
-            }
+            onPress={() => Linking.openURL(`${link.company}`)}
             style={{
               color: Colors.black,
               fontWeight: '500',
@@ -262,11 +256,7 @@ const LoginScreen = () => {
           </Text>
           ,{' '}
           <Text
-            onPress={() =>
-              Linking.openURL(
-                'https://trogiup.batdongsan.com.vn/docs/chinh-sach-bao-mat',
-              )
-            }
+            onPress={() => Linking.openURL(`${link.company}`)}
             style={{
               color: Colors.black,
               fontWeight: '500',

@@ -9,8 +9,6 @@ import {
 } from 'react-native';
 
 import { IMAGES } from '../../utils/constants';
-import { Colors } from '../../utils/color';
-import { Spacing } from '../../utils/spacing';
 
 const SplashScreen = ({ onAnimationEnd }: { onAnimationEnd: () => void }) => {
   const fadeAnim = useRef(new Animated.Value(1)).current;

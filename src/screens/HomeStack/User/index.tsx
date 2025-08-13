@@ -13,7 +13,7 @@ import AppButton from '../../../components/AppButton';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import NavBar from '../../../components/Navbar';
-import { IMAGES, link, text } from '../../../utils/constants';
+import { IMAGES, link, message, text } from '../../../utils/constants';
 import AppStyles from '../../../components/AppStyle';
 import { Spacing } from '../../../utils/spacing';
 import {
@@ -26,17 +26,18 @@ import moment from 'moment';
 import AppInput from '../../../components/AppInput';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   navigation: any;
 }
 const UserScreen: React.FC<Props> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   const [isEditing, setIsEditing] = useState(false);
   const [changePassword, setChangePassword] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -96,16 +97,16 @@ const UserScreen: React.FC<Props> = ({ navigation }) => {
         gender,
         taxCode,
       );
-      Toast.show({ type: 'success', text1: 'Cập nhật thông tin thành công' });
+      Toast.show({ type: 'success', text1: `${t(message.update_success)}` });
     } catch (error) {
       console.error('Error updating user info', error);
-      Toast.show({ type: 'error', text1: 'Cập nhật thông tin thất bại' });
+      Toast.show({ type: 'error', text1: `${t(message.update_failed)}` });
     } finally {
       setLoading(false);
     }
 
     // TODO: call API cập nhật user info
-    Toast.show({ type: 'success', text1: 'Cập nhật thành công' });
+    Toast.show({ type: 'success', text1: `${t(message.update_success)}` });
     setIsEditing(false);
   };
 
@@ -121,14 +122,14 @@ const UserScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
-      Toast.show({ type: 'error', text1: 'Mật khẩu xác nhận không khớp' });
+      Toast.show({ type: 'error', text1: `${t(message.not_match)}` });
       return;
     } else {
       const res = await updatePassword(oldPassword, newPassword);
     }
 
     // TODO: call API đổi mật khẩu
-    Toast.show({ type: 'success', text1: 'Đổi mật khẩu thành công' });
+    Toast.show({ type: 'success', text1: `${t(message.change_password)}` });
     setOldPassword('');
     setNewPassword('');
     setConfirmPassword('');
@@ -136,14 +137,9 @@ const UserScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <View
-      style={[styles.container, { paddingTop: insets.top + Spacing.medium }]}
-    >
-      <NavBar
-        title="Thông tin khách hàng"
-        onPress={() => navigation.goBack()}
-      />
-      <ScrollView style={{}}>
+    <View style={[styles.container]}>
+      <NavBar title={t(text.user_info)} onPress={() => navigation.goBack()} />
+      <ScrollView style={{ paddingTop: Spacing.medium }}>
         <TouchableOpacity
           style={{ alignItems: 'center' }}
           onPress={pickImage}
@@ -157,24 +153,24 @@ const UserScreen: React.FC<Props> = ({ navigation }) => {
             ]}
           />
         </TouchableOpacity>
-        <AppInput label="Tên đăng nhập" value={email} editable={false} />
+        <AppInput label={t(text.user)} value={email} editable={false} />
         <AppInput
-          label="Họ và tên"
-          placeholder="Nhập họ và tên"
+          label={t(text.fullname)}
+          placeholder={t(text.fullname)}
           value={fullName}
           onChangeText={text => setFullName(text)}
           editable={isEditing}
         />
         <AppInput
-          label="Địa chỉ"
-          placeholder="Nhập địa chỉ"
+          label={t(text.address)}
+          placeholder={t(text.address)}
           value={address}
           onChangeText={text => setAddress(text)}
           editable={isEditing}
         />
         <AppInput
-          label="Số điện thoại"
-          placeholder="Nhập số điện thoại"
+          label={t(text.phone)}
+          placeholder={t(text.phone)}
           value={phoneNumber}
           onChangeText={text => setPhoneNumber(text)}
           editable={isEditing}
@@ -182,53 +178,56 @@ const UserScreen: React.FC<Props> = ({ navigation }) => {
         <View>
           {!isEditing ? (
             <AppButton
-              title="Chỉnh sửa thông tin"
+              title={t(text.edit_info)}
               onPress={() => setIsEditing(true)}
             />
           ) : (
             <>
               <AppButton
-                title="Lưu thông tin"
+                title={t(text.submit)}
                 onPress={handleUpdateUser}
                 customStyle={[{ marginBottom: Spacing.medium }]}
               />
-              <AppButton title="Hủy" onPress={() => setIsEditing(false)} />
+              <AppButton
+                title={t(text.cancel)}
+                onPress={() => setIsEditing(false)}
+              />
             </>
           )}
         </View>
         <View style={styles.divider} />
-        <Text style={styles.title}>Đổi mật khẩu</Text>
+        <Text style={styles.title}>{t(message.change_password)}</Text>
         {changePassword ? (
           <>
             <AppInput
-              label="Mật khẩu cũ"
-              placeholder="Nhập mật khẩu cũ"
+              label={t(text.old_password)}
+              placeholder={t(text.old_password)}
               value={oldPassword}
               secureTextEntry={true}
               onChangeText={text => setOldPassword(text)}
             />
             <AppInput
-              label="Mật khẩu mới"
-              placeholder="Nhập mật khẩu mới"
+              label={t(text.new_password)}
+              placeholder={t(text.new_password)}
               value={newPassword}
               secureTextEntry={true}
               onChangeText={text => setNewPassword(text)}
             />
             <AppInput
-              label="Xác nhận mật khẩu "
-              placeholder="Nhập lại mật khẩu mới"
+              label={t(text.confirm_password)}
+              placeholder={t(text.confirm_password)}
               value={confirmPassword}
               secureTextEntry={true}
               onChangeText={text => setConfirmPassword(text)}
             />
             <View>
               <AppButton
-                title="Đổi mật khẩu"
+                title={t(message.change_password)}
                 onPress={handleChangePassword}
                 customStyle={[{ marginBottom: Spacing.medium }]}
               />
               <AppButton
-                title="Hủy"
+                title={t(text.cancel)}
                 onPress={() => setChangePassword(false)}
                 customStyle={[{ marginBottom: Spacing.xxxxlarge }]}
               />
@@ -236,7 +235,7 @@ const UserScreen: React.FC<Props> = ({ navigation }) => {
           </>
         ) : (
           <AppButton
-            title="Đổi mật khẩu"
+            title={t(message.change_password)}
             onPress={() => setChangePassword(true)}
           />
         )}
@@ -247,7 +246,7 @@ const UserScreen: React.FC<Props> = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    paddingHorizontal: 16,
     backgroundColor: Colors.white,
   },
   title: {

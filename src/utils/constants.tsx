@@ -1,10 +1,8 @@
-import { register } from '../service';
-import { logout } from '../store/reducers/userSlice';
-
 export const message = {
-  loginSuccess: 'Login successful!',
-  loginFailed: 'Login failed. Please try again.',
-  networkError: 'Network error. Please check your internet connection.',
+  loginSuccess: 'loginSuccess',
+  registerSuccess: 'registerSuccess',
+  loginFailed: 'loginFailed',
+  networkError: 'networkError',
   login_to_view: 'login_to_view',
   requestLogin: 'requestLogin',
   text1Error: 'text1Error',
@@ -12,6 +10,7 @@ export const message = {
   min_max: 'min_max',
   enter_userName: 'enter_userName',
   enter_password: 'enter_password',
+  change_password: 'change_password',
   register: 'register',
   other_register: 'other_register',
   other_login: 'other_login',
@@ -23,6 +22,13 @@ export const message = {
   delete_account_confirm_message: 'delete_account_confirm_message',
   delete_account_request_sent: 'delete_account_request_sent',
   delete_account_request_soon: 'delete_account_request_soon',
+  not_match: 'not_match',
+  no_saved_post: 'no_saved_post',
+  password_min_length: 'password_min_length',
+  password_uppercase: 'password_uppercase',
+  password_number: 'password_number',
+  update_success: 'update_success',
+  update_failed: 'update_failed',
 };
 
 export const formatAddress = (post: {
@@ -54,6 +60,13 @@ export const caseType = {
 };
 
 export const text = {
+  old_password: 'old_password',
+  new_password: 'new_password',
+  confirm_password: 'confirm_password',
+  edit_info: 'edit_info',
+  address: 'address',
+  user_info: 'user_info',
+  value: 'value',
   login: 'login',
   welcome: 'welcome',
   home: 'home',
@@ -67,7 +80,7 @@ export const text = {
   register: 'register',
   transaction: 'Transaction',
   report: 'Report',
-  user: 'User',
+  user: 'user',
   company_name: 'company_name',
   search: 'search',
   find: 'find',
@@ -129,7 +142,7 @@ export const text = {
   deal: 'deal',
   bilion: 'bilion',
   milion: 'milion',
-  thousand: 'thousand ',
+  thousand: 'thousand',
   coin: 'coin',
   other_info: 'other_info',
   legal: 'legal',

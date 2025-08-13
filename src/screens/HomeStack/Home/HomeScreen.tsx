@@ -385,7 +385,9 @@ const HomeScreen: React.FC = ({}) => {
               {t(text.no_data)}
             </Text>
           }
-          keyExtractor={(item, index) => item._id?.toString?.() ?? String(index)}
+          keyExtractor={(item, index) =>
+            item._id?.toString?.() ?? String(index)
+          }
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }

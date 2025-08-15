@@ -63,7 +63,6 @@ export const getAllPosts = async (
 
     return response.data;
   } catch (error: any) {
-    console.error('API Error:', error.message);
     if (error.response) {
       console.log('Status:', error.response.status);
       console.log('Data:', error.response.data);

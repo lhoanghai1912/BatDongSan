@@ -82,9 +82,7 @@ const UserScreen: React.FC<Props> = ({ navigation }) => {
       try {
         const avatarResponse = await updateAvatar(formData); // Gọi API tải avatar lên
         console.log('Avatar uploaded', avatarResponse);
-      } catch (error) {
-        console.error('Error uploading avatar', error);
-      }
+      } catch (error) {}
     }
 
     try {
@@ -99,7 +97,6 @@ const UserScreen: React.FC<Props> = ({ navigation }) => {
       );
       Toast.show({ type: 'success', text1: `${t(message.update_success)}` });
     } catch (error) {
-      console.error('Error updating user info', error);
       Toast.show({ type: 'error', text1: `${t(message.update_failed)}` });
     } finally {
       setLoading(false);

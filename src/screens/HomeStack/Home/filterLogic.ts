@@ -68,7 +68,7 @@ export async function fetchFilteredData({
     setCurrentPage(page);
     setIsInitialLoad(false);
   } catch (err) {
-    console.error('❌ Lỗi khi tải dữ liệu có filter:', err);
+
   } finally {
     setLoading(false);
     setLoadingMore(false);

@@ -39,7 +39,6 @@ export const updateAvatar = async (formData: FormData) => {
     );
     return response.data;
   } catch (error) {
-    console.error('Error uploading avatar', error);
     throw error;
   }
 };

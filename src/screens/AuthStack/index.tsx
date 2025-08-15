@@ -29,8 +29,8 @@ import { likePost } from '../../service/likeService';
 const LoginScreen = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const [email, setEmail] = useState('hoanghai281zzz@gmail.com');
-  const [password, setPassWord] = useState('123456Ab@');
+  const [email, setEmail] = useState('');
+  const [password, setPassWord] = useState('');
   const [checked, setchecked] = useState(false);
   const [loading, setLoading] = useState(false);
 

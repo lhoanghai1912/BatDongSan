@@ -23,7 +23,7 @@ apiClient.interceptors.request.use(config => {
 apiClient.interceptors.response.use(
   response => response,
   error => {
-    // console.error('API Error:', error);
+    //  ('API Error:', error);
     console.log(error.message);
     if (error.response) {
       console.log('📥 Response status:', error.response.status);

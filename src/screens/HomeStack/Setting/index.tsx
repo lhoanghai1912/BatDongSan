@@ -19,7 +19,6 @@ import { Fonts } from '../../../utils/fontSize';
 import { logout } from '../../../store/reducers/userSlice';
 import AppButton from '../../../components/AppButton';
 import DeleteAccountModal from '../../../components/Modal/DeleteAccountModal';
-import { ToastAndroid, Platform, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n from '../../../i18n/i18n';
@@ -161,7 +160,7 @@ const SettingScreen = () => {
               }}
             >
               <Image
-                source={ICONS.apple}
+                source={ICONS.user}
                 style={[AppStyles.icon, { marginRight: Spacing.small }]}
               />
               <Text
@@ -271,11 +270,7 @@ const SettingScreen = () => {
                 alignItems: 'center',
                 marginBottom: Spacing.medium,
               }}
-              onPress={() =>
-                Linking.openURL(
-                  'https://trogiup.batdongsan.com.vn/docs/dieu-khoan-thoa-thuan',
-                )
-              }
+              onPress={() => Linking.openURL(link.term_conditions)}
             >
               <Image
                 source={ICONS.clause}
@@ -289,11 +284,7 @@ const SettingScreen = () => {
                 alignItems: 'center',
                 marginBottom: Spacing.medium,
               }}
-              onPress={() =>
-                Linking.openURL(
-                  'https://trogiup.batdongsan.com.vn/docs/chinh-sach-bao-mat',
-                )
-              }
+              onPress={() => Linking.openURL(link.privacy_policy)}
             >
               <Image
                 source={ICONS.privacy}

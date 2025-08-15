@@ -1,4 +1,5 @@
 {
+  "guest":"Use as Guest",
   "update_failed": "Update failed.",
   "update_success": "Update successful!",
   "password_min_length": "Password must be at least 8 characters long",
@@ -137,7 +138,6 @@
   "area_desc": "Area descending ",
   "price_asc": "Price ascending ",
   "price_des": "Price descending ",
-
   "sort": "Sort",
   "under": "Under",
   "min" : "Min",
@@ -154,11 +154,9 @@
   "delete_account_confirm_message": "This action cannot be undone. Do you want to proceed?",
   "delete_account_request_sent": "Account deletion request has been sent.",
   "delete_account_request_soon": "Your request will be responded to soon.",
-
   "modal": {
     "chooseHouseType": "Choose house type",
     "chooseDirection": "Choose direction",
-
     "houseDirection": "House direction",
     "balconyDirection": "Balcony direction",
     "chooseUnit": "Choose Unit",
@@ -171,9 +169,6 @@
       "shophouse": "Shophouse, commercial townhouse",
       "projectLand": "Project land",
       "land": "Land",
-  
-
-
       "farm": "Farm, resort",
       "condotel": "Condotel",
       "warehouse": "Warehouse, factory",

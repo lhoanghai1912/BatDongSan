@@ -29,6 +29,7 @@ export const message = {
   password_number: 'password_number',
   update_success: 'update_success',
   update_failed: 'update_failed',
+  guest: 'guest',
 };
 
 export const formatAddress = (post: {
@@ -302,4 +303,6 @@ export const IMAGES = {
 export const link = {
   url: 'https://bds.foxai.com.vn:8441',
   company: 'https://fox.ai.vn/',
+  term_conditions: 'https://fox.ai.vn/dieu-khoan-su-dung/',
+  privacy_policy: 'https://fox.ai.vn/chinh-sach-bao-mat/',
 };

@@ -21,7 +21,7 @@ const HomeNavigator = () => {
         name={Screen_Name.BottomTab_Navigator}
         component={BottomTabNavigator}
       />
-      {/* <Stack.Screen name={Screen_Name.Home_Screen} component={HomeScreen} /> */}
+      <Stack.Screen name={Screen_Name.Home_Screen} component={HomeScreen} />
       <Stack.Screen name={Screen_Name.Detail_Screen} component={DetailScreen} />
 
       <Stack.Screen name={Screen_Name.User_Screen} component={UserScreen} />

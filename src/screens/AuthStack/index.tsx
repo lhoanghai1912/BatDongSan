@@ -244,7 +244,7 @@ const LoginScreen = () => {
         >
           {t(message.agree)}{' '}
           <Text
-            onPress={() => Linking.openURL(`${link.company}`)}
+            onPress={() => Linking.openURL(`${link.term_conditions}`)}
             style={{
               color: Colors.black,
               fontWeight: '500',
@@ -256,7 +256,7 @@ const LoginScreen = () => {
           </Text>
           ,{' '}
           <Text
-            onPress={() => Linking.openURL(`${link.company}`)}
+            onPress={() => Linking.openURL(`${link.privacy_policy}`)}
             style={{
               color: Colors.black,
               fontWeight: '500',
@@ -269,6 +269,26 @@ const LoginScreen = () => {
           {t(text.of_us)}
         </Text>
       </View>
+      <TouchableOpacity
+        onPress={() => navigate(Screen_Name.Home_Screen)}
+        style={{
+          alignItems: 'center',
+          marginVertical: Spacing.medium,
+        }}
+      >
+        <Text
+          style={[
+            AppStyles.text,
+            {
+              color: Colors.red,
+              textDecorationLine: 'underline',
+              fontWeight: 'bold',
+            },
+          ]}
+        >
+          {t(message.guest)}
+        </Text>
+      </TouchableOpacity>
       {loading && (
         <View
           style={{

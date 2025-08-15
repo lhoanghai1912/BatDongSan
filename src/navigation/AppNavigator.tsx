@@ -8,6 +8,7 @@ import SplashScreen from '../screens/Splash';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setToken } from '../store/reducers/userSlice';
 import HomeScreen from '../screens/HomeStack/Home/HomeScreen';
+import LoginScreen from '../screens/AuthStack';
 // const AppNavigator = () => {
 //   const [showSplash, setShowSplash] = useState(true);
 //   const { token } = useSelector((state: any) => state.user);
@@ -58,8 +59,8 @@ const AppNavigator = () => {
 
   return (
     <NavigationContainer ref={navigationRef}>
-      {/* {token ? <HomeNavigator /> : <AuthNavigator />} */}
       <HomeNavigator />
+      {/* Logic cũ yêu cầu token để vào home: {token ? <HomeNavigator /> : <LoginScreen />} */}
     </NavigationContainer>
   );
 };

@@ -2,7 +2,7 @@
 
 ## 📱 THÔNG TIN APP
 
-- **Tên App**: Homes App
+- **Tên App**: FOX Homes
 - **Package Name**: com.homesapp
 - **Version**: 1.0.0 (Version Code: 1)
 - **Target SDK**: 35

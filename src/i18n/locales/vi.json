@@ -1,4 +1,12 @@
 {
+  "province_first": "Vui lòng chọn tỉnh trước.",
+  "district_first": "Vui lòng chọn huyện trước.",
+  "select_province": "Chọn tỉnh.",
+  "select_district": "Chọn huyện.",
+  "select_commune": "Chọn xã.",
+  "enter_street": "Vui lòng nhập tên đường.",
+  "unit_label": "VNĐ",
+  "total_value": "Tổng giá trị",
   "guest": "Sử dụng với tư cách Khách",
   "update_failed": "Cập nhật không thành công.",
   "update_success":"Cập nhật thành công!",
@@ -160,7 +168,6 @@
     "chooseHouseType": "Chọn loại nhà",
     "chooseDirection": "Chọn hướng",
     "houseDirection": "Hướng nhà",
-
     "balconyDirection": "Hướng ban công",
     "chooseUnit": "Chọn đơn vị",
     "houseType": {

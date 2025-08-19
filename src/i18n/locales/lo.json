@@ -1,4 +1,12 @@
 {
+  "province_first": "ກະລຸນາເລືອກເຂດແລ້ວ",
+  "district_first": "ກະລຸນາເລືອກເຂົາກ່ຽວ",
+  "select_province": "ກະລຸນາເລືອກເຂດ",
+  "select_district": "ກະລຸນາເລືອກເຂົາ",
+  "select_commune": "ກະລຸນາເລືອກເພືອນ",
+  "enter_street": "ກະລຸນາໃສ່ຊື່ຖົງ",
+  "unit_label": "LAK",
+  "total_value": "ມູນຄ່າລວມ",
   "guest": "ໃຊ້ເປັນຜູ້ເຂົ້າຊົມ",
   "update_failed": "ອັບເດດບໍ່ສຳເລັດ.",
   "update_success":"ອັບເດດສຳເລັດ!",

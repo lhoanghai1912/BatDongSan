@@ -82,15 +82,15 @@ android {
         applicationId "com.homesapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "1.0.1"
+        versionCode 4
+        versionName "1.0.2"
     }
     signingConfigs {
         debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            // storeFile file('homes-app-release-key.keystore')
+            // storePassword 'fox.ai'
+            // keyAlias 'androiddebugkey'
+            // keyPassword 'fox.ai'
         }
         release {
             if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {

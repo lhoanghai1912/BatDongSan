@@ -27,6 +27,7 @@ import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import i18n from '../../../i18n/i18n';
 
 interface Props {
   navigation: any;
@@ -70,7 +71,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
   const [area, setArea] = useState('');
   const [price, setPrice] = useState<number>(0);
   const [unit, setUnit] = useState<{ label: string; value: number }>({
-    label: 'VND',
+    label: t(text.unit_label),
     value: 1,
   });
   const [bedrooms, setBedroom] = useState(0);
@@ -190,7 +191,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
       setPropertyType('');
       setArea('');
       setPrice(0);
-      setUnit({ label: 'VND', value: 0 });
+      setUnit({ label: t(text.unit_label), value: 0 });
       setBedroom(0);
       setBathroom(0);
       setFloor(0);
@@ -658,7 +659,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                         onPress={() => setPropertyTypeVisible(true)}
                         style={styles.searchBox}
                       >
-                        <Text style={[AppStyles.text, { color: '#666666' }]}>
+                        <Text style={[AppStyles.text]}>
                           {propertyType?.label || t(text.property_type)}
                         </Text>
                       </TouchableOpacity>
@@ -804,7 +805,15 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                       {unit.value == 1 && price
                         ? `${t(text.value)}: ${formatPriceToTy(price)}`
                         : unit.value == 2 && price
-                        ? `${price.toLocaleString('vi-VN')}/m²`
+                        ? `${price.toLocaleString(
+                            i18n.language === 'lo-LA'
+                              ? 'lo-LA'
+                              : i18n.language === 'en-US'
+                              ? 'en-US'
+                              : 'vi-VN',
+                          )}/m²\n${t(text.total_value)}: ${(
+                            price * Number(area)
+                          ).toLocaleString('vi-VN')}`
                         : null}
                     </Text>
                   </View>
@@ -828,7 +837,10 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
           )}
 
           {/* Contact Information */}
-          {propertyType && area && price && unit ? (
+          {propertyType &&
+          area &&
+          unit &&
+          ((price && price > 0) || unit.label === t(text.deal)) ? (
             <>
               <View style={styles.body_item}>
                 <View style={styles.body_itemHeader}>
@@ -1496,9 +1508,6 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                     >
                       {t(text.upload_image)}
                     </Text>
-                    <Text
-                      style={[AppStyles.text, { marginLeft: Spacing.medium }]}
-                    >{`(${t(text.optional)})`}</Text>
                   </View>
                   <TouchableOpacity
                     onPress={() => setIsShowImagesUpdaload(!isShowImageUpload)}
@@ -1521,17 +1530,42 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                         contentContainerStyle={{ marginBottom: Spacing.medium }}
                       >
                         <View
-                          style={{ flexDirection: 'row', flexWrap: 'wrap' }}
+                          style={{
+                            flexDirection: 'row',
+                            flexWrap: 'wrap',
+                            width: '100%',
+                          }}
                         >
                           {imageUris.map((uri, index) => {
                             const uniqueKey = `image-${uri}`;
-
-                            if (index === 0) {
-                              // Ảnh đầu tiên sẽ chiếm hết chiều rộng
+                            if (imageUris.length === 1) {
+                              // Nếu chỉ có 1 ảnh, hiển thị full width
                               return (
-                                <View key={uniqueKey}>
+                                <View key={uniqueKey} style={{ width: '100%' }}>
                                   <Image
-                                    key={uniqueKey}
+                                    source={{ uri }}
+                                    style={{
+                                      width: '100%',
+                                      height: 200,
+                                      marginBottom: 10,
+                                    }}
+                                  />
+                                  <TouchableOpacity
+                                    style={styles.removeImageButton}
+                                    onPress={() => removeImage(uri)}
+                                  >
+                                    <Image
+                                      source={ICONS.clear}
+                                      style={styles.clearImageIcon}
+                                    />
+                                  </TouchableOpacity>
+                                </View>
+                              );
+                            } else if (index === 0) {
+                              // Ảnh đầu tiên khi có nhiều ảnh
+                              return (
+                                <View key={uniqueKey} style={{ width: '100%' }}>
+                                  <Image
                                     source={{ uri }}
                                     style={{
                                       width: '100%',
@@ -1551,7 +1585,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
                                 </View>
                               );
                             } else {
-                              // Các ảnh sau sẽ chia thành 2 cột
+                              // Các ảnh sau chia 2 cột
                               return (
                                 <View
                                   key={uniqueKey}

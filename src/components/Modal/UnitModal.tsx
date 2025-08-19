@@ -50,7 +50,7 @@ const UnitSelectionModal: React.FC<Props> = ({
   }, [visible]);
 
   const unitOptions: { label: string; value: string }[] = [
-    { label: 'VND', value: '1' },
+    { label: `${t(text.unit_label)}`, value: '1' },
     { label: `${t(text.price_m2)}`, value: '2' },
     { label: `${t(text.deal)}`, value: '3' },
   ];

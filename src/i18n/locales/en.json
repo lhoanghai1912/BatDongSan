@@ -1,4 +1,12 @@
 {
+  "province_first": "Please select a province first.",
+  "district_first": "Please select a district first.",
+  "select_province": "Select a province.",
+  "select_district": "Select a district.",
+  "select_commune": "Select a commune.",
+  "enter_street": "Please enter a street name.",
+  "unit_label": "USD",
+  "total_value": "Total value",
   "guest":"Use as Guest",
   "update_failed": "Update failed.",
   "update_success": "Update successful!",

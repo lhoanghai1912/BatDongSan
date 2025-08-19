@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Colors } from '../../utils/color';
 import { Spacing } from '../../utils/spacing';
-import { ICONS, text } from '../../utils/constants';
+import { ICONS, message, text } from '../../utils/constants';
 import AppButton from '../AppButton';
 import AppStyles from '../AppStyle';
 import { useTranslation } from 'react-i18next';
@@ -56,11 +56,11 @@ const SearchLocationModal: React.FC<Props> = ({
 
   const openLocationModal = (field: FieldType) => {
     if (field === 'district' && !selectedLocation.province) {
-      alert('Vui lòng chọn Tỉnh/Thành trước');
+      alert(t(message.province_first));
       return;
     }
     if (field === 'commune' && !selectedLocation.district) {
-      alert('Vui lòng chọn Quận/Huyện trước');
+      alert(t(message.district_first));
       return;
     }
     setLocationModalField(field);
@@ -132,7 +132,8 @@ const SearchLocationModal: React.FC<Props> = ({
                 onPress={() => openLocationModal('province')}
               >
                 <Text style={styles.selectText}>
-                  {selectedLocation.province?.name || 'Chọn Tỉnh/Thành'}
+                  {selectedLocation.province?.name ||
+                    t(message.select_province)}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -148,7 +149,8 @@ const SearchLocationModal: React.FC<Props> = ({
                 onPress={() => openLocationModal('district')}
               >
                 <Text style={styles.selectText}>
-                  {selectedLocation.district?.name || 'Chọn Quận/Huyện'}
+                  {selectedLocation.district?.name ||
+                    t(message.select_district)}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -164,7 +166,7 @@ const SearchLocationModal: React.FC<Props> = ({
                 onPress={() => openLocationModal('commune')}
               >
                 <Text style={styles.selectText}>
-                  {selectedLocation.commune?.name || 'Chọn Xã/Bản'}
+                  {selectedLocation.commune?.name || t(message.select_commune)}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -192,7 +194,7 @@ const SearchLocationModal: React.FC<Props> = ({
                   onChangeText={text =>
                     setSelectedLocation(prev => ({ ...prev, street: text }))
                   }
-                  placeholder="Nhập tên đường"
+                  placeholder={t(message.enter_street)}
                 />
               </View>
             </View>

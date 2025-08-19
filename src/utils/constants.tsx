@@ -30,6 +30,12 @@ export const message = {
   update_success: 'update_success',
   update_failed: 'update_failed',
   guest: 'guest',
+  province_first: 'province_first',
+  district_first: 'district_first',
+  select_province: 'select_province',
+  select_district: 'select_district',
+  select_commune: 'select_commune',
+  enter_street: 'enter_street',
 };
 
 export const formatAddress = (post: {
@@ -61,6 +67,9 @@ export const caseType = {
 };
 
 export const text = {
+  unit_label: 'unit_label',
+  country: 'country',
+  total_value: 'total_value',
   old_password: 'old_password',
   new_password: 'new_password',
   confirm_password: 'confirm_password',

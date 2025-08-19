@@ -80,7 +80,20 @@ const LoginScreen = () => {
     await AsyncStorage.removeItem('savedLikes');
   };
 
-  const handleLoginWithGoogle = async () => {};
+  const handleLoginWithGoogle = async () => {
+    Toast.show({
+      type: 'info',
+      text1: t(message.notyet),
+    });
+  };
+
+  const handleLoginWithApple = async () => {
+    Toast.show({
+      type: 'info',
+      text1: t(message.notyet),
+    });
+  };
+
   return (
     <View style={styles.container}>
       <View style={{ marginBottom: Spacing.xlarge }}>
@@ -123,18 +136,19 @@ const LoginScreen = () => {
           marginBottom: Spacing.medium,
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity onPress={() => setchecked(!checked)}>
-            <Image
-              source={checked ? ICONS.checked : ICONS.unchecked}
-              style={[AppStyles.icon, { width: 40, height: 40 }]}
-            />
-          </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setchecked(!checked)}
+          style={{ flexDirection: 'row', alignItems: 'center' }}
+        >
+          <Image
+            source={checked ? ICONS.checked : ICONS.unchecked}
+            style={[AppStyles.icon, { width: 40, height: 40 }]}
+          />
           <Text style={[AppStyles.text, { marginLeft: Spacing.small }]}>
             {t(text.remember)}
           </Text>
-        </View>
-        <TouchableOpacity onPress={() => handleForgotPassword}>
+        </TouchableOpacity>
+        {/* <TouchableOpacity onPress={() => handleForgotPassword}>
           <Text
             style={{
               fontSize: Fonts.small,
@@ -145,7 +159,7 @@ const LoginScreen = () => {
           >
             {t(text.forgot)}
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <View style={{ marginBottom: Spacing.xlarge }}>
         <AppButton
@@ -197,7 +211,7 @@ const LoginScreen = () => {
         <TouchableOpacity onPress={() => handleLoginWithGoogle()}>
           <Image source={ICONS.google} style={{ width: 40, height: 40 }} />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => handleLoginWithApple()}>
           <Image source={ICONS.apple} style={{ width: 40, height: 40 }} />
         </TouchableOpacity>
       </View>
@@ -270,7 +284,11 @@ const LoginScreen = () => {
         </Text>
       </View>
       <TouchableOpacity
-        onPress={() => navigate(Screen_Name.Home_Screen)}
+        onPress={() =>
+          navigate(Screen_Name.BottomTab_Navigator, {
+            screen: Screen_Name.Home_Screen,
+          })
+        }
         style={{
           alignItems: 'center',
           marginVertical: Spacing.medium,

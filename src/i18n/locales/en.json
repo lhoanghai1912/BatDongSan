@@ -1,4 +1,7 @@
 {
+  "enter_userName": "Enter Username",
+  "enter_password": "Enter Password",
+  "notyet": "This feature will be available soon.",
   "province_first": "Please select a province first.",
   "district_first": "Please select a district first.",
   "select_province": "Select a province.",

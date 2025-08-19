@@ -36,6 +36,7 @@ export const message = {
   select_district: 'select_district',
   select_commune: 'select_commune',
   enter_street: 'enter_street',
+  notyet: 'notyet',
 };
 
 export const formatAddress = (post: {
@@ -312,6 +313,6 @@ export const IMAGES = {
 export const link = {
   url: 'https://bds.foxai.com.vn:8441',
   company: 'https://fox.ai.vn/',
-  term_conditions: 'https://fox.ai.vn/dieu-khoan-su-dung/',
+  term_conditions: 'https://fox.ai.vn/dieu-khoan-thoa-thuan/',
   privacy_policy: 'https://fox.ai.vn/chinh-sach-bao-mat/',
 };

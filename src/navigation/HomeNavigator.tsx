@@ -8,6 +8,7 @@ import UserScreen from '../screens/HomeStack/User';
 import LoginScreen from '../screens/AuthStack';
 import RegisterScreen from '../screens/AuthStack/Register/Register';
 import SetPasswordScreen from '../screens/AuthStack/Register/SetPassword';
+import ForgotPasswordScreen from '../screens/AuthStack/ForgotPassword';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,7 +24,6 @@ const HomeNavigator = () => {
       />
       <Stack.Screen name={Screen_Name.Home_Screen} component={HomeScreen} />
       <Stack.Screen name={Screen_Name.Detail_Screen} component={DetailScreen} />
-
       <Stack.Screen name={Screen_Name.User_Screen} component={UserScreen} />
       <Stack.Screen name={Screen_Name.Login_Screen} component={LoginScreen} />
       <Stack.Screen
@@ -33,6 +33,10 @@ const HomeNavigator = () => {
       <Stack.Screen
         name={Screen_Name.SetPassword_Screen}
         component={SetPasswordScreen}
+      />
+      <Stack.Screen
+        name={Screen_Name.ForgotPassword_Screen}
+        component={ForgotPasswordScreen}
       />
     </Stack.Navigator>
   );

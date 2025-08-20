@@ -26,6 +26,8 @@ import LanguageSelector from '../../../components/LanguageSelector';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
+const verAndroid = '1.0.0';
+
 const SettingScreen = () => {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -211,6 +213,7 @@ const SettingScreen = () => {
                 alignItems: 'center',
                 marginBottom: Spacing.medium,
               }}
+              onPress={() => Linking.openURL(link.connect)}
             >
               <Image
                 source={ICONS.question}
@@ -418,7 +421,7 @@ const SettingScreen = () => {
             />
           </TouchableOpacity>
           <Text style={[AppStyles.text, { textAlign: 'center' }]}>
-            {t(text.version)}
+            {t(text.version)} {verAndroid}
           </Text>
         </ScrollView>
       </View>

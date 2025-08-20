@@ -14,7 +14,7 @@ import AppButton from '../AppButton';
 import Toast from 'react-native-toast-message';
 import { navigate } from '../../navigation/RootNavigator';
 import { Screen_Name } from '../../navigation/ScreenName';
-import { enterOtp } from '../../service';
+import { enterOtp, otp_ResetPassword_Verify } from '../../service';
 import { useDispatch } from 'react-redux';
 import { setVerificationToken } from '../../store/reducers/userSlice';
 import { message, text } from '../../utils/constants';
@@ -25,6 +25,7 @@ interface EnterOtpProp {
   onClose: () => void;
   onSuccess: (otpString: string) => void;
   contact: string;
+  api: string;
 }
 
 const EnterOtpModal: React.FC<EnterOtpProp> = ({
@@ -32,6 +33,7 @@ const EnterOtpModal: React.FC<EnterOtpProp> = ({
   onClose,
   onSuccess,
   contact,
+  api,
 }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -71,17 +73,30 @@ const EnterOtpModal: React.FC<EnterOtpProp> = ({
 
   const handleSubmit = async () => {
     const otpString = otp.join('');
+    console.log('otpString', otpString);
+
     if (otpString.length === 6) {
       try {
         console.log('📤 Gửi OTP verify:', {
           contact,
           otp: otpString,
         });
-        const otpRes = await enterOtp(contact, otpString);
-        dispatch(
-          setVerificationToken({ verificationToken: otpRes.verificationToken }),
-        );
-        console.log('otpRes', otpRes);
+        if (api === 'register') {
+          const otpRes = await enterOtp(contact, otpString);
+          dispatch(
+            setVerificationToken({
+              verificationToken: otpRes.verificationToken,
+            }),
+          );
+          console.log('otpRes', otpRes);
+        } else if (api === 'forgot_password') {
+          console.log('Gửi OTP xác thực quên mật khẩu:', {
+            contact,
+            otp: otpString,
+          });
+          const otpRes = await otp_ResetPassword_Verify(contact, otpString);
+          console.log('otpRes', otpRes);
+        }
 
         onSuccess(otpString);
       } catch (error) {

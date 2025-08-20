@@ -1,4 +1,5 @@
 export const message = {
+  validate: 'validate',
   loginSuccess: 'loginSuccess',
   registerSuccess: 'registerSuccess',
   loginFailed: 'loginFailed',
@@ -27,6 +28,7 @@ export const message = {
   password_min_length: 'password_min_length',
   password_uppercase: 'password_uppercase',
   password_number: 'password_number',
+  password_special_character: 'password_special_character',
   update_success: 'update_success',
   update_failed: 'update_failed',
   guest: 'guest',
@@ -315,4 +317,5 @@ export const link = {
   company: 'https://fox.ai.vn/',
   term_conditions: 'https://fox.ai.vn/dieu-khoan-thoa-thuan/',
   privacy_policy: 'https://fox.ai.vn/chinh-sach-bao-mat/',
+  connect: 'https://fox.ai.vn/lien-he/',
 };

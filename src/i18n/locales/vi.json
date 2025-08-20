@@ -1,4 +1,6 @@
 {
+  "validate": "Vui lòng kiểm tra tính hợp lệ",
+  "password_special_character": "Mật khẩu phải có ít nhất 1 ký tự đặc biệt",
   "notyet":"Tính năng này sẽ sớm khả dụng.",
   "province_first": "Vui lòng chọn tỉnh trước.",
   "district_first": "Vui lòng chọn huyện trước.",
@@ -79,7 +81,7 @@
   "responsible_person": "Người chịu trách nhiệm nền tảng thương mại điện tử: Ông ...",
   "company_name": "CÔNG TY CỔ PHẦN CÔNG NGHỆ FOXAI (FOXAI)",
   "company_address": "Tầng 3, N03-T3 Ngoại Giao Đoàn, Bắc Từ Liêm, Hà Nội",
-  "version": "Phiên bản 1.0",
+  "version": "Phiên bản",
   "description": "Mô tả",
   "property_features": "Đặc điểm bất động sản",
   "created" : "Đăng ",

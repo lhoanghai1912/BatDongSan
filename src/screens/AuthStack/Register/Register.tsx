@@ -199,10 +199,14 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         visible={isEnterOtpModalVisible}
         onClose={() => setIsEnterOtpModalVisible(false)}
         contact={resetcontact}
+        api="register"
         onSuccess={otp => {
           setResetOtp(otp);
           setIsEnterOtpModalVisible(false);
-          navigate(Screen_Name.SetPassword_Screen);
+          navigate(Screen_Name.SetPassword_Screen, {
+            source: 'register',
+            contact,
+          });
         }}
       />
       {Loading && (

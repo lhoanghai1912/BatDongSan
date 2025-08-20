@@ -3,7 +3,7 @@ export const Screen_Name = {
   Login_Screen: 'Login_Screen',
   Register_Screen: 'Register_Screen',
   SetPassword_Screen: 'SetPassword_Screen',
-
+  ForgotPassword_Screen: 'ForgotPassword_Screen',
   //AppStack
   Home_Screen: 'Home_Screen',
   Heart_Screen: 'Heart_Screen',

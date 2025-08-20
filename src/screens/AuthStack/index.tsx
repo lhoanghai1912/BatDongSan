@@ -34,7 +34,10 @@ const LoginScreen = () => {
   const [checked, setchecked] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleForgotPassword = async () => {};
+  const handleForgotPassword = () => {
+    console.log('swvmnvk');
+    navigate(Screen_Name.ForgotPassword_Screen);
+  };
 
   const handleLogin = async () => {
     try {
@@ -148,7 +151,7 @@ const LoginScreen = () => {
             {t(text.remember)}
           </Text>
         </TouchableOpacity>
-        {/* <TouchableOpacity onPress={() => handleForgotPassword}>
+        <TouchableOpacity onPress={() => handleForgotPassword()}>
           <Text
             style={{
               fontSize: Fonts.small,
@@ -159,7 +162,7 @@ const LoginScreen = () => {
           >
             {t(text.forgot)}
           </Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
       </View>
       <View style={{ marginBottom: Spacing.xlarge }}>
         <AppButton

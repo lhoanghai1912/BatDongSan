@@ -1,4 +1,6 @@
 {
+  "validate":"Please check the validate",
+  "password_special_character": "Password must contain at least 1 special character",
   "enter_userName": "Enter Username",
   "enter_password": "Enter Password",
   "notyet": "This feature will be available soon.",
@@ -79,7 +81,7 @@
   "business_registration": "Business Registration No. 1209312 issued by Hanoi DPI on 01/01/2025",
   "responsible_person": "Responsible for the e-commerce platform: Mr. ...",
   "company_address": "3rd Floor, N03-T3 Ngoai Giao Doan, Bac Tu Liem, Hanoi",
-  "version": "Version 1.0",
+  "version": "Version",
   "description": "Description",
   "property_features": "Property features",
   "created":"Created",

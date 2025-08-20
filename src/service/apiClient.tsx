@@ -30,8 +30,7 @@ apiClient.interceptors.response.use(
       console.log('📦 Response data:', error.response.data); // 🟢 Đây là chỗ chứa lỗi như "Sai mật khẩu"
       Toast.show({
         type: 'error',
-        text1: `Lỗi ${error.response.status}`,
-        text2: `${error.response.data}`,
+        text2: `${error.response.data.message.value}`,
       });
     } else if (error.request) {
       console.log('📡 No response received:', error.request);

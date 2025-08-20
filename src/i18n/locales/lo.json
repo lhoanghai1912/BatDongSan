@@ -1,4 +1,6 @@
 {
+  "validate": "ກະລຸນາກວດສອບຄວາມຖືກຕໍ່ສິນຄ້າ",
+  "password_special_character": "ລະຫັດຜ່ານຕ້ອງມີຕົວອັກສອນພິເສດ 1 ຕົວ",
   "notyet": "ຄຸນສົມບັດນີ້ຈະສາມາດໃຊ້ໄດ້ໃນໄວໆນີ້.",
   "province_first": "ກະລຸນາເລືອກເຂດແລ້ວ",
   "district_first": "ກະລຸນາເລືອກເຂົາກ່ຽວ",
@@ -78,7 +80,7 @@
   "responsible_person": "ຜູ້ມີສຳພັນຄວາມຮອບບອດທາງສິດທິໃຈ",
   "company_name": "ບໍລິສັດ FOXAI TECHNOLOGY JOINT STOCK COMPANY (FOXAI) ",
   "company_address": "ຊັ້ນ 3, N03-T3 ງອກກາວົງດົນ, ບາກທືລີ່ມ, ຫາຫົວ",
-  "version": "ຫົວຖານ 1.0",
+  "version": "ຫົວຖານ",
   "description": "ລາຍລະອຽດ",
   "property_features": "ລະຄາຂອງອະສັງຫາ",
   "created":"ປະກາດທີ່",

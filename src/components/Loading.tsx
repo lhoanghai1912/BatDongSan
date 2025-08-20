@@ -10,9 +10,16 @@ const LoadingScreen = () => {
 
   if (!isLoading) return null;
   return (
-    <View style={styles.container}>
-      <ActivityIndicator size="large" color="#0000ff" />
-      <Text style={styles.text}>Loading...</Text>
+    <View
+      style={{
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0,0,0,0.3)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 10,
+      }}
+    >
+      <ActivityIndicator size="large" color="#E53935" />
     </View>
   );
 };

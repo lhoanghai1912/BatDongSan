@@ -9,8 +9,8 @@ export const login = async (contact: string, password: string) => {
   return res.data;
 };
 
-export const forgotPassword = async (email: string) => {
-  const res = await apiClient.post('/Account/forgot-password', { email });
+export const forgotPassword = async (contact: string) => {
+  const res = await apiClient.post('/Account/forgot-password-otp', { contact });
   return res.data;
 };
 
@@ -49,6 +49,36 @@ export const create_password = async (
     address: address,
     avatarBase64: avatarBase64,
     taxCode: taxCode,
+  });
+  return res.data;
+};
+
+export const otp_ResetPassword = async (contact: string) => {
+  const res = await apiClient.post('/Account/otp-reset-password', { contact });
+  return res.data;
+};
+export const otp_ResetPassword_Verify = async (
+  contact: string,
+  otp: string,
+) => {
+  const res = await apiClient.post('Account/verify-otp-for-password-reset', {
+    contact,
+    otp,
+  });
+  return res.data;
+};
+
+export const reset_password = async (
+  contact: string,
+  otp: string,
+  newPassword: string,
+  confirmPassword: string,
+) => {
+  const res = await apiClient.post('/Account/reset-password-otp', {
+    contact,
+    otp,
+    newPassword,
+    confirmPassword,
   });
   return res.data;
 };

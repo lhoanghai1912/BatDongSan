@@ -947,7 +947,10 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
           )}
 
           {/* Other Info */}
-          {propertyType && area && price && unit ? (
+          {propertyType &&
+          area &&
+          unit &&
+          ((price && price > 0) || unit.label === t(text.deal)) ? (
             <>
               <View style={styles.body_item}>
                 <View style={styles.body_itemHeader}>

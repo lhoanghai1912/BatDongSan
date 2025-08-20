@@ -11,13 +11,11 @@ import {
 } from 'react-native';
 import AppInput from '../../../components/AppInput';
 import { ICONS, IMAGES, message, text } from '../../../utils/constants';
-import AppStyles from '../../../components/AppStyle';
 import { Spacing } from '../../../utils/spacing';
 import AppButton from '../../../components/AppButton';
 import { Colors } from '../../../utils/color';
 import Toast from 'react-native-toast-message';
-import { useRoute } from '@react-navigation/native';
-import { Screen_Name } from '../../../navigation/ScreenName';
+
 import NavBar from '../../../components/Navbar';
 import { useDispatch, useSelector } from 'react-redux';
 import { setToken, setUserData } from '../../../store/reducers/userSlice';

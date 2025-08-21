@@ -5,6 +5,8 @@ import { View, Text, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import { Colors } from '../utils/color';
 import { Spacing } from '../utils/spacing';
 import { useTranslation } from 'react-i18next';
+import { message } from '../utils/constants';
+import { lang } from 'moment';
 
 interface LanguageSelectorProps {
   visible: boolean;
@@ -25,12 +27,13 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   onSelect,
   onClose,
 }) => {
+  console.log('lang', selectedLang);
   const { t } = useTranslation();
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.container}>
-          <Text style={styles.title}>Chọn ngôn ngữ</Text>
+          <Text style={styles.title}>{t(message.selectLanguage)}</Text>
           {languages.map((item, idx) => (
             <TouchableOpacity
               key={item.value || idx}

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import {
   View,
   Text,
@@ -27,6 +28,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
 const verAndroid = '1.0.0';
+const verIos = '1.0.0';
 
 const SettingScreen = () => {
   const { t } = useTranslation();
@@ -39,7 +41,7 @@ const SettingScreen = () => {
   const [userData, setUserData] = useState(reduxUserData || null);
   const [token, setToken] = useState(reduxToken || '');
   const [langModalVisible, setLangModalVisible] = useState(false);
-  const [selectedLang, setSelectedLang] = useState('en');
+  const [selectedLang, setSelectedLang] = useState(i18n.language || 'en');
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
 
   // dùng Toast.show()
@@ -421,7 +423,9 @@ const SettingScreen = () => {
             />
           </TouchableOpacity>
           <Text style={[AppStyles.text, { textAlign: 'center' }]}>
-            {t(text.version)} {verAndroid}
+            {Platform.OS === 'ios'
+              ? `${t(text.version)} ${verIos}`
+              : `${t(text.version)} ${verAndroid}`}
           </Text>
         </ScrollView>
       </View>

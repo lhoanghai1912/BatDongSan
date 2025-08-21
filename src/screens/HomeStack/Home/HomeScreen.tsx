@@ -144,41 +144,48 @@ const HomeScreen: React.FC = ({}) => {
 
   const openFilterModal = (type: string) => {
     console.log('key:', type);
-
     setModalTitleKey(type);
+    let modalTypeValue: 'checkBoxModal' | 'radioButtonModal' | null = null;
+    let modalDataValue: any[] = [];
+    let modalTitleValue = '';
+    let singleValue = false;
     switch (type) {
       case caseType.PROPERTY_TYPE:
-        setModalType('checkBoxModal');
-        setModalData(getHouseTypeData(t));
-        setModalTitle(t(text.modal.chooseHouseType));
+        modalTypeValue = 'checkBoxModal';
+        modalDataValue = getHouseTypeData(t);
+        modalTitleValue = t(text.modal.chooseHouseType);
         break;
-
       case caseType.PRICE_RANGE:
-        setModalType('radioButtonModal');
-        setModalData(getPriceData(t));
-        setModalTitle(t(text.enter_price));
+        modalTypeValue = 'radioButtonModal';
+        modalDataValue = getPriceData(t);
+        modalTitleValue = t(text.enter_price);
         break;
       case caseType.ACREAGE:
-        setModalType('radioButtonModal');
-        setModalData(getAcreageData(t));
-        setModalTitle(t(text.enter_area));
+        modalTypeValue = 'radioButtonModal';
+        modalDataValue = getAcreageData(t);
+        modalTitleValue = t(text.enter_area);
         break;
       case caseType.BEDROOMS:
-        setModalType('radioButtonModal');
-
-        setModalData(getBedRoomData(t));
-
-        setModalTitle(t(text.bedrooms));
-
-        setIsSingleValue(true);
-
+        modalTypeValue = 'radioButtonModal';
+        modalDataValue = getBedRoomData(t);
+        modalTitleValue = t(text.bedrooms);
+        singleValue = true;
         break;
       case caseType.SORT:
-        setModalType('radioButtonModal');
-        setModalData(getSortData(t));
-        setModalTitle(t(text.enter_sort));
+        modalTypeValue = 'radioButtonModal';
+        modalDataValue = getSortData(t);
+        modalTitleValue = t(text.enter_sort);
+        break;
+      default:
+        modalTypeValue = null;
+        modalDataValue = [];
+        modalTitleValue = '';
     }
-    setModalVisible(true);
+    setModalType(modalTypeValue);
+    setModalData(modalDataValue);
+    setModalTitle(modalTitleValue);
+    setIsSingleValue(singleValue);
+    setModalVisible(!!modalTypeValue);
   };
   console.log('a================', filteredData);
 

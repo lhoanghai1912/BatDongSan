@@ -1,4 +1,5 @@
 export const message = {
+  selectLanguage: 'selectLanguage',
   validate: 'validate',
   loginSuccess: 'loginSuccess',
   registerSuccess: 'registerSuccess',

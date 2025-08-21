@@ -1,4 +1,5 @@
 {
+  "selectLanguage": "Select Language",
   "validate":"Please check the validate",
   "password_special_character": "Password must contain at least 1 special character",
   "enter_userName": "Enter Username",

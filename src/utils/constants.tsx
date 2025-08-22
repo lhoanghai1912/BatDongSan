@@ -71,6 +71,7 @@ export const caseType = {
 };
 
 export const text = {
+  web: 'web',
   unit_label: 'unit_label',
   country: 'country',
   total_value: 'total_value',
@@ -240,6 +241,7 @@ export const text = {
   },
 };
 export const ICONS = {
+  web: require('../assets/icons/desktop.png'),
   search: require('../assets/icons/search.png'),
   search_focus: require('../assets/icons/search_focus.png'),
   heart: require('../assets/icons/heart.png'),
@@ -319,4 +321,5 @@ export const link = {
   term_conditions: 'https://fox.ai.vn/dieu-khoan-thoa-thuan/',
   privacy_policy: 'https://fox.ai.vn/chinh-sach-bao-mat/',
   connect: 'https://fox.ai.vn/lien-he/',
+  web: 'https://homelao.la/',
 };

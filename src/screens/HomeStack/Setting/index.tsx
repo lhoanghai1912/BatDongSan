@@ -250,6 +250,20 @@ const SettingScreen = () => {
               />
               <Text style={AppStyles.text}> {t(text.about_us)}</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => Linking.openURL(link.web)}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginBottom: Spacing.medium,
+              }}
+            >
+              <Image
+                source={ICONS.web}
+                style={{ width: 20, height: 20, marginRight: Spacing.medium }}
+              />
+              <Text style={AppStyles.text}> {t(text.web)}</Text>
+            </TouchableOpacity>
             <View
               style={{
                 borderColor: Colors.lightGray,

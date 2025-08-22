@@ -23,6 +23,7 @@ interface AppButtonProps {
   customStyle?: ViewStyle[]; // Custom style cho nút
   disabled?: boolean;
   leftIcon?: ImageSourcePropType; // icon key trong ICONS
+  textStyle?: TextStyle; // Custom style cho text
 }
 
 const AppButton: React.FC<AppButtonProps> = ({
@@ -32,6 +33,7 @@ const AppButton: React.FC<AppButtonProps> = ({
   customStyle = [],
   disabled,
   leftIcon,
+  textStyle,
 }) => {
   return (
     <TouchableOpacity
@@ -50,9 +52,12 @@ const AppButton: React.FC<AppButtonProps> = ({
         )}
 
         <Text
+          numberOfLines={1} // Cắt tên khi quá dài
+          ellipsizeMode="tail" // Hiển thị ba chấm
           style={[
             styles.buttonText,
             { color: disabled ? Colors.black : Colors.white },
+            textStyle,
           ]}
         >
           {title}
@@ -94,6 +99,7 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontSize: Fonts.normal,
     fontWeight: 500,
+
     textAlign: 'center',
   },
 

@@ -1,12 +1,16 @@
 import apiClient from './apiClient';
 
 export const likePost = async (id: number, isLiked: boolean) => {
-  const res = await apiClient.post(`posts/${id}/toggle-like`, {
-    isLiked,
-  });
-  console.log(res);
+  try {
+    const res = await apiClient.post(`posts/${id}/toggle-like`, {
+      isLiked,
+    });
+    console.log(res);
 
-  return res.data;
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 // export const unlikePost = async (id: number) => {
@@ -25,6 +29,10 @@ export const likePost = async (id: number, isLiked: boolean) => {
 // };
 
 export const listLikedPost = async () => {
-  const res = await apiClient.get(`posts/My_liked`);
-  return res.data;
+  try {
+    const res = await apiClient.get(`posts/My_liked`);
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
 };

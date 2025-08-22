@@ -5,7 +5,6 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  TextInput,
   ScrollView,
   FlatList,
   ActivityIndicator,
@@ -31,7 +30,6 @@ import {
 } from './houseType_data';
 import SortModal from '../../../components/Modal/SortModal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFocusEffect } from '@react-navigation/native';
 import { fetchFilteredData as fetchFilteredDataLogic } from './filterLogic';
 
 const HomeScreen: React.FC = ({}) => {
@@ -51,9 +49,9 @@ const HomeScreen: React.FC = ({}) => {
 
   const dataFilter = [
     { label: t(text.property_type), key: caseType.PROPERTY_TYPE },
-    { label: t(text.price_range), key: 'khoangGia' },
-    { label: t(text.acreage), key: 'dienTich' },
-    { label: t(text.bedrooms), key: 'soPhongNgu' },
+    { label: t(text.price_range), key: caseType.PRICE_RANGE },
+    { label: t(text.acreage), key: caseType.ACREAGE },
+    { label: t(text.bedrooms), key: caseType.BEDROOMS },
   ];
   const placeholderTexts = [
     t(text.find_project),
@@ -301,15 +299,21 @@ const HomeScreen: React.FC = ({}) => {
                 if (Array.isArray(selected)) {
                   label = valueToLabel(item.key, selected);
                 } else {
-                  if (item.key === 'khoangGia' && selected !== 'Deal') {
+                  if (
+                    item.key === caseType.PRICE_RANGE &&
+                    selected !== 'Deal'
+                  ) {
                     label = `${selected} ${t(text.bilion)}`;
-                  } else if (item.key === 'khoangGia' && selected === 'Deal') {
+                  } else if (
+                    item.key === caseType.PRICE_RANGE &&
+                    selected === 'Deal'
+                  ) {
                     label = `${selected}`;
-                  } else if (item.key === 'dienTich') {
+                  } else if (item.key === caseType.ACREAGE) {
                     {
                       label = `${selected} m²`;
                     }
-                  } else if (item.key === 'soPhongNgu') {
+                  } else if (item.key === caseType.BEDROOMS) {
                     {
                       label = `${selected} ${t(text.bedrooms)}`;
                     }

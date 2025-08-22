@@ -307,14 +307,19 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
             marginBottom: 0,
             justifyContent: 'space-between',
             height: 50,
+            flexDirection: 'row', // Đảm bảo các phần tử ngang nhau
           },
         ]}
       >
+        {/* Avatar + Name */}
         <View
           style={[
             styles.descriptionItem,
             {
-              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              maxWidth: '50%',
             },
           ]}
         >
@@ -327,7 +332,11 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
             style={AppStyles.avartar_item}
           />
           <View style={{ marginLeft: Spacing.small }}>
-            <Text style={[AppStyles.text, { color: Colors.black }]}>
+            <Text
+              style={[AppStyles.text, { color: Colors.black }]}
+              numberOfLines={1} // Cắt tên khi quá dài
+              ellipsizeMode="tail" // Hiển thị ba chấm
+            >
               {post.contactName}
             </Text>
             <Text
@@ -340,12 +349,16 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
             </Text>
           </View>
         </View>
+
+        {/* Phone number + Heart button */}
         <View
           style={[
             styles.descriptionItem,
             {
+              flexDirection: 'row',
               justifyContent: 'space-evenly',
-              flex: 1.2,
+              alignItems: 'center',
+              width: '45%',
             },
           ]}
         >
@@ -360,7 +373,8 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
                 ),
               );
             }}
-            customStyle={[{ height: 50 }]}
+            customStyle={[{ height: 50, flex: 1, marginRight: Spacing.small }]}
+            textStyle={{ flexShrink: 1 }}
           />
           <TouchableOpacity
             style={{

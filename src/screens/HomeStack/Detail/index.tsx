@@ -69,26 +69,16 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
     }
 
     if (price >= 1_000_000) {
-      return `${(price / 1_000_000).toFixed(0)} ${t(text.milion)}`;
+      return `${(price / 1_000_000).toFixed(2)} ${t(text.milion)}`;
     }
 
     if (price >= 1_000) {
-      return `${(price / 1_000).toFixed(0)} ${t(text.thousand)}`;
+      return `${(price / 1_000).toFixed(2)} ${t(text.thousand)}`;
     }
 
     return `${price.toFixed(0)} `;
   };
   console.log(post.id);
-  // const handleCheckLike = async () => {
-  //   if (token) {
-  //     const res = await checkLike(post.id);
-  //     setLiked(res.liked);
-  //   }
-  // };
-  // useEffect(() => {
-  //   handleCheckLike();
-  // }, []);
-  // console.log('liked', liked);
 
   const handleLike = async () => {
     console.log('liked', liked);
@@ -104,9 +94,7 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
         setLiked(false); // cập nhật lại state nếu cần
         console.log('databack: ', res);
       }
-    } catch (error) {
-      console.error('Lỗi like/unlike:', error);
-    }
+    } catch (error) {}
   };
 
   const renderItem = ({ item, index }) => {
@@ -146,7 +134,7 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
         <View style={styles.header}>
           <FlatList
             data={post.images.map(item => item.imageUrl)}
-            keyExtractor={item => item.displayOrder?.toString?.() ?? ''}
+            keyExtractor={(item, index) => item.displayOrder?.toString?.()}
             horizontal
             pagingEnabled
             showsHorizontalScrollIndicator={false}

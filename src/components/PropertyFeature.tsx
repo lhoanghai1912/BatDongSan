@@ -20,15 +20,31 @@ const PropertyDetailsView = ({ data }: { data: any }) => {
   const [expanded, setExpanded] = useState(false);
   const { t } = useTranslation();
 
+  const formatPriceToTy = (price: number): string => {
+    if (!price || isNaN(price)) return t(text.deal);
+
+    if (price >= 1_000_000_000) {
+      return `${(price / 1_000_000_000).toFixed(2)} ${t(text.bilion)}`;
+    }
+
+    if (price >= 1_000_000) {
+      return `${(price / 1_000_000).toFixed(2)} ${t(text.milion)}`;
+    }
+
+    if (price >= 1_000) {
+      return `${(price / 1_000).toFixed(2)} ${t(text.thousand)}`;
+    }
+
+    return `${price.toFixed(0)} `;
+  };
+
   // Mảng các đặc điểm cần hiển thị
   const features = [
     {
       key: 'price',
       title: t(text.price),
       icon: ICONS.price,
-      value: data.price
-        ? `${(data.price / 1e9).toFixed(2)} ${t(text.bilion)}`
-        : null,
+      value: formatPriceToTy(data.price),
     },
     {
       id: data.id,

@@ -14,7 +14,7 @@ import { Spacing } from '../../utils/spacing';
 import { ICONS, message, text } from '../../utils/constants';
 import AppStyles from '../AppStyle';
 import AppButton from '../AppButton';
-const MultiSlider = require('@ptomasroos/react-native-multi-slider');
+import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import Toast from 'react-native-toast-message';
 import { useTranslation } from 'react-i18next';
 
@@ -215,7 +215,9 @@ const RadioButtonModal: React.FC<RadioButtonModalProps> = ({
           >
             <View style={styles.valueRow}>
               {isSingleValue ? (
-                <Text style={styles.valueText}>Số phòng: {sliderValue}</Text>
+                <Text style={styles.valueText}>
+                  {t(text.bathrooms)}: {sliderValue}
+                </Text>
               ) : (
                 <View style={styles.valueRow}>
                   <Text style={styles.valueText}>

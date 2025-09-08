@@ -15,10 +15,14 @@ import {
   initialWindowMetrics,
   SafeAreaProvider,
 } from 'react-native-safe-area-context';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+GoogleSignin.configure({
+  webClientId:
+    '933795750129-idvkam8p59s26v1mv2ooainof52cd1it.apps.googleusercontent.com',
+  offlineAccess: true,
+});
+enableScreens(); // Bật tính năng screens để sử dụng trong navigation
 function App() {
-  enableScreens(); // Bật tính năng screens để sử dụng trong navigation
   return (
     <Provider store={store}>
       <StatusBar barStyle="light-content" translucent={false} />

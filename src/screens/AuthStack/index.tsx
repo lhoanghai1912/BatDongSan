@@ -20,11 +20,13 @@ import { navigate } from '../../navigation/RootNavigator';
 import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
 import { setToken, setUserData } from '../../store/reducers/userSlice';
-import { login } from '../../service';
+import { login, loginFirebase } from '../../service';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import { likePost } from '../../service/likeService';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import auth from '@react-native-firebase/auth';
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
@@ -84,10 +86,37 @@ const LoginScreen = () => {
   };
 
   const handleLoginWithGoogle = async () => {
-    Toast.show({
-      type: 'info',
-      text1: t(message.notyet),
-    });
+    console.log('handleLoginWithGoogle');
+
+    try {
+      setLoading(true);
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      console.log('userInfo', userInfo);
+      const idToken = userInfo?.data?.idToken || '';
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      // console.log('googleCredential', googleCredential);
+
+      const userCredential = await auth().signInWithCredential(
+        googleCredential,
+      );
+      // console.log('userCredential', userCredential);
+
+      const firebaseIdToken = await userCredential.user.getIdToken();
+      console.log('firebaseIdToken', firebaseIdToken);
+      const res = await loginFirebase(firebaseIdToken);
+      // console.log('res', res);
+
+      dispatch(setToken({ token: res.token }));
+      // console.log('token', res.token);
+
+      navigate(Screen_Name.BottomTab_Navigator);
+      console.log(userInfo);
+    } catch (error) {
+      console.log('error', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLoginWithApple = async () => {

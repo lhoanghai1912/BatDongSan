@@ -99,6 +99,8 @@ const HomeScreen: React.FC = ({}) => {
   }, [t]);
 
   const fetchFilteredData = (page: number = 1, append: boolean = false) => {
+    console.log(searchValue, 'searchValue');
+
     fetchFilteredDataLogic({
       selectedValue,
       selectedSort,

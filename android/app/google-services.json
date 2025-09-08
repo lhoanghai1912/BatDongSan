@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "933795750129",
+    "project_id": "fox-homes-3223e",
+    "storage_bucket": "fox-homes-3223e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:933795750129:android:1b59b44a06e2687736c950",
+        "android_client_info": {
+          "package_name": "com.homesapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "933795750129-9vr0l00gi12ek9hch4buu8oq8b6skub2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.homesapp",
+            "certificate_hash": "5528367f9b3ef005487fb856185a6d1a9d9a3388"
+          }
+        },
+        {
+          "client_id": "933795750129-p73jrj1ger2n4mgf044j91qfjcbogks1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.homesapp",
+            "certificate_hash": "f7937369bd8f9e15918f7a219b4b16e882707841"
+          }
+        },
+        {
+          "client_id": "933795750129-idvkam8p59s26v1mv2ooainof52cd1it.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLx4Yg3xzE4S7kv-ghuPWnSGMcfA2bLYE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "933795750129-idvkam8p59s26v1mv2ooainof52cd1it.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

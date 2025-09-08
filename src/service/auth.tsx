@@ -9,6 +9,11 @@ export const login = async (contact: string, password: string) => {
   return res.data;
 };
 
+export const loginFirebase = async (idToken: string) => {
+  const res = await apiClient.post('/Account/firebase-login', { idToken });
+  return res.data;
+};
+
 export const forgotPassword = async (contact: string) => {
   const res = await apiClient.post('/Account/forgot-password-otp', { contact });
   return res.data;

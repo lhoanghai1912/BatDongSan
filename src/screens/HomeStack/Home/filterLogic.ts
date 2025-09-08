@@ -26,7 +26,11 @@ export async function fetchFilteredData({
   }
 
   try {
+    console.log('absc');
+    
     const userFilters = buildGridifyFilter(selectedValue, selectedSort.value);
+    console.log( 'userFilters',userFilters);
+    
     const typeFilter = `type=${searchValue}`;
     let locationFilter = '';
 
@@ -41,6 +45,8 @@ export async function fetchFilteredData({
     const fullFilter = userFilters
       ? `${typeFilter},${userFilters}${locationFilter}`
       : `${typeFilter}${locationFilter}`;
+    
+    console.log('Full Filter String:', fullFilter);
 
     const res = await getAllPosts(
       fullFilter,

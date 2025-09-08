@@ -121,14 +121,14 @@ const CheckBoxModal: React.FC<CheckBoxModalProps> = ({
             <View style={styles.buttonWrap}>
               <View style={{ width: '40%' }}>
                 <AppButton
-                  title="Đặt lại"
+                  title={t(text.reset)}
                   disabled={localSelected.length === 0}
                   onPress={() => clearValue()}
                 />
               </View>
               <View style={{ width: '40%' }}>
                 <AppButton
-                  title="Áp dụng"
+                  title={t(text.submit)}
                   onPress={() => {
                     console.log('selected value:', localSelected);
 

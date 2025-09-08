@@ -36,6 +36,8 @@ export const getAllPosts = async (
   limit?: number,
 ) => {
   try {
+    console.log('filterString', filterString);
+
     const params: Record<string, any> = {};
 
     if (page !== undefined && page !== null) {

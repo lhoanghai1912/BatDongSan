@@ -7,26 +7,18 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:933795750129:android:1b59b44a06e2687736c950",
+        "mobilesdk_app_id": "1:933795750129:android:5403a3e6acd4623136c950",
         "android_client_info": {
           "package_name": "com.homesapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "933795750129-9vr0l00gi12ek9hch4buu8oq8b6skub2.apps.googleusercontent.com",
+          "client_id": "933795750129-pph1jp581lfbhe5s6vdphdssc2ssdp1g.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.homesapp",
-            "certificate_hash": "5528367f9b3ef005487fb856185a6d1a9d9a3388"
-          }
-        },
-        {
-          "client_id": "933795750129-p73jrj1ger2n4mgf044j91qfjcbogks1.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.homesapp",
-            "certificate_hash": "f7937369bd8f9e15918f7a219b4b16e882707841"
+            "certificate_hash": "ca15a91e7a660dd578e13c3a3772e6faf515be5b"
           }
         },
         {

@@ -2,29 +2,47 @@
 import apiClient from './apiClient';
 
 export const login = async (contact: string, password: string) => {
-  const res = await apiClient.post('/Account/login-with-password', {
-    contact,
-    password,
-  });
-  return res.data;
+  try {
+    const res = await apiClient.post('/Account/login-with-password', {
+      contact,
+      password,
+    });
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const loginFirebase = async (idToken: string) => {
-  const res = await apiClient.post('/Account/firebase-login', { idToken });
-  return res.data;
+  try {
+    const res = await apiClient.post('/Account/firebase-login', { idToken });
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const forgotPassword = async (contact: string) => {
-  const res = await apiClient.post('/Account/forgot-password-otp', { contact });
-  return res.data;
+  try {
+    const res = await apiClient.post('/Account/forgot-password-otp', {
+      contact,
+    });
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const register = async (contact: string) => {
-  const res = await apiClient.post('Account/register-with-otp', {
-    contact: contact,
-  });
+  try {
+    const res = await apiClient.post('Account/register-with-otp', {
+      contact: contact,
+    });
 
-  return res.data;
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const enterOtp = async (contact: string, otp: string) => {
@@ -45,32 +63,46 @@ export const create_password = async (
   avatarBase64?: string,
   taxCode?: string,
 ) => {
-  const res = await apiClient.post('/Account/create-password', {
-    verificationToken: verificationToken,
-    password: password,
-    confirmPassword: confirmPassword,
-    gender: gender,
-    dateOfBirth: dateOfBirth,
-    address: address,
-    avatarBase64: avatarBase64,
-    taxCode: taxCode,
-  });
-  return res.data;
+  try {
+    const res = await apiClient.post('/Account/create-password', {
+      verificationToken: verificationToken,
+      password: password,
+      confirmPassword: confirmPassword,
+      gender: gender,
+      dateOfBirth: dateOfBirth,
+      address: address,
+      avatarBase64: avatarBase64,
+      taxCode: taxCode,
+    });
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const otp_ResetPassword = async (contact: string) => {
-  const res = await apiClient.post('/Account/otp-reset-password', { contact });
-  return res.data;
+  try {
+    const res = await apiClient.post('/Account/otp-reset-password', {
+      contact,
+    });
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
 };
 export const otp_ResetPassword_Verify = async (
   contact: string,
   otp: string,
 ) => {
-  const res = await apiClient.post('Account/verify-otp-for-password-reset', {
-    contact,
-    otp,
-  });
-  return res.data;
+  try {
+    const res = await apiClient.post('Account/verify-otp-for-password-reset', {
+      contact,
+      otp,
+    });
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const reset_password = async (
@@ -79,11 +111,15 @@ export const reset_password = async (
   newPassword: string,
   confirmPassword: string,
 ) => {
-  const res = await apiClient.post('/Account/reset-password-otp', {
-    contact,
-    otp,
-    newPassword,
-    confirmPassword,
-  });
-  return res.data;
+  try {
+    const res = await apiClient.post('/Account/reset-password-otp', {
+      contact,
+      otp,
+      newPassword,
+      confirmPassword,
+    });
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
 };

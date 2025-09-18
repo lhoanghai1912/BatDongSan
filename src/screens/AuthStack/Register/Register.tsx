@@ -38,9 +38,10 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
     try {
       setLoading(true);
       const registerData = await register(contact);
+      console.log('register', registerData);
 
-      setIsEnterOtpModalVisible(true);
-      setResetcontact(contact);
+      // setIsEnterOtpModalVisible(true);
+      // setResetcontact(contact);
     } catch (error) {
       console.log('error', error);
     } finally {

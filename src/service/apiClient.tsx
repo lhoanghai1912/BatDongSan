@@ -21,25 +21,45 @@ apiClient.interceptors.request.use(config => {
 });
 
 apiClient.interceptors.response.use(
-  response => response,
-  error => {
-    //  ('API Error:', error);
-    console.log(error.message);
-    if (error.response) {
-      console.log('📥 Response status:', error.response.status);
-      console.log('📦 Response data:', error.response.data); // 🟢 Đây là chỗ chứa lỗi như "Sai mật khẩu"
-      Toast.show({
-        type: 'error',
-        text2: `${error.response.data.title}`,
-      });
-    } else if (error.request) {
-      console.log('📡 No response received:', error.request);
-    } else {
-      console.log('⚠️ Error setting up request:', error.message);
+  response => {
+    // Kiểm tra status code - nếu khác 200 thì vào error
+    if (response.status !== 200) {
+      const status = response.status;
+      const data = response.data;
+      const message = data.message.value;
+      console.log('response', response);
+
+      console.log('📥 Non-200 status:', status);
+      console.log('📦 Response data:', data);
+
+      // Tạo error object để reject
+      const error = new Error(message);
+      (error as any).response = response;
+      (error as any).status = status;
+      return Promise.reject(error);
     }
 
+    // Nếu response trả về message "Bạn đã ứng tuyển job này rồi" mà status vẫn là 200
+
+    return response;
+  },
+  error => {
+    console.log('API Error:', error.message);
+    if (error.response) {
+      const status = error.response.status;
+      const data = error.response.data;
+      const message = data.message.value;
+      const value = data.value; // Giả sử server trả về lỗi trong trường 'value'
+
+      console.log('📥 Response status:', status);
+      console.log('📦 Response data:', data);
+
+      Toast.show({
+        type: 'error',
+        text2: message || 'Đã có lỗi xảy ra',
+      });
+    }
     return Promise.reject(error);
   },
 );
-
 export default apiClient;

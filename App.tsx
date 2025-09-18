@@ -4,6 +4,7 @@
  *
  * @format
  */
+import React from 'react';
 
 import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
 import { Provider } from 'react-redux';

@@ -333,7 +333,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
           />
           <View style={{ marginLeft: Spacing.small }}>
             <Text
-              style={[AppStyles.text, { color: Colors.black }]}
+              style={[AppStyles.text, { color: Colors.black, width: '80%' }]}
               numberOfLines={1} // Cắt tên khi quá dài
               ellipsizeMode="tail" // Hiển thị ba chấm
             >

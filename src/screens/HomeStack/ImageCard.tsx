@@ -35,9 +35,8 @@ import { likePost } from '../../service/likeService';
 type ImageCardProps = {
   post: any;
   onReload?: () => void; // 🔹 Optional
-  edit?: boolean;
 };
-const ImageCard: React.FC<ImageCardProps> = ({ post, onReload, edit }) => {
+const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
   const { t } = useTranslation();
   const images = post.images?.map(img => img).slice(0, 4) || [];
   const imageslink = post.images?.map(img => img.imageUrl).slice(0, 4) || [];
@@ -134,11 +133,11 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload, edit }) => {
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={() =>
-        navigate(edit ? Screen_Name.Create_Screen : Screen_Name.Detail_Screen, {
+      onPress={() => {
+        navigate(Screen_Name.Detail_Screen, {
           post,
-        })
-      }
+        });
+      }}
     >
       <View style={{ marginBottom: Spacing.medium }}>
         {images.length === 1 && imageslink[0] ? (

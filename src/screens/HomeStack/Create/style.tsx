@@ -8,7 +8,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    paddingTop: 70,
     paddingHorizontal: Spacing.medium,
     backgroundColor: Colors.white,
     justifyContent: 'space-between',

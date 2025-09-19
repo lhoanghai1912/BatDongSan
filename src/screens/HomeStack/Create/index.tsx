@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import AppStyles from '../../../components/AppStyle';
-import { ICONS, text } from '../../../utils/constants';
+import { ICONS, link, text } from '../../../utils/constants';
 import { useTranslation } from 'react-i18next';
 import AppButton from '../../../components/AppButton';
 import { navigate } from '../../../navigation/RootNavigator';
@@ -28,6 +28,7 @@ import { useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n from '../../../i18n/i18n';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
   navigation: any;
@@ -36,6 +37,14 @@ interface Props {
 const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
   const { t } = useTranslation();
   const { userData: reduxUserData } = useSelector((state: any) => state.user);
+  const insets = useSafeAreaInsets();
+  // ✅ Extract edit mode data from route params
+  const editPost = route?.params?.post;
+  const isEditMode = !!editPost; // ✅ Auto-detect edit mode
+  const editingPostId = editPost?.id;
+
+  console.log('Edit Mode:', isEditMode);
+  console.log('Edit Post Data:', editPost);
 
   const [userData, setUserData] = useState(reduxUserData || null);
   const [isShowDemand, setIsShowDemand] = useState(true);
@@ -137,7 +146,6 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
   const [contactPhone, setContactPhone] = useState(userData?.phoneNumber);
   const [imageUpload, setImageUpload] = useState<any[]>([]);
   console.log(userData);
-  console.log('route', route.params.post);
 
   const handleSelect = (selected: { label: string; value: number }) => {
     switch (selectedField) {
@@ -184,45 +192,203 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
     setLocationText(parts.join(', ')); // Ví dụ: "Phường Bến Nghé, Quận 1, TP.HCM"
   };
 
+  // ✅ Auto-fill form with edit data
+  useEffect(() => {
+    if (isEditMode && editPost) {
+      console.log('Auto-filling form with edit data:', editPost);
+
+      // ✅ Fill basic info
+      setDemanLabel(editPost.type === 1 ? t(text.sale) : t(text.rent));
+      setTitle(editPost.title || '');
+      setDescription(editPost.description || '');
+      setArea(editPost.area?.toString() || '');
+      setPrice(editPost.price || 0);
+      setBedroom(editPost.bedrooms || 0);
+      setBathroom(editPost.bathrooms || 0);
+      setFloor(editPost.floor || 0);
+      setAccessRoad(editPost.accessRoad || 0);
+      setFrontage(editPost.frontage || 0);
+
+      // ✅ Fill contact info
+      setContactName(editPost.contactName || userData?.fullName || '');
+      setContactEmail(editPost.contactEmail || userData?.email || '');
+      setContactPhone(editPost.contactPhone || userData?.phoneNumber || '');
+
+      // ✅ Fill location data
+      if (editPost.provinceId) {
+        const locationData = {
+          province: {
+            id: editPost.provinceId,
+            name: editPost.provinceName,
+          },
+          district: {
+            id: editPost.districtId,
+            name: editPost.districtName,
+          },
+          commune: {
+            id: editPost.communeId,
+            name: editPost.communeName,
+          },
+          street: editPost.street || '',
+        };
+        setLocation(locationData);
+
+        // ✅ Build location text
+        const parts = [
+          editPost.street,
+          editPost.communeName,
+          editPost.districtName,
+          editPost.provinceName,
+        ].filter(Boolean);
+        setLocationText(parts.join(', '));
+      }
+
+      // ✅ Fill property type
+      if (editPost.categoryType) {
+        setPropertyType({
+          value: editPost.categoryType,
+          label: editPost.categoryTypeText || '',
+        });
+      }
+
+      // ✅ Fill unit info
+      if (editPost.unit) {
+        setUnit({
+          value: editPost.unit,
+          label: editPost.unitText || t(text.unit_label),
+        });
+      }
+
+      // ✅ Fill complex fields (if available in post data)
+      if (editPost.legalDocument) {
+        setLegal({
+          value: editPost.legalDocument,
+          label: editPost.legalDocumentText || '',
+        });
+      }
+
+      if (editPost.furniture) {
+        setFurniture({
+          value: editPost.furniture,
+          label: editPost.furnitureText || '',
+        });
+      }
+
+      if (editPost.houseDirection) {
+        setHouseDirection({
+          value: editPost.houseDirection,
+          label: editPost.houseDirectionText || '',
+        });
+      }
+
+      if (editPost.balconyDirection) {
+        setBalconyDirection({
+          value: editPost.balconyDirection,
+          label: editPost.balconyDirectionText || '',
+        });
+      }
+
+      // ✅ Fill rental-specific fields
+      if (editPost.type === 2) {
+        // Rent
+        if (editPost.availableFrom) {
+          setAvailbleFrom({
+            value: editPost.availableFrom,
+            label: editPost.availableFromText || '',
+          });
+        }
+
+        if (editPost.electricityPrice) {
+          seteElectricityPrice({
+            value: editPost.electricityPrice,
+            label: editPost.electricityPriceText || '',
+          });
+        }
+
+        if (editPost.waterPrice) {
+          setWaterPrice({
+            value: editPost.waterPrice,
+            label: editPost.waterPriceText || '',
+          });
+        }
+
+        if (editPost.internetPrice) {
+          setInternetPrice({
+            value: editPost.internetPrice,
+            label: editPost.internetPriceText || '',
+          });
+        }
+      }
+
+      // ✅ Fill existing images
+      if (editPost.images && editPost.images.length > 0) {
+        const existingImageUris = editPost.images.map(
+          (img: any) => `${link.url}${img.imageUrl || img.url}`,
+        );
+        setImageUris(existingImageUris);
+
+        // ✅ Set imageUpload for form submission (existing images)
+        const existingImageData = editPost.images.map(
+          (img: any, index: number) => ({
+            uri: `${link.url}${img.imageUrl || img.url}`,
+            fileName: img.description || `image_${index}`,
+            type: 'image/jpeg',
+            isExisting: true, // ✅ Flag for existing images
+            id: img.id,
+          }),
+        );
+        setImageUpload(existingImageData);
+      }
+
+      console.log('Form auto-filled successfully for edit mode');
+    }
+  }, [isEditMode, editPost, userData, t]);
+
+  // ✅ Modify useFocusEffect to only reset for new posts
   useFocusEffect(
     React.useCallback(() => {
-      // Reset toàn bộ các trường về rỗng
-      setDemanLabel(`${t(text.more_info)}`);
-      setLocation({});
-      setLocationText('');
-      setPropertyType('');
-      setArea('');
-      setPrice(0);
-      setUnit({ label: t(text.unit_label), value: 0 });
-      setBedroom(0);
-      setBathroom(0);
-      setFloor(0);
-      setAccessRoad(0);
-      setFrontage(0);
-      setTitle('');
-      setDescription('');
-      setLegal({ label: '', value: 0 });
-      setFurniture({ label: '', value: 0 });
-      setHouseDirection({ label: '', value: 0 });
-      setBalconyDirection({ label: '', value: 0 });
-      setAvailbleFrom({ label: '', value: 0 });
-      seteElectricityPrice({ label: '', value: 0 });
-      setWaterPrice({ label: '', value: 0 });
-      setInternetPrice({ label: '', value: 0 });
-      setImageUpload([]);
-      setImageUris([]);
-      setIsShowDemand(true);
-      setIsShowMainInfo(true);
-      setIsShowContactInfo(true);
-      setIsShowOtherInfo(true);
-      setIshowTitDes(true);
-      setIsShowImagesUpdaload(true);
+      // ✅ Only reset form if NOT in edit mode
+      if (!isEditMode) {
+        console.log('Resetting form for new post creation');
+        // Reset toàn bộ các trường về rỗng
+        setDemanLabel(`${t(text.more_info)}`);
+        setLocation({});
+        setLocationText('');
+        setPropertyType('');
+        setArea('');
+        setPrice(0);
+        setUnit({ label: t(text.unit_label), value: 0 });
+        setBedroom(0);
+        setBathroom(0);
+        setFloor(0);
+        setAccessRoad(0);
+        setFrontage(0);
+        setTitle('');
+        setDescription('');
+        setLegal({ label: '', value: 0 });
+        setFurniture({ label: '', value: 0 });
+        setHouseDirection({ label: '', value: 0 });
+        setBalconyDirection({ label: '', value: 0 });
+        setAvailbleFrom({ label: '', value: 0 });
+        seteElectricityPrice({ label: '', value: 0 });
+        setWaterPrice({ label: '', value: 0 });
+        setInternetPrice({ label: '', value: 0 });
+        setImageUpload([]);
+        setImageUris([]);
+        setIsShowDemand(true);
+        setIsShowMainInfo(true);
+        setIsShowContactInfo(true);
+        setIsShowOtherInfo(true);
+        setIshowTitDes(true);
+        setIsShowImagesUpdaload(true);
+      }
 
       return () => {
         // Cleanup nếu cần
       };
-    }, []),
+    }, [isEditMode, t]),
   );
+  console.log('rou', route);
 
   const formatPriceToTy = (price: number): string => {
     if (!price || isNaN(price)) return '0 đồng';
@@ -333,74 +499,101 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
     ? validOtherInfo
     : validOtherInfo.slice(0, maxVisibleItems);
   const remainingCount = validOtherInfo.length - visibleItems.length; // Số lượng phần còn lại
-  const formData = new FormData();
-  const data = {
-    type,
-    categoryType: propertyType.value,
-    provinceId: location?.province?.id,
-    provinceName: location?.province?.name,
-    districtId: location?.district?.id,
-    districtName: location?.district?.name,
-    communeId: location?.commune?.id,
-    communeName: location?.commune?.name,
-    street: location?.street,
-    area,
-    price,
-    unit: unit.value,
-    legalDocument: legal.value,
-    furniture: furniture.value,
-    bedrooms,
-    bathrooms,
-    floor,
-    houseDirection: housedirection.value,
-    balconyDirection: balconydirection.value,
-    accessRoad,
-    frontage,
-    availableFrom: availableFrom.value,
-    electricityPrice: electricityPrice.value,
-    waterPrice: waterPrice.value,
-    internetPrice: internetPrice.value,
-    title,
-    description,
-    menities: '1',
-    contactName,
-    contactPhone,
-    contactEmail,
-    videoUrl: 'http://youtu.be/xyz',
-    isExpired: false,
-    images: imageUpload.map((item: any, index: number) => {
-      return {
-        description: item?.fileName,
-        displayOrder: index,
-      };
-    }),
-  };
-  imageUpload.forEach((item: any) => {
-    formData.append('images', {
-      uri: item?.uri,
-      type: item?.type,
-      name: item?.fileName,
-    } as any);
-  });
 
-  formData.append('jsonPostData', JSON.stringify(data));
-
+  // ✅ Modify handleCreatePost to handle both create and update
   const handleCreatePost = async () => {
     setLoading(true);
     try {
-      const res = await createPost(formData);
-      console.log('ressssssss=================', res);
+      // ✅ Prepare form data (same as before)
+      const formData = new FormData();
+      const data = {
+        type,
+        categoryType: propertyType.value,
+        provinceId: location?.province?.id,
+        provinceName: location?.province?.name,
+        districtId: location?.district?.id,
+        districtName: location?.district?.name,
+        communeId: location?.commune?.id,
+        communeName: location?.commune?.name,
+        street: location?.street,
+        area,
+        price,
+        unit: unit.value,
+        legalDocument: legal.value,
+        furniture: furniture.value,
+        bedrooms,
+        bathrooms,
+        floor,
+        houseDirection: housedirection.value,
+        balconyDirection: balconydirection.value,
+        accessRoad,
+        frontage,
+        availableFrom: availableFrom.value,
+        electricityPrice: electricityPrice.value,
+        waterPrice: waterPrice.value,
+        internetPrice: internetPrice.value,
+        title,
+        description,
+        menities: '1',
+        contactName,
+        contactPhone,
+        contactEmail,
+        videoUrl: 'http://youtu.be/xyz',
+        isExpired: false,
+        images: imageUpload.map((item: any, index: number) => {
+          return {
+            description: item?.fileName,
+            displayOrder: index,
+            ...(item.isExisting && { id: item.id }), // ✅ Include ID for existing images
+          };
+        }),
+      };
 
-      if (res.status === 200) {
+      // ✅ Handle image uploads (only new images)
+      const newImages = imageUpload.filter(item => !item.isExisting);
+      newImages.forEach((item: any) => {
+        formData.append('images', {
+          uri: item?.uri,
+          type: item?.type,
+          name: item?.fileName,
+        } as any);
+      });
+
+      formData.append('jsonPostData', JSON.stringify(data));
+
+      let res;
+      if (isEditMode) {
+        // ✅ Update existing post
+        console.log('Updating post:', editingPostId);
+        // res = await updatePost(editingPostId, formData); // ✅ You'll need to create this API function
         Toast.show({
           type: 'success',
           text1: 'Success',
-          text2: 'Create post success',
+          text2: 'Post updated successfully',
         });
-        navigate(Screen_Name.Home_Screen);
+      } else {
+        // ✅ Create new post
+        console.log('Creating new post');
+        res = await createPost(formData);
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Post created successfully',
+        });
+      }
+
+      console.log('Operation result:', res);
+
+      if (res.status === 200) {
+        navigate(Screen_Name.Post_Screen); // ✅ Navigate back to posts list
       }
     } catch (error) {
-      console.log('Error is: ', error);
+      console.log('Error:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: isEditMode ? 'Failed to update post' : 'Failed to create post',
+      });
     } finally {
       setLoading(false);
     }
@@ -445,15 +638,20 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
   };
   console.log('picked iamge', imageUris);
 
+  // ✅ Update header title based on mode
+  const headerTitle = isEditMode ? t('Edit Post') : t(text.create_post);
+
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top }]}>
         <View style={styles.header_top}>
           <Text style={[AppStyles.title, { marginBottom: 0 }]}>
-            {t(text.create_post)}
+            {headerTitle}
           </Text>
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
+            onPress={() =>
+              editPost ? navigate(Screen_Name.Post_Screen) : navigation.goBack()
+            }
             style={styles.button}
           >
             <Text style={styles.text}>{t(text.exit)}</Text>
@@ -1715,8 +1913,8 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
           )}
         </View>
         <AppButton
-          title={t(text.create_post)}
-          customStyle={[{ display: imageUpload.length > 1 ? 'flex' : 'none' }]}
+          title={isEditMode ? t('Update Post') : t(text.create_post)}
+          customStyle={[{ display: imageUpload.length > 0 ? 'flex' : 'none' }]}
           onPress={() => handleCreatePost()}
         />
       </ScrollView>

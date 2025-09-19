@@ -31,8 +31,9 @@ import i18n from '../../../i18n/i18n';
 
 interface Props {
   navigation: any;
+  route?: any;
 }
-const CreateScreen: React.FC<Props> = ({ navigation }) => {
+const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
   const { t } = useTranslation();
   const { userData: reduxUserData } = useSelector((state: any) => state.user);
 
@@ -136,6 +137,7 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
   const [contactPhone, setContactPhone] = useState(userData?.phoneNumber);
   const [imageUpload, setImageUpload] = useState<any[]>([]);
   console.log(userData);
+  console.log('route', route.params.post);
 
   const handleSelect = (selected: { label: string; value: number }) => {
     switch (selectedField) {

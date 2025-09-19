@@ -108,8 +108,22 @@ const LoginScreen = () => {
       // console.log('res', res);
 
       dispatch(setToken({ token: res.token }));
-      // console.log('token', res.token);
-
+      // dispatch(setUserData({ token: res.token }));
+      console.log('data', userInfo.data);
+      dispatch(
+        setUserData({
+          userData: {
+            address: '',
+            avatarUrl: userInfo.data?.user?.photo,
+            dateOfBirth: '',
+            email: userInfo.data?.user?.email,
+            fullName: userInfo.data?.user?.name,
+            gender: '',
+            phoneNumber: '',
+            taxCode: '',
+          },
+        }),
+      );
       navigate(Screen_Name.BottomTab_Navigator);
       console.log(userInfo);
     } catch (error) {

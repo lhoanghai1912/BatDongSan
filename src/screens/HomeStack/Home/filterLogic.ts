@@ -127,14 +127,6 @@ export async function fetchFilteredData({
   }
 
   try {
-    console.log('🚀 Filter Function Called:');
-    console.log('- Selected Value:', selectedValue);
-    console.log('- Selected Sort:', selectedSort);
-    console.log('- Search Value:', searchValue);
-    console.log('- Location:', location);
-    console.log('- Page:', page);
-    console.log('- Append:', append);
-
     // Xây dựng filter string
     const userFilters = buildFilterString(selectedValue);
     const locationFilter = buildLocationFilter(location);
@@ -151,24 +143,12 @@ export async function fetchFilteredData({
         ? selectedSort.value
         : 'createdAt desc';
 
-    console.log('🔍 API Call Parameters:');
-    console.log('- Filter String:', allFilters);
-    console.log('- Sort Value:', sortValue);
-    console.log('- Page:', page);
-    console.log('- Items Per Page:', ITEMS_PER_PAGE);
-    console.log('- Selected Sort Object:', selectedSort);
-
     const response = await getAllPosts(
       allFilters,
       sortValue,
       page,
       ITEMS_PER_PAGE,
     );
-
-    console.log('📡 API Response:');
-    console.log('- Response:', response);
-    console.log('- Result Length:', response?.result?.length || 0);
-    console.log('- Total:', response?.total || 0);
 
     // Xử lý response
     if (response && response.result && Array.isArray(response.result)) {
@@ -192,15 +172,6 @@ export async function fetchFilteredData({
       setHasMoreData(response.result.length === ITEMS_PER_PAGE);
       setCurrentPage(page);
       setIsInitialLoad(false);
-
-      console.log('✅ Filter Success:');
-      console.log('- Data Length:', response.result.length);
-      console.log('- Total Results:', total);
-      console.log(
-        '- Has More Data:',
-        response.result.length === ITEMS_PER_PAGE,
-      );
-      console.log('- Current Page:', page);
     } else {
       setFilteredData([]);
       setTotalResults(0);
@@ -209,10 +180,6 @@ export async function fetchFilteredData({
       setIsInitialLoad(false);
     }
   } catch (error) {
-    console.error('❌ Filter Error:');
-    console.error('- Error:', error);
-    console.error('- Error Message:', (error as any)?.message);
-    console.error('- Error Stack:', (error as any)?.stack);
   } finally {
     setLoading(false);
     setLoadingMore(false);

@@ -20,6 +20,7 @@ import { navigate } from '../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../navigation/ScreenName';
 import AppButton from '../../../components/AppButton';
 import { listLikedPost } from '../../../service/likeService';
+import NavBar from '../../../components/Navbar';
 
 type PostType = {
   _id: string;
@@ -27,7 +28,7 @@ type PostType = {
   [key: string]: any;
 };
 
-const HeartScreen = () => {
+const HeartScreen = ({ navigation }: any) => {
   const { t } = useTranslation();
   const [listDataLiked, setListLiked] = useState<PostType[]>([]);
   const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -59,7 +60,7 @@ const HeartScreen = () => {
   };
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <Text
           style={[
             AppStyles.title,
@@ -73,7 +74,8 @@ const HeartScreen = () => {
           {t(text.saved_post)}
         </Text>
         <View style={AppStyles.line} />
-      </View>
+      </View> */}
+      <NavBar title={t(text.saved_post)} onPress={() => navigation.goBack()} />
       {token ? (
         <>
           <View style={styles.body}>
@@ -112,10 +114,10 @@ const HeartScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 50,
+    // marginTop: 50,
   },
   header: {},
-  body: { marginBottom: Spacing.xxxlarge },
+  body: { marginBottom: Spacing.xxxlarge, marginTop: Spacing.medium },
   underLine: {
     borderWidth: 1,
     borderColor: Colors.Gray,

@@ -82,3 +82,24 @@ export const getPostById = async (id: number) => {
     return null;
   }
 };
+
+export const getPostOfUser = async (page: number, pageSize: number) => {
+  try {
+    const response = await apiClient.get(
+      `/posts/my-posts?Page=${page}&PageSize=${pageSize}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          // Add auth header if needed
+        },
+      },
+    );
+    console.log('API Raw Response:', response);
+
+    return response.data;
+  } catch (error: any) {
+    console.log(`Get post of User error:`, error);
+
+    throw error;
+  }
+};

@@ -92,12 +92,8 @@ const HomeScreen: React.FC = ({}) => {
   ];
   // Removed useFocusEffect to prevent duplicate API call on mount
   useEffect(() => {
-    console.log('🔄 useEffect triggered - Sort Data Update');
-    console.log('- Translation function:', t);
     const newSortData = getSortData(t);
-    console.log('- New Sort Data:', newSortData);
     setSelectedSort(prevSort => {
-      console.log('- Previous Sort:', prevSort);
       const validOption = newSortData.find(
         option => option.value === prevSort.value,
       );
@@ -105,19 +101,12 @@ const HomeScreen: React.FC = ({}) => {
         value: 'createdAt desc',
         label: t(text.created_desc),
       };
-      console.log('- New Sort Result:', result);
       return result;
     });
   }, [t]);
 
   const fetchFilteredData = useCallback(
     (page: number = 1, append: boolean = false) => {
-      console.log('🏠 HomeScreen calling fetchFilteredData:');
-      console.log('- Page:', page);
-      console.log('- Append:', append);
-      console.log('- Selected Value:', selectedValue);
-      console.log('- Selected Sort:', selectedSort);
-
       fetchFilteredDataLogic({
         selectedValue,
         selectedSort,
@@ -140,7 +129,6 @@ const HomeScreen: React.FC = ({}) => {
   );
 
   useEffect(() => {
-    console.log('🔄 useEffect triggered - Initial Load');
     setCurrentPage(1);
     setHasMoreData(true);
     setIsInitialLoad(true);
@@ -148,35 +136,22 @@ const HomeScreen: React.FC = ({}) => {
   }, [fetchFilteredData]);
 
   const handleLoadMore = useCallback(() => {
-    console.log('📄 handleLoadMore called:');
-    console.log('- Loading More:', loadingMore);
-    console.log('- Has More Data:', hasMoreData);
-    console.log('- Loading:', loading);
-    console.log('- Current Page:', currentPage);
-
     if (!loadingMore && hasMoreData && !loading) {
       const nextPage = currentPage + 1;
-      console.log('- Loading page:', nextPage);
       fetchFilteredData(nextPage, true);
     }
   }, [loadingMore, hasMoreData, loading, currentPage, fetchFilteredData]);
 
   const loadMenu = async () => {
-    console.log('🍽️ Loading Menu:');
-    console.log('- Selected Language:', selectedLang);
     const data = await menu(selectedLang);
-    console.log('- Menu Data:', data);
     setHouseType(data.forSale);
   };
   useEffect(() => {
-    console.log('🔄 useEffect triggered - Language Change');
-    console.log('- Selected Language:', selectedLang);
     loadMenu();
     selectedSort;
   }, [selectedLang]);
 
   const openFilterModal = (type: string) => {
-    console.log('🔧 Opening Filter Modal:');
     console.log('- Filter Type:', type);
     console.log('- Current Selected Value:', selectedValue);
 
@@ -222,13 +197,6 @@ const HomeScreen: React.FC = ({}) => {
     setModalTitle(modalTitleValue);
     setIsSingleValue(singleValue);
     setModalVisible(!!modalTypeValue);
-
-    console.log('🔧 Modal Configuration:');
-    console.log('- Modal Type:', modalTypeValue);
-    console.log('- Modal Data Length:', modalDataValue.length);
-    console.log('- Modal Title:', modalTitleValue);
-    console.log('- Is Single Value:', singleValue);
-    console.log('- Modal Visible:', !!modalTypeValue);
   };
 
   const valueToLabel = React.useCallback(
@@ -254,7 +222,6 @@ const HomeScreen: React.FC = ({}) => {
     [t],
   );
   const onRefresh = useCallback(() => {
-    console.log('🔄 onRefresh triggered');
     setRefreshing(true);
     flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
 
@@ -271,26 +238,14 @@ const HomeScreen: React.FC = ({}) => {
   }, [t, fetchFilteredData]);
 
   const renderPost = ({ item }: { item: PostType }) => {
-    console.log('📄 Rendering Post:');
-    console.log('- Post ID:', item.id || item._id);
-    console.log('- Post Title:', item.title);
-    console.log('- Post Price:', item.price);
-    console.log('- Post Area:', item.area);
-    console.log('- Post Bedrooms:', item.bedrooms);
-    console.log('- Post Bathrooms:', item.bathrooms);
-
     return (
       <>
         <ImageCard post={item} />
-        <View style={styles.underLine} />
+        <View style={AppStyles.underLine} />
       </>
     );
   };
   const handleReset = () => {
-    console.log('🔄 Filter Reset:');
-    console.log('- Modal Title Key:', modalTitleKey);
-    console.log('- Previous Selected Value:', selectedValue);
-
     setSelectedValue(prev => {
       const updated = { ...prev };
       delete updated[modalTitleKey];
@@ -299,20 +254,11 @@ const HomeScreen: React.FC = ({}) => {
     setModalVisible(false);
   };
   const handleSortChange = (selected: any) => {
-    console.log('🔄 Sort Changed:');
     console.log('- New Sort:', selected);
-    console.log('- Previous Sort:', selectedSort);
     setSelectedSort(selected);
   };
   const renderFooter = () => {
-    console.log('📄 Rendering Footer:');
-    console.log('- Loading More:', loadingMore);
-    console.log('- Has More Data:', hasMoreData);
-    console.log('- Is Initial Load:', isInitialLoad);
-    console.log('- Filtered Data Length:', filteredData.length);
-
     if (loadingMore) {
-      console.log('- Showing Loading More Indicator');
       return (
         <View style={styles.footerLoader}>
           <ActivityIndicator size="small" color="#E53935" />
@@ -322,7 +268,6 @@ const HomeScreen: React.FC = ({}) => {
     }
 
     if (!hasMoreData && !isInitialLoad && filteredData.length > 0) {
-      console.log('- Showing No More Posts Message');
       return (
         <View style={styles.noMorePostsContainer}>
           <Text style={styles.noMorePostsText}>Hết bài viết</Text>
@@ -330,7 +275,6 @@ const HomeScreen: React.FC = ({}) => {
       );
     }
 
-    console.log('- Footer: No content to show');
     return null;
   };
 
@@ -341,8 +285,6 @@ const HomeScreen: React.FC = ({}) => {
           <Image source={ICONS.search} style={styles.searchIcon} />
           <TouchableOpacity
             onPress={() => {
-              console.log('🔧 Opening Search Modal');
-              console.log('- Current Location:', location);
               console.log('- Current Search Value:', searchValue);
               setSearchModalVisible(true);
             }}
@@ -404,12 +346,6 @@ const HomeScreen: React.FC = ({}) => {
                   key={item.key || index}
                   style={styles.filterInput}
                   onPress={() => {
-                    console.log('🔧 Opening Filter for:', item.key);
-                    console.log('- Filter Label:', item.label);
-                    console.log(
-                      '- Current Selected Value for this key:',
-                      selectedValue[item.key],
-                    );
                     openFilterModal(item.key);
                   }}
                 >
@@ -433,7 +369,6 @@ const HomeScreen: React.FC = ({}) => {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: Spacing.medium,
             paddingHorizontal: Spacing.medium,
           }}
         >
@@ -453,7 +388,6 @@ const HomeScreen: React.FC = ({}) => {
 
           <TouchableOpacity
             onPress={() => {
-              console.log('🔧 Opening Sort Modal');
               console.log('- Current Selected Sort:', selectedSort);
               setModalSortVisible(true);
             }}
@@ -484,9 +418,8 @@ const HomeScreen: React.FC = ({}) => {
               {t(text.no_data)}
             </Text>
           }
-          keyExtractor={(item, index) => {
+          keyExtractor={item => {
             const key = item.id;
-            console.log('🔑 FlatList Key Extractor:', key);
             return key;
           }}
           refreshControl={
@@ -494,7 +427,6 @@ const HomeScreen: React.FC = ({}) => {
           }
           renderItem={renderPost}
           onEndReached={() => {
-            console.log('📄 FlatList onEndReached triggered');
             handleLoadMore();
           }}
           onEndReachedThreshold={0.1}
@@ -524,10 +456,7 @@ const HomeScreen: React.FC = ({}) => {
         }}
         onReset={() => handleReset()}
         onApplyFilter={value => {
-          console.log('🎯 Filter Applied:');
-          console.log('- Modal Title Key:', modalTitleKey);
           console.log('- Filter Value:', value);
-          console.log('- Previous Selected Value:', selectedValue);
 
           setSelectedValue(prev => ({
             ...prev,
@@ -553,10 +482,6 @@ const HomeScreen: React.FC = ({}) => {
           setSearchModalVisible(false);
         }}
         onSearch={(value, locationSearchValue) => {
-          console.log('🔍 Search Performed:');
-          console.log('- Search Value:', value);
-          console.log('- Location Search Value:', locationSearchValue);
-          console.log('- Previous Location:', location);
           console.log('- Previous Search Value:', searchValue);
 
           setLocation(locationSearchValue);
@@ -616,21 +541,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 20,
     paddingHorizontal: 14,
-    paddingVertical: Spacing.small,
     marginRight: Spacing.small,
-    marginBottom: Spacing.small,
     maxWidth: 300,
   },
   filterText: {
     fontSize: 14,
     color: '#333',
   },
-  underLine: {
-    borderWidth: 1,
-    borderColor: Colors.Gray,
-    marginVertical: Spacing.medium,
-    width: '100%',
-  },
+
   // Add these to your styles object
   footerLoader: {
     paddingVertical: Spacing.medium,

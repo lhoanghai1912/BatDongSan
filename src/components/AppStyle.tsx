@@ -72,6 +72,12 @@ const AppStyles = StyleSheet.create({
     borderRadius: 500,
     resizeMode: 'cover',
   },
+  underLine: {
+    borderWidth: 1,
+    borderColor: Colors.Gray,
+    marginVertical: Spacing.medium,
+    width: '100%',
+  },
   avartar_item: {
     width: 50,
     height: 50,

@@ -71,6 +71,7 @@ export const caseType = {
 };
 
 export const text = {
+  uploaded: 'uploaded',
   web: 'web',
   unit_label: 'unit_label',
   country: 'country',
@@ -311,7 +312,7 @@ export const ICONS = {
 
 export const IMAGES = {
   logo: require('../assets/images/company-logo.png'),
-  avartar: require('../assets/images/avt_male.jpg'),
+  avartar: require('../assets/images/avt_default.jpg'),
   bocongthuong: require('../assets/images/bocongthuong.png'),
 };
 

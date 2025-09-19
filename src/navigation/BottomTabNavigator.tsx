@@ -12,6 +12,7 @@ import SettingScreen from '../screens/HomeStack/Setting';
 import { useSelector } from 'react-redux';
 import DocumentScreen from '../screens/HomeStack/Document';
 import CreateScreen from '../screens/HomeStack/Create';
+import PostScreen from '../screens/HomeStack/Post/Post';
 
 const Tab = createBottomTabNavigator();
 
@@ -32,7 +33,7 @@ const BottomTabNavigator = () => {
           const iconMap = {
             Home_Screen: focused ? ICONS.search_focus : ICONS.search,
             Create_Screen: focused ? ICONS.plus_focus : ICONS.plus,
-            // Document_Screen: focused ? ICONS.clause_focus : ICONS.clause,
+            Post_Screen: focused ? ICONS.clause_focus : ICONS.clause,
             Heart_Screen: focused ? ICONS.heart_focus : ICONS.heart,
             Setting_Screen: focused ? ICONS.user_focus : ICONS.user,
           };
@@ -61,6 +62,7 @@ const BottomTabNavigator = () => {
             name={Screen_Name.Create_Screen}
             component={CreateScreen}
           />
+          <Tab.Screen name={Screen_Name.Post_Screen} component={PostScreen} />
         </>
       )}
       <Tab.Screen name={Screen_Name.Heart_Screen} component={HeartScreen} />

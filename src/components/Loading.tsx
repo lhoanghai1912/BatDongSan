@@ -5,10 +5,13 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { Spacing } from '../utils/spacing';
 import { Fonts } from '../utils/fontSize';
-const LoadingScreen = () => {
-  const isLoading = useSelector((state: RootState) => state.loading.isLoading);
 
+type LoadingProps = {
+  isLoading: boolean;
+};
+const LoadingScreen: React.FC<LoadingProps> = ({ isLoading }) => {
   if (!isLoading) return null;
+
   return (
     <View
       style={{

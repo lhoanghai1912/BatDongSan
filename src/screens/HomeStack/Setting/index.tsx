@@ -73,6 +73,7 @@ const SettingScreen = () => {
       console.log('error', error);
     }
   };
+  console.log('userData', userData);
 
   useEffect(() => {
     if (!reduxUserData) {
@@ -107,7 +108,11 @@ const SettingScreen = () => {
               >
                 {userData?.avatarUrl ? (
                   <Image
-                    source={{ uri: `${link.url}${userData.avatarUrl}` }}
+                    source={{
+                      uri: userData.avatarUrl.startsWith('http')
+                        ? userData.avatarUrl
+                        : `${link.url}${userData.avatarUrl}`,
+                    }}
                     style={AppStyles.avartar}
                   />
                 ) : (

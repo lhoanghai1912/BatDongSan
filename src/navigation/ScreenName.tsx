@@ -12,6 +12,7 @@ export const Screen_Name = {
   Setting_Screen: 'Setting_Screen',
   Create_Screen: 'Create_Screen',
   Document_Screen: 'Document_Screen',
+  Post_Screen: 'Post_Screen',
   //Other
   Splash_Screen: 'Splash_Screen',
   Loading_Screen: 'Splash_Screen',

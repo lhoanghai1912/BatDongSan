@@ -74,6 +74,8 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
     fetchUserData();
     // Only run once on mount
   }, []);
+
+  // Early return sau khi gọi tất cả hooks
   if (imageslink.length === 0) return null;
   const formatPriceToTy = (price: number): string => {
     if (!price || isNaN(price)) return t(text.deal);

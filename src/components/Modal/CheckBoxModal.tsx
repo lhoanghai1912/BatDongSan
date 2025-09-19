@@ -1,4 +1,4 @@
-// components/CheckBoxModal.tsx
+// src/components/Modal/CheckBoxModal.tsx - Component checkbox modal mới đơn giản
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -13,16 +13,19 @@ import {
 } from 'react-native';
 import { Colors } from '../../utils/color';
 import { Spacing } from '../../utils/spacing';
-import { ICONS, IMAGES, text } from '../../utils/constants';
+import { ICONS, text } from '../../utils/constants';
 import AppStyles from '../AppStyle';
 import AppButton from '../AppButton';
-import { HOUSE_TYPE_CATEGORY_MAP } from '../../screens/HomeStack/Home/houseType_data';
 import { useTranslation } from 'react-i18next';
+
+// Interface cho option
 interface Option {
   value: string;
   label: string;
   icon: string;
 }
+
+// Interface cho props
 interface CheckBoxModalProps {
   visible: boolean;
   title: string;
@@ -33,6 +36,7 @@ interface CheckBoxModalProps {
   onSubmit: (selected: string[]) => void;
 }
 
+// Component chính
 const CheckBoxModal: React.FC<CheckBoxModalProps> = ({
   visible,
   title,
@@ -43,29 +47,41 @@ const CheckBoxModal: React.FC<CheckBoxModalProps> = ({
   onSubmit,
 }) => {
   const { t } = useTranslation();
-  const [localSelected, setLocalSelected] = useState<string[]>(selected);
+  const [localSelected, setLocalSelected] = useState<string[]>([]);
 
+  // Cập nhật localSelected khi selected prop thay đổi
   useEffect(() => {
-    setLocalSelected(selected);
+    setLocalSelected(selected || []);
   }, [selected]);
 
+  // Toggle selection
   const toggleValue = (value: string) => {
-    setLocalSelected(prev =>
-      prev.includes(value)
-        ? prev.filter(item => item !== value)
-        : [...prev, value],
-    );
+    setLocalSelected(prev => {
+      if (prev.includes(value)) {
+        return prev.filter(item => item !== value);
+      } else {
+        return [...prev, value];
+      }
+    });
   };
 
+  // Clear all selections
   const clearValue = () => {
     setLocalSelected([]);
     onReset();
+  };
+
+  // Submit selections
+  const handleSubmit = () => {
+    onSubmit(localSelected);
+    onClose();
   };
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
       <View style={styles.overlay}>
         <View style={styles.modal}>
+          {/* Header */}
           <View style={styles.header}>
             <Text
               style={[
@@ -75,35 +91,32 @@ const CheckBoxModal: React.FC<CheckBoxModalProps> = ({
             >
               {title}
             </Text>
-            <TouchableOpacity onPress={() => onClose()}>
+            <TouchableOpacity onPress={onClose}>
               <Image
                 source={ICONS.clear}
                 style={[AppStyles.icon, { tintColor: Colors.white }]}
               />
             </TouchableOpacity>
           </View>
-          {/* <View style={styles.body}> */}
+
+          {/* Body */}
           <ScrollView style={styles.body}>
-            {data.map((item, idx) => {
+            {data.map((item, index) => {
               const isChecked = localSelected.includes(item.value);
               return (
                 <TouchableOpacity
-                  key={item.value}
+                  key={item.value || index}
                   onPress={() => toggleValue(item.value)}
                   style={styles.option}
                 >
                   <View style={styles.optionContent}>
-                    {/* Left side: icon + label */}
                     <View style={styles.labelContainer}>
-                      {/* Nếu có icon bạn thêm vào đây: */}
                       <Image
                         source={item.icon as ImageSourcePropType}
                         style={AppStyles.icon}
                       />
                       <Text style={styles.optionLabel}>{item.label}</Text>
                     </View>
-
-                    {/* Right side: checkbox */}
                     <View style={styles.checkboxContainer}>
                       <Image
                         source={isChecked ? ICONS.checked : ICONS.unchecked}
@@ -115,7 +128,8 @@ const CheckBoxModal: React.FC<CheckBoxModalProps> = ({
               );
             })}
           </ScrollView>
-          {/* </View> */}
+
+          {/* Footer */}
           <View style={styles.footer}>
             <View style={AppStyles.line} />
             <View style={styles.buttonWrap}>
@@ -123,18 +137,11 @@ const CheckBoxModal: React.FC<CheckBoxModalProps> = ({
                 <AppButton
                   title={t(text.reset)}
                   disabled={localSelected.length === 0}
-                  onPress={() => clearValue()}
+                  onPress={clearValue}
                 />
               </View>
               <View style={{ width: '40%' }}>
-                <AppButton
-                  title={t(text.submit)}
-                  onPress={() => {
-                    console.log('selected value:', localSelected);
-
-                    onSubmit(localSelected), onClose();
-                  }}
-                />
+                <AppButton title={t(text.submit)} onPress={handleSubmit} />
               </View>
             </View>
           </View>
@@ -144,81 +151,64 @@ const CheckBoxModal: React.FC<CheckBoxModalProps> = ({
   );
 };
 
-export default CheckBoxModal;
-
+// Styles
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
-    backgroundColor: '#00000066',
   },
   modal: {
     backgroundColor: Colors.white,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    maxHeight: '90%',
+    maxHeight: '80%',
   },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  option: {
-    paddingVertical: Spacing.small,
-  },
-  submit: {
-    backgroundColor: Colors.primary,
-    padding: Spacing.medium,
-    marginTop: Spacing.medium,
-    borderRadius: 8,
-  },
-  submitText: {
-    color: Colors.white,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  optionContent: {
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: Spacing.small,
+    padding: Spacing.medium,
+    backgroundColor: Colors.primary,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
-
+  body: {
+    maxHeight: 400,
+    padding: Spacing.medium,
+  },
+  option: {
+    paddingVertical: Spacing.small,
+    paddingHorizontal: Spacing.medium,
+    borderRadius: 8,
+    marginBottom: Spacing.small,
+  },
+  optionContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   labelContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
   },
-
   optionLabel: {
+    marginLeft: Spacing.small,
     fontSize: 16,
     color: Colors.black,
-    marginLeft: 8, // nếu có icon, cách icon 1 chút
   },
-
   checkboxContainer: {
-    width: 32,
-    alignItems: 'flex-end',
+    marginLeft: Spacing.small,
   },
-
-  checkboxText: {
-    fontSize: 20,
-    color: Colors.primary,
-  },
-  header: {
-    backgroundColor: Colors.black,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+  footer: {
     padding: Spacing.medium,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
-  body: { height: '80%', paddingHorizontal: Spacing.medium },
-  footer: { marginBottom: Spacing.medium },
   buttonWrap: {
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.medium,
-    alignItems: 'center',
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: Spacing.small,
   },
 });
+
+export default CheckBoxModal;

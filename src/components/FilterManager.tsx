@@ -1,23 +1,28 @@
+// src/components/FilterManager.tsx - Component filter manager mới đơn giản
+
 import React from 'react';
 import CheckBoxModal from './Modal/CheckBoxModal';
 import RadioButtonModal from './Modal/RadioButtonModal';
 import { text } from '../utils/constants';
 import { useTranslation } from 'react-i18next';
 
-// Kiểu dữ liệu input
+// Kiểu dữ liệu cho modal type
 type FilterModalType = 'checkBoxModal' | 'radioButtonModal';
 
+// Props interface
 interface FilterManagerProps {
   visible: boolean;
   type: FilterModalType;
   title: string;
-  data: any[]; // string[] cho checkbox, button — { label, value }[] cho radio
+  data: any[];
   selected: string[] | string;
   onClose: () => void;
   onReset: () => void;
   onApplyFilter: (value: string[] | string) => void;
-  isSingleValue?: boolean; // 👈 THÊM DÒNG NÀY
+  isSingleValue?: boolean;
 }
+
+// Component chính
 const FilterManager: React.FC<FilterManagerProps> = ({
   visible,
   type,
@@ -27,26 +32,21 @@ const FilterManager: React.FC<FilterManagerProps> = ({
   onClose,
   onReset,
   onApplyFilter,
-  isSingleValue,
+  isSingleValue = false,
 }) => {
   const { t } = useTranslation();
-  // console.log(
-  //   'filtermanger',
-  //   title.toLowerCase().includes(`${t(text.bedrooms)}`),
-  // );
 
-  if (!visible) return null;
+  // Luôn render component, chỉ ẩn/hiện bằng visible prop
 
-  // console.log("FilterMng" + );
-
+  // Render CheckBoxModal cho property type
   if (type === 'checkBoxModal') {
     return (
       <CheckBoxModal
         visible={visible}
         title={title}
-        data={(data as any[]).map(item => ({
+        data={data.map(item => ({
           ...item,
-          value: item.value ?? item.label, // fallback to label if value is missing
+          value: item.value ?? item.label,
         }))}
         selected={selected as string[]}
         onClose={onClose}
@@ -56,6 +56,7 @@ const FilterManager: React.FC<FilterManagerProps> = ({
     );
   }
 
+  // Render RadioButtonModal cho các filter khác
   if (type === 'radioButtonModal') {
     return (
       <RadioButtonModal
@@ -65,14 +66,13 @@ const FilterManager: React.FC<FilterManagerProps> = ({
         selected={selected as string}
         onClose={onClose}
         onReset={onReset}
-        isSingleValue={title
-          .toLowerCase()
-          .includes(`${t(text.bedrooms).toLocaleLowerCase()}`)} // ✅ chỉ true với "Số phòng ngủ" à đây r :) có khi ở đây
+        isSingleValue={isSingleValue}
         onSubmit={onApplyFilter}
       />
     );
   }
 
+  // Fallback - không render gì
   return null;
 };
 

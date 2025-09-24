@@ -142,6 +142,12 @@ export async function fetchFilteredData({
       selectedSort && selectedSort.value
         ? selectedSort.value
         : 'createdAt desc';
+    console.log('🚀 Fetching with filters:', {
+      allFilters,
+      sortValue,
+      page,
+      ITEMS_PER_PAGE,
+    });
 
     const response = await getAllPosts(
       allFilters,

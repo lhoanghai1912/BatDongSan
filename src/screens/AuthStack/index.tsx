@@ -95,6 +95,8 @@ const LoginScreen = () => {
       console.log('userInfo', userInfo);
       const idToken = userInfo?.data?.idToken || '';
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      console.log('googleCredential', googleCredential);
+
       // console.log('googleCredential', googleCredential);
 
       const userCredential = await auth().signInWithCredential(

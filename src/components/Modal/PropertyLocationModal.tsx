@@ -17,6 +17,7 @@ import AppButton from '../AppButton';
 import { useTranslation } from 'react-i18next';
 import { Fonts } from '../../utils/fontSize';
 import { HOUSE_TYPE_CATEGORY_MAP } from '../../screens/HomeStack/Home/houseType_data';
+import i18n from '../../i18n/i18n';
 
 interface Props {
   visible: boolean;
@@ -42,7 +43,7 @@ const PropertyLocationModal: React.FC<Props> = ({
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [selectedItem, setSelectedItem] = useState<any>(null);
-
+  const lang = (i18n.language || 'lo').split('-')[0];
   useEffect(() => {
     if (!visible) {
       setSelectedItem(''); // Reset selected value when modal is closed
@@ -55,7 +56,7 @@ const PropertyLocationModal: React.FC<Props> = ({
     const fetchData = async () => {
       try {
         setLoading(true);
-        let url = `${link.url}/api/Area/search-smart?lang=en`;
+        let url = `${link.url}/api/Area/search-smart?lang=${lang}`;
 
         if (field === 'district') {
           if (!selected.province?.id) {
@@ -63,14 +64,14 @@ const PropertyLocationModal: React.FC<Props> = ({
             setLoading(false);
             return;
           }
-          url = `${link.url}/api/Area/search-smart?id=${selected.province.id}&lang=en`;
+          url = `${link.url}/api/Area/search-smart?id=${selected.province.id}&lang=${lang}`;
         } else if (field === 'commune') {
           if (!selected.district?.id) {
             setOptions([]);
             setLoading(false);
             return;
           }
-          url = `${link.url}/api/Area/search-smart?id=${selected.district.id}&lang=en`;
+          url = `${link.url}/api/Area/search-smart?id=${selected.district.id}&lang=${lang}`;
         }
 
         const res = await fetch(url);
@@ -154,7 +155,7 @@ const PropertyLocationModal: React.FC<Props> = ({
             <ScrollView>
               {filteredOptions.map(item => (
                 <TouchableOpacity
-                  key={item.displayOrder}
+                  key={item.id}
                   style={[
                     styles.itemButton,
                     selectedItem?.id === item.id && {

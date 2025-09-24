@@ -36,6 +36,7 @@ interface Props {
 
 const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
   const insets = useSafeAreaInsets();
+  const { userData } = useSelector((state: any) => state.user);
   const scrollY = useRef(new Animated.Value(0)).current;
   const { t } = useTranslation();
   const { post } = route.params; // mảng các URL ảnh
@@ -47,7 +48,7 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
   );
 
   const [token, setToken] = useState(reduxToken || '');
-
+  const [owner] = useState(userData.email === post.creatorName);
   console.log('route1112341234242134', route?.params);
   console.log('data', post);
   const IMAGE_HEIGHT = 300; // chiều cao ảnh
@@ -257,6 +258,7 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
             <Text style={AppStyles.label}>{t(text.property_features)}</Text>
             <PropertyDetailsView data={post} />
           </View>
+          <TouchableOpacity onPress={() => {}} />
         </View>
       </ScrollView>
       <AppButton

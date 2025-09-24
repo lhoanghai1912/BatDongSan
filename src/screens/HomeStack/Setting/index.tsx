@@ -26,6 +26,7 @@ import i18n from '../../../i18n/i18n';
 import LanguageSelector from '../../../components/LanguageSelector';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 const verAndroid = '1.0.0';
 const verIos = '1.0.0';
@@ -105,7 +106,16 @@ const SettingScreen = () => {
       console.log('Error saving language:', error);
     }
   };
-
+  const handleLogout = async () => {
+    try {
+      await GoogleSignin.signOut();
+    } catch (error) {
+      // Có thể log lỗi nếu cần
+    }
+    setTimeout(() => {
+      dispactch(logout());
+    });
+  };
   return (
     <View
       style={[styles.container, { paddingTop: insets.top + Spacing.medium }]}
@@ -403,7 +413,7 @@ const SettingScreen = () => {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => dispactch(logout())}
+                  onPress={() => handleLogout()}
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',

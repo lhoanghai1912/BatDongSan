@@ -11,11 +11,11 @@ i18n
   .use(languageDetector)
   .use(initReactI18next)
   .init({
-    fallbackLng: 'en',
+    fallbackLng: 'lo',
     resources: {
+      lo: { translation: (lo as any).default || lo },
       en: { translation: (en as any).default || en },
       vi: { translation: (vi as any).default || vi },
-      lo: { translation: (lo as any).default || lo },
     },
     interpolation: { escapeValue: false },
   });

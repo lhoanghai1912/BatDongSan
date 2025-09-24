@@ -71,7 +71,7 @@ const SortModal: React.FC<SortModalProps> = ({
         <View style={styles.modalContent}>
           <View
             style={{
-              backgroundColor: Colors.black,
+              backgroundColor: Colors.primary,
               paddingHorizontal: Spacing.medium,
               paddingVertical: 5,
               borderTopLeftRadius: 20,
@@ -103,7 +103,7 @@ const SortModal: React.FC<SortModalProps> = ({
                   value={opt.value}
                   status={checked.value === opt.value ? 'checked' : 'unchecked'}
                   onPress={() => handleSelect(opt)} // Lưu đối tượng opt
-                  color={Colors.black || '#E53935'}
+                  color={Colors.primary || '#E53935'}
                 />
               </TouchableOpacity>
             ))}
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },

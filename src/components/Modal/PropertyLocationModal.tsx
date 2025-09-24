@@ -12,7 +12,7 @@ import {
 import AppInput from '../AppInput';
 import { Colors } from '../../utils/color';
 import { Spacing } from '../../utils/spacing';
-import { ICONS, text } from '../../utils/constants';
+import { ICONS, link, text } from '../../utils/constants';
 import AppButton from '../AppButton';
 import { useTranslation } from 'react-i18next';
 import { Fonts } from '../../utils/fontSize';
@@ -55,7 +55,7 @@ const PropertyLocationModal: React.FC<Props> = ({
     const fetchData = async () => {
       try {
         setLoading(true);
-        let url = 'https://bds.foxai.com.vn:8441/api/Area/search-smart?lang=en';
+        let url = `${link.url}/api/Area/search-smart?lang=en`;
 
         if (field === 'district') {
           if (!selected.province?.id) {
@@ -63,14 +63,14 @@ const PropertyLocationModal: React.FC<Props> = ({
             setLoading(false);
             return;
           }
-          url = `https://bds.foxai.com.vn:8441/api/Area/search-smart?id=${selected.province.id}&lang=en`;
+          url = `${link.url}/api/Area/search-smart?id=${selected.province.id}&lang=en`;
         } else if (field === 'commune') {
           if (!selected.district?.id) {
             setOptions([]);
             setLoading(false);
             return;
           }
-          url = `https://bds.foxai.com.vn:8441/api/Area/search-smart?id=${selected.district.id}&lang=en`;
+          url = `${link.url}/api/Area/search-smart?id=${selected.district.id}&lang=en`;
         }
 
         const res = await fetch(url);
@@ -154,7 +154,7 @@ const PropertyLocationModal: React.FC<Props> = ({
             <ScrollView>
               {filteredOptions.map(item => (
                 <TouchableOpacity
-                  key={item.id}
+                  key={item.displayOrder}
                   style={[
                     styles.itemButton,
                     selectedItem?.id === item.id && {

@@ -11,9 +11,6 @@ import {
   View,
 } from 'react-native';
 import AppButton from '../AppButton';
-import Toast from 'react-native-toast-message';
-import { navigate } from '../../navigation/RootNavigator';
-import { Screen_Name } from '../../navigation/ScreenName';
 import { enterOtp, otp_ResetPassword_Verify } from '../../service';
 import { useDispatch } from 'react-redux';
 import { setVerificationToken } from '../../store/reducers/userSlice';
@@ -39,7 +36,6 @@ const EnterOtpModal: React.FC<EnterOtpProp> = ({
   const { t } = useTranslation();
   const [otp, setOtp] = useState(['', '', '', '', '', '']); // Lưu trữ 6 ký tự OTP
   const [error, setError] = useState(false); // Lỗi nếu mã OTP không hợp lệ
-  const lastValueRef = useRef(['', '', '', '', '', '']);
 
   // Tạo refs cho từng ô nhập OTP
   const inputRefs = useRef<Array<TextInput | null>>([]);

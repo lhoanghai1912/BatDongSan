@@ -5,8 +5,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import { Colors } from '../utils/color';
 import { Spacing } from '../utils/spacing';
 import { useTranslation } from 'react-i18next';
-import { message } from '../utils/constants';
-import { lang } from 'moment';
+import { message, text } from '../utils/constants';
 
 interface LanguageSelectorProps {
   visible: boolean;
@@ -52,7 +51,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
             </TouchableOpacity>
           ))}
           <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
-            <Text style={{ color: Colors.white }}>Đóng</Text>
+            <Text style={{ color: Colors.white }}>{t(text.cancel)}</Text>
           </TouchableOpacity>
         </View>
       </View>

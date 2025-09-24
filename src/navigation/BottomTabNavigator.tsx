@@ -13,18 +13,21 @@ import { useSelector } from 'react-redux';
 import DocumentScreen from '../screens/HomeStack/Document';
 import CreateScreen from '../screens/HomeStack/Create';
 import PostScreen from '../screens/HomeStack/Post/Post';
+import { Spacing } from '../utils/spacing';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = () => {
   const { token } = useSelector((state: any) => state.user); // ✅ lấy token từ Redux
-
+  const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
+          paddingBottom: insets.bottom + Spacing.medium,
           backgroundColor: '#fff',
           borderTopColor: '#ddd',
           paddingTop: 10,
@@ -41,7 +44,9 @@ const BottomTabNavigator = () => {
           return (
             <Image
               source={iconMap[route.name]}
-              style={{ width: 24, height: 24 }}
+              style={
+                focused ? { width: 40, height: 40 } : { width: 24, height: 24 }
+              }
               resizeMode="contain"
             />
           );
@@ -58,11 +63,11 @@ const BottomTabNavigator = () => {
             name={Screen_Name.Document_Screen}
             component={DocumentScreen}
           /> */}
+          <Tab.Screen name={Screen_Name.Post_Screen} component={PostScreen} />
           <Tab.Screen
             name={Screen_Name.Create_Screen}
             component={CreateScreen}
           />
-          <Tab.Screen name={Screen_Name.Post_Screen} component={PostScreen} />
         </>
       )}
       <Tab.Screen name={Screen_Name.Heart_Screen} component={HeartScreen} />

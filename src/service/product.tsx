@@ -61,14 +61,10 @@ export const getAllPosts = async (
         // Authorization: 'Bearer your_token_here',
       },
     });
-    console.log('ress=====================================', response);
 
     return response.data;
   } catch (error: any) {
-    if (error.response) {
-      console.log('Status:', error.response.status);
-      console.log('Data:', error.response.data);
-    }
+    console.log('Error fetching all posts:', error);
     throw error;
   }
 };
@@ -94,7 +90,6 @@ export const getPostOfUser = async (page: number, pageSize: number) => {
         },
       },
     );
-    console.log('API Raw Response:', response);
 
     return response.data;
   } catch (error: any) {

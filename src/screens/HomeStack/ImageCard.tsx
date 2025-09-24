@@ -35,8 +35,9 @@ import { likePost } from '../../service/likeService';
 type ImageCardProps = {
   post: any;
   onReload?: () => void; // 🔹 Optional
+  edit?: boolean; // 🔹 Optional
 };
-const ImageCard: React.FC<ImageCardProps> = ({ post, onReload }) => {
+const ImageCard: React.FC<ImageCardProps> = ({ post, onReload, edit }) => {
   const { t } = useTranslation();
   const images = post.images?.map(img => img).slice(0, 4) || [];
   const imageslink = post.images?.map(img => img.imageUrl).slice(0, 4) || [];

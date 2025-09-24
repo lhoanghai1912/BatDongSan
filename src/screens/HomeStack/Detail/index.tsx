@@ -132,14 +132,16 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
       />
       <ScrollView style={{ paddingTop: Spacing.medium }}>
         <View style={styles.header}>
+          {/* {post.images && ( */}
           <FlatList
             data={post.images.map(item => item.imageUrl)}
-            keyExtractor={(item, index) => item.displayOrder}
+            keyExtractor={item => item.displayOrder}
             horizontal
             pagingEnabled
             showsHorizontalScrollIndicator={false}
             renderItem={renderItem}
           />
+          {/* )} */}
           {post.unit === 3 ? (
             <Text
               style={[

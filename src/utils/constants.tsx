@@ -1,4 +1,6 @@
 export const message = {
+  loading_more: 'loading_more',
+  no_more_posts: 'no_more_posts',
   selectLanguage: 'selectLanguage',
   validate: 'validate',
   loginSuccess: 'loginSuccess',
@@ -317,7 +319,8 @@ export const IMAGES = {
 };
 
 export const link = {
-  url: 'https://bds.foxai.com.vn:8441',
+  // url: 'https://bds.foxai.com.vn:8441',
+  url: 'https://bdslao.foxai.com.vn',
   company: 'https://fox.ai.vn/',
   term_conditions: 'https://fox.ai.vn/dieu-khoan-thoa-thuan/',
   privacy_policy: 'https://fox.ai.vn/chinh-sach-bao-mat/',

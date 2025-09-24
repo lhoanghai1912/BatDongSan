@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { caseType, ICONS, text } from '../../../utils/constants';
+import { caseType, ICONS, message, text } from '../../../utils/constants';
 import { Spacing } from '../../../utils/spacing';
 import AppStyles from '../../../components/AppStyle';
 import { Colors } from '../../../utils/color';
@@ -270,7 +270,7 @@ const HomeScreen: React.FC = ({}) => {
     if (!hasMoreData && !isInitialLoad && filteredData.length > 0) {
       return (
         <View style={styles.noMorePostsContainer}>
-          <Text style={styles.noMorePostsText}>Hết bài viết</Text>
+          <Text style={styles.noMorePostsText}>{t(message.no_more_posts)}</Text>
         </View>
       );
     }
@@ -562,7 +562,7 @@ const styles = StyleSheet.create({
   },
 
   noMorePostsContainer: {
-    paddingVertical: Spacing.large,
+    // paddingVertical: Spacing.large,
     alignItems: 'center',
     justifyContent: 'center',
   },

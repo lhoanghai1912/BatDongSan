@@ -75,7 +75,11 @@ const HeartScreen = ({ navigation }: any) => {
         </Text>
         <View style={AppStyles.line} />
       </View> */}
-      <NavBar title={t(text.saved_post)} onPress={() => navigation.goBack()} />
+      <NavBar
+        title={t(text.saved_post)}
+        onPress={() => navigation.goBack()}
+        customStyle={[{ paddingHorizontal: Spacing.medium }]}
+      />
       {token ? (
         <>
           <View style={styles.body}>

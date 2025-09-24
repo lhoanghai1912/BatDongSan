@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Linking,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import { ICONS, IMAGES, link, message, text } from '../../utils/constants';
 import AppStyles from '../../components/AppStyle';
@@ -37,7 +38,6 @@ const LoginScreen = () => {
   const [loading, setLoading] = useState(false);
 
   const handleForgotPassword = () => {
-    console.log('swvmnvk');
     navigate(Screen_Name.ForgotPassword_Screen);
   };
 
@@ -106,6 +106,7 @@ const LoginScreen = () => {
       console.log('firebaseIdToken', firebaseIdToken);
       const res = await loginFirebase(firebaseIdToken);
       // console.log('res', res);
+      console.log('res.token', res.token);
 
       dispatch(setToken({ token: res.token }));
       // dispatch(setUserData({ token: res.token }));
@@ -250,7 +251,8 @@ const LoginScreen = () => {
           alignSelf: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-          width: 100,
+          alignItems: 'center',
+          // width: 100,
           marginBottom: Spacing.large,
         }}
       >
@@ -258,7 +260,15 @@ const LoginScreen = () => {
           <Image source={ICONS.google} style={{ width: 40, height: 40 }} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleLoginWithApple()}>
-          <Image source={ICONS.apple} style={{ width: 40, height: 40 }} />
+          <Image
+            source={ICONS.apple}
+            style={{
+              display: Platform.OS === 'ios' ? 'flex' : 'none',
+              width: 40,
+              height: 40,
+              marginLeft: Spacing.medium,
+            }}
+          />
         </TouchableOpacity>
       </View>
       <View

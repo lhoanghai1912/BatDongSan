@@ -41,8 +41,16 @@ const SettingScreen = () => {
   const [userData, setUserData] = useState(reduxUserData || null);
   const [token, setToken] = useState(reduxToken || '');
   const [langModalVisible, setLangModalVisible] = useState(false);
-  const [selectedLang, setSelectedLang] = useState(i18n.language || 'en');
+  const [selectedLang, setSelectedLang] = useState(i18n.language || 'lo');
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
+
+  // Ensure default language is set to Lao if not already set
+  useEffect(() => {
+    if (!i18n.language || i18n.language === 'cimode') {
+      i18n.changeLanguage('lo');
+      setSelectedLang('lo');
+    }
+  }, []);
 
   // dùng Toast.show()
   const handleDeleteAccountRequest = () => {
@@ -89,6 +97,13 @@ const SettingScreen = () => {
 
     await i18n.changeLanguage(newLang);
     setSelectedLang(newLang);
+
+    // Save the selected language to AsyncStorage
+    try {
+      await AsyncStorage.setItem('user-language', newLang);
+    } catch (error) {
+      console.log('Error saving language:', error);
+    }
   };
 
   return (

@@ -1,7 +1,7 @@
 // app/utils/colors.ts
 
 export const Colors = {
-  primary: '#BC7F56',
+  primary: '#5DB3E9',
   secondary: '#A5A5A5',
   background: '#f5f5f5',
   white: '#ffffff',
@@ -13,6 +13,6 @@ export const Colors = {
   darkGray: '#707573',
   blue: '#5DB3E9',
   red: '#E4080A',
-  button: '#095286',
+  button: '#5DB3E9',
   buttonDisable: '#F0EFF4',
 };

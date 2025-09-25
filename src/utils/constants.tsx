@@ -319,8 +319,8 @@ export const IMAGES = {
 };
 
 export const link = {
-  // url: 'https://bds.foxai.com.vn:8441',
-  url: 'https://bdslao.foxai.com.vn',
+  url: 'https://bds.foxai.com.vn:8441',
+  // url: 'https://bdslao.foxai.com.vn',
   company: 'https://fox.ai.vn/',
   term_conditions: 'https://fox.ai.vn/dieu-khoan-thoa-thuan/',
   privacy_policy: 'https://fox.ai.vn/chinh-sach-bao-mat/',

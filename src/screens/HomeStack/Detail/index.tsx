@@ -27,6 +27,9 @@ import AppButton from '../../../components/AppButton';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ImagePreviewModal from '../../../components/Modal/ImagePreviewModal';
 import { likePost } from '../../../service/likeService';
+import { Item } from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
+import { deletePost } from '../../../service';
+import { setLoading } from '../../../store/reducers/loadingSlice';
 
 const { width } = Dimensions.get('window');
 interface Props {
@@ -48,7 +51,7 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
   );
 
   const [token, setToken] = useState(reduxToken || '');
-  const [owner] = useState(userData.email === post.creatorName);
+  const [owner] = useState(userData?.email === post.creatorName);
   console.log('route1112341234242134', route?.params);
   console.log('data', post);
   const IMAGE_HEIGHT = 300; // chiều cao ảnh
@@ -98,6 +101,21 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
     } catch (error) {}
   };
 
+  const handleDeletePost = async (postId: any) => {
+    try {
+      setLoading(true);
+      console.log('start delete');
+      console.log('postId', postId);
+
+      const response = await deletePost(postId);
+      console.log('response', response);
+    } catch (error) {
+    } finally {
+      setLoading(false);
+      navigation.goBack();
+    }
+  };
+
   const renderItem = ({ item, index }) => {
     return (
       <TouchableOpacity
@@ -131,7 +149,7 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
         icon2={liked ? ICONS.heart_like : ICONS.heart}
         onRightPress2={() => handleLike()}
       />
-      <ScrollView style={{ paddingTop: Spacing.medium }}>
+      <ScrollView style={{ marginVertical: Spacing.medium }}>
         <View style={styles.header}>
           {/* {post.images && ( */}
           <FlatList
@@ -260,6 +278,15 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
           </View>
           <TouchableOpacity onPress={() => {}} />
         </View>
+        <AppButton
+          title="Delete Post"
+          onPress={() => {
+            handleDeletePost(post.id);
+          }}
+          customStyle={[
+            { display: owner ? 'flex' : 'none', marginBottom: Spacing.medium },
+          ]}
+        />
       </ScrollView>
       <AppButton
         title={post.contactPhone}

@@ -79,10 +79,18 @@ export const getPostById = async (id: number) => {
   }
 };
 
-export const getPostOfUser = async (page: number, pageSize: number) => {
+export const getPostOfUser = async (
+  page: number,
+  pageSize: number,
+  search?: string,
+) => {
   try {
+    console.log(
+      `/posts/my-posts?Page=${page}&PageSize=${pageSize}&OrderBy=createdAt desc&Search=${search}`,
+    );
+
     const response = await apiClient.get(
-      `/posts/my-posts?Page=${page}&PageSize=${pageSize}`,
+      `/posts/my-posts?Page=${page}&PageSize=${pageSize}&OrderBy=createdAt desc&Search=${search}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -94,6 +102,18 @@ export const getPostOfUser = async (page: number, pageSize: number) => {
     return response.data;
   } catch (error: any) {
     console.log(`Get post of User error:`, error);
+
+    throw error;
+  }
+};
+
+export const deletePost = async (id: number) => {
+  try {
+    const response = await apiClient.patch(`/posts/${id}/soft-delete`);
+
+    return response.data;
+  } catch (error) {
+    console.log(`Delete post ${id} error:`, error);
 
     throw error;
   }

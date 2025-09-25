@@ -68,9 +68,9 @@ const BottomTabNavigator = () => {
             name={Screen_Name.Create_Screen}
             component={CreateScreen}
           />
+          <Tab.Screen name={Screen_Name.Heart_Screen} component={HeartScreen} />
         </>
       )}
-      <Tab.Screen name={Screen_Name.Heart_Screen} component={HeartScreen} />
       <Tab.Screen name={Screen_Name.Setting_Screen} component={SettingScreen} />
     </Tab.Navigator>
   );

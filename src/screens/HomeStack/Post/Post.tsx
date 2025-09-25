@@ -1,5 +1,12 @@
-import React, { useCallback, useRef, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  RefreshControl,
+  TextInput,
+} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator } from 'react-native-paper';
@@ -10,15 +17,17 @@ import ImageCard from '../ImageCard';
 import { PostType } from '../../../store/reducers/postSlice';
 import AppStyles from '../../../components/AppStyle';
 import NavBar from '../../../components/Navbar';
-import { message, text } from '../../../utils/constants';
+import { ICONS, message, text } from '../../../utils/constants';
 import { Spacing } from '../../../utils/spacing';
 import { Fonts } from '../../../utils/fontSize';
 import { Colors } from '../../../utils/color';
+import AppInput from '../../../components/AppInput';
 
 const PAGE_SIZE = 10;
 
 const PostScreen = ({ navigation }: any) => {
   const flatListRef = useRef<FlatList<PostType>>(null);
+  const searchDelayRef = useRef<NodeJS.Timeout | null>(null); // <-- thêm
 
   const [loading, setLoading] = useState(false); // overlay khi load lần đầu / focus
   const [refreshing, setRefreshing] = useState(false); // kéo để làm mới
@@ -26,7 +35,8 @@ const PostScreen = ({ navigation }: any) => {
   const [posts, setPosts] = useState<PostType[]>([]);
   const [page, setPage] = useState(1);
   const [noMoreData, setNoMoreData] = useState(false);
-
+  const [search, setSearch] = useState<string>('');
+  const [searchVisible, setSearchVisible] = useState(false);
   const { t } = useTranslation();
 
   const fetchPosts = async (
@@ -45,10 +55,11 @@ const PostScreen = ({ navigation }: any) => {
       console.log('🚀 API Call - getPostOfUser:', {
         page: currentPage,
         pageSize: PAGE_SIZE,
+        search,
         isRefresh,
       });
 
-      const res = await getPostOfUser(currentPage, PAGE_SIZE);
+      const res = await getPostOfUser(currentPage, PAGE_SIZE, search);
       console.log('📥 API Response:', res);
 
       if (res?.result && Array.isArray(res.result)) {
@@ -103,6 +114,20 @@ const PostScreen = ({ navigation }: any) => {
       fetchPosts(1, true);
     }, []),
   );
+
+  useEffect(() => {
+    if (searchDelayRef.current) clearTimeout(searchDelayRef.current);
+    searchDelayRef.current = setTimeout(() => {
+      // Reset danh sách rồi fetch lại
+      setPage(1);
+      setNoMoreData(false);
+      fetchPosts(1, true);
+    }, 500);
+
+    return () => {
+      if (searchDelayRef.current) clearTimeout(searchDelayRef.current);
+    };
+  }, [search]); // chỉ chạy khi search thay đổi
 
   const handleRefresh = () => {
     setRefreshing(true);
@@ -159,14 +184,37 @@ const PostScreen = ({ navigation }: any) => {
         title={t(text.uploaded)}
         onPress={() => navigation.goBack()}
         customStyle={[{ paddingHorizontal: Spacing.medium }]}
+        icon1={ICONS.search}
+        onRightPress1={() => setSearchVisible(!searchVisible)}
       />
+      <View
+        style={[
+          styles.searchInput,
+          { display: searchVisible ? 'flex' : 'none' },
+        ]}
+      >
+        <TextInput
+          value={search}
+          onChangeText={setSearch}
+          placeholder={t(text.search)}
+          placeholderTextColor="#999"
+          returnKeyType="search"
+          onSubmitEditing={() => {
+            // user bấm enter -> gọi ngay (bỏ debounce hiện tại)
+            if (searchDelayRef.current) clearTimeout(searchDelayRef.current);
+            setPage(1);
+            setNoMoreData(false);
+            fetchPosts(1, true);
+          }}
+        />
+      </View>
       <View
         style={{
           borderRadius: 20,
           backgroundColor: Colors.white,
           marginHorizontal: Spacing.medium,
           marginTop: Spacing.small,
-          maxHeight: `88%`,
+          maxHeight: searchVisible ? `82%` : `88%`,
         }}
       >
         <FlatList
@@ -174,7 +222,7 @@ const PostScreen = ({ navigation }: any) => {
           data={posts}
           renderItem={renderPost}
           style={{
-            marginVertical: Spacing.medium,
+            marginVertical: Spacing.small,
           }}
           keyExtractor={item => item.id.toString()}
           ListEmptyComponent={
@@ -216,7 +264,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
+  searchInput: {
+    marginHorizontal: Spacing.medium,
+    marginVertical: Spacing.small,
+    backgroundColor: Colors.white,
+    borderRadius: 20,
+    paddingHorizontal: Spacing.medium,
+    borderWidth: 1,
+    borderColor: Colors.Gray,
+  },
   footerNoMore: {
     paddingVertical: Spacing.small,
     alignItems: 'center',

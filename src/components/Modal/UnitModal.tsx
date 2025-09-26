@@ -22,6 +22,7 @@ interface Props {
   onSelect: (value: { label: string; value: number }) => void;
   selectedValue?: { label: string; value: number };
   type:
+    | 'currency'
     | 'unit'
     | 'legal'
     | 'furniture'
@@ -48,7 +49,12 @@ const UnitSelectionModal: React.FC<Props> = ({
       setSelected(null); // Reset selected value when modal is closed
     }
   }, [visible]);
-
+  const currencyOptions: { label: string; value: string }[] = [
+    { label: `VND`, value: '1' },
+    { label: 'USD', value: '2' },
+    { label: 'THB', value: '3' },
+    { label: 'LAK', value: '4' },
+  ];
   const unitOptions: { label: string; value: string }[] = [
     { label: `${t(text.unit_label)}`, value: '1' },
     { label: `${t(text.price_m2)}`, value: '2' },
@@ -94,6 +100,11 @@ const UnitSelectionModal: React.FC<Props> = ({
   let headerText = '';
 
   switch (type) {
+    case 'currency':
+      options = currencyOptions;
+      headerText = t(text.modal.chooseCurrency);
+      break;
+
     case 'unit':
       options = unitOptions;
       headerText = t(text.modal.chooseUnit);

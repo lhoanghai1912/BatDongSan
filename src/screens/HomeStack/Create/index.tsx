@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from 'react';
+import React, { use, useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -63,6 +63,7 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
   const [propertyTypeVisible, setPropertyTypeVisible] = useState(false);
   const [isUnitModalVisible, setUnitModalVisible] = useState(false);
   const [selectedField, setSelectedField] = useState<
+    | 'currency'
     | 'unit'
     | 'legal'
     | 'furniture'
@@ -72,21 +73,25 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
     | 'electricityPrice'
     | 'waterPrice'
     | 'internetPrice'
-  >('unit');
+  >('currency');
   const type =
     demandLabel === t(text.sale) ? 1 : demandLabel === t(text.rent) ? 2 : '';
   const [location, setLocation] = useState<any>({});
   const [locationText, setLocationText] = useState(''); // NEW: hiển thị địa điểm
   const [propertyType, setPropertyType] = useState<any>('');
-  const [area, setArea] = useState('');
+  const [area, setArea] = useState<number>(0);
   const [price, setPrice] = useState<number>(0);
+  const [currency, setCurrency] = useState<{ label: string; value: number }>({
+    label: t(text.currency_label),
+    value: 1,
+  });
   const [unit, setUnit] = useState<{ label: string; value: number }>({
-    label: t(text.unit_label),
+    label: 'USD',
     value: 1,
   });
   const [bedrooms, setBedroom] = useState(0);
   const [bathrooms, setBathroom] = useState(0);
-  const [floor, setFloor] = useState(0);
+  const [floors, setFloor] = useState(0);
   const [accessRoad, setAccessRoad] = useState(0);
   const [frontage, setFrontage] = useState(0);
   const [title, setTitle] = useState('');
@@ -146,9 +151,13 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
   const [contactPhone, setContactPhone] = useState(userData?.phoneNumber);
   const [imageUpload, setImageUpload] = useState<any[]>([]);
   console.log(userData);
+  console.log('currency', currency, 'unit', unit);
 
   const handleSelect = (selected: { label: string; value: number }) => {
     switch (selectedField) {
+      case 'currency':
+        setCurrency(selected);
+        break;
       case 'unit':
         setUnit(selected);
         break;
@@ -205,7 +214,7 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
       setPrice(editPost.price || 0);
       setBedroom(editPost.bedrooms || 0);
       setBathroom(editPost.bathrooms || 0);
-      setFloor(editPost.floor || 0);
+      setFloor(editPost.floors || 0);
       setAccessRoad(editPost.accessRoad || 0);
       setFrontage(editPost.frontage || 0);
 
@@ -251,7 +260,14 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
         });
       }
 
-      // ✅ Fill unit info
+      // ✅ Fill currency info
+      if (editPost.currency) {
+        setCurrency({
+          value: editPost.currency,
+          label: editPost.currencyText || t(text.currency_label),
+        });
+      }
+
       if (editPost.unit) {
         setUnit({
           value: editPost.unit,
@@ -355,9 +371,13 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
         setLocation({});
         setLocationText('');
         setPropertyType('');
-        setArea('');
+        setArea(0);
         setPrice(0);
-        setUnit({ label: t(text.unit_label), value: 0 });
+        setCurrency({
+          label: 'USD',
+          value: 1,
+        });
+        setUnit({ label: t(text.unit_label), value: 1 });
         setBedroom(0);
         setBathroom(0);
         setFloor(0);
@@ -391,8 +411,6 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
   console.log('rou', route);
 
   const formatPriceToTy = (price: number): string => {
-    if (!price || isNaN(price)) return '0 đồng';
-
     if (price >= 1_000_000_000) {
       const billion = price / 1_000_000_000;
       return billion % 1 === 0
@@ -420,8 +438,8 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
       setBedroom(bedrooms + 1);
     } else if (field === 'bathrooms') {
       setBathroom(bathrooms + 1);
-    } else if (field === 'floor') {
-      setFloor(floor + 1);
+    } else if (field === 'floors') {
+      setFloor(floors + 1);
     }
   };
 
@@ -430,8 +448,8 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
       setBedroom(bedrooms - 1);
     } else if (field === 'bathrooms' && bathrooms >= 1) {
       setBathroom(bathrooms - 1);
-    } else if (field === 'floor' && floor >= 1) {
-      setFloor(floor - 1);
+    } else if (field === 'floors' && floors >= 1) {
+      setFloor(floors - 1);
     }
   };
 
@@ -463,7 +481,7 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
     { label: t(text.furnishing), value: furniture },
     { label: t(text.bedrooms), value: bedrooms },
     { label: t(text.bathrooms), value: bathrooms },
-    { label: t(text.floors), value: floor },
+    { label: t(text.floors), value: floors },
     { label: t(text.modal.houseDirection), value: housedirection },
     { label: t(text.modal.balconyDirection), value: balconydirection },
     { label: t(text.accessRoad), value: accessRoad },
@@ -518,15 +536,16 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
         street: location?.street,
         area,
         price,
+        currency: currency.value,
         unit: unit.value,
         legalDocument: legal.value,
-        furniture: furniture.value,
+        furnishing: furniture.value,
         bedrooms,
         bathrooms,
-        floor,
-        houseDirection: housedirection.value,
+        floors,
+        houseOrientation: housedirection.value,
         balconyDirection: balconydirection.value,
-        accessRoad,
+        acccessRoad: accessRoad,
         frontage,
         availableFrom: availableFrom.value,
         electricityPrice: electricityPrice.value,
@@ -534,7 +553,7 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
         internetPrice: internetPrice.value,
         title,
         description,
-        menities: '1',
+        menities: 1,
         contactName,
         contactPhone,
         contactEmail,
@@ -573,7 +592,7 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
         });
       } else {
         // ✅ Create new post
-        console.log('Creating new post');
+        console.log('Creating new post', formData);
         res = await createPost(formData);
         Toast.show({
           type: 'success',
@@ -876,9 +895,13 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
                       <View style={[styles.searchBox, { paddingVertical: 0 }]}>
                         <TextInput
                           style={[styles.text, { flex: 1 }]}
-                          value={area}
+                          value={area.toLocaleString('vi-VN')}
                           keyboardType="number-pad"
-                          onChangeText={text => setArea(text)}
+                          onChangeText={textChange => {
+                            const raw = textChange.replace(/\./g, '');
+                            const num = Number(raw);
+                            setArea(isNaN(num) ? 0 : num);
+                          }}
                           placeholder={t(text.enter_area)}
                         />
                         <Text
@@ -893,8 +916,71 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
                         >
                           m²
                         </Text>
-                        {area.length > 0 && (
-                          <TouchableOpacity onPress={() => setArea('')}>
+                        {area > 0 && (
+                          <TouchableOpacity onPress={() => setArea(0)}>
+                            <Image
+                              source={ICONS.clear}
+                              style={[
+                                AppStyles.icon,
+                                { marginLeft: Spacing.small },
+                              ]}
+                            />
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    </View>
+                    <View>
+                      <Text
+                        style={[
+                          AppStyles.text_bold,
+                          { marginBottom: Spacing.medium },
+                        ]}
+                      >
+                        {t(text.price)}
+                      </Text>
+                      <View
+                        style={[
+                          styles.searchBox,
+                          {
+                            paddingVertical: 0,
+                            backgroundColor:
+                              unit.label === t(text.deal)
+                                ? Colors.Gray
+                                : undefined,
+                          },
+                        ]}
+                      >
+                        <TextInput
+                          // style={[styles.text, { flex: 1 }]}
+                          value={
+                            unit.label === t(text.deal)
+                              ? '0'
+                              : price
+                              ? price.toLocaleString('vi-VN')
+                              : ''
+                          }
+                          keyboardType="number-pad"
+                          editable={unit.label !== t(text.deal)}
+                          style={[
+                            styles.text,
+                            {
+                              flex: 1,
+                            },
+                          ]}
+                          onChangeText={textChange => {
+                            if (unit.label === t(text.deal)) {
+                              setPrice(0);
+                              return;
+                            }
+                            const raw = textChange.replace(/\./g, '');
+                            const num = Number(raw);
+                            setPrice(isNaN(num) ? 0 : num);
+                          }}
+                          placeholder={t(text.enter_price)}
+                        />
+
+                        {area > 0 && (
+                          <TouchableOpacity onPress={() => setPrice(0)}>
                             <Image
                               source={ICONS.clear}
                               style={[
@@ -907,70 +993,38 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
                       </View>
                     </View>
                     <View style={styles.body_itemHeader}>
-                      <View style={{ flex: 0.55 }}>
+                      <View style={{ flex: 0.4 }}>
                         <Text
                           style={[
                             AppStyles.text_bold,
                             { marginBottom: Spacing.medium },
                           ]}
                         >
-                          {t(text.price)}
+                          {t(text.currency)}
                         </Text>
-                        <View
-                          style={[
-                            styles.searchBox,
-                            {
-                              paddingVertical: 0,
-                              backgroundColor:
-                                unit.label === t(text.deal)
-                                  ? Colors.Gray
-                                  : undefined,
-                            },
-                          ]}
+                        <TouchableOpacity
+                          onPress={() => {
+                            setSelectedField('currency'),
+                              setUnitModalVisible(true);
+                          }}
+                          style={[styles.searchBox, { height: 48 }]}
                         >
-                          <TextInput
-                            // style={[styles.text, { flex: 1 }]}
-                            value={
-                              unit.label === t(text.deal)
-                                ? '0'
-                                : price
-                                ? price.toLocaleString('vi-VN')
-                                : ''
-                            }
-                            keyboardType="number-pad"
-                            editable={unit.label !== t(text.deal)}
-                            style={[
-                              styles.text,
-                              {
-                                flex: 1,
-                              },
-                            ]}
-                            onChangeText={textChange => {
-                              if (unit.label === t(text.deal)) {
-                                setPrice(0);
-                                return;
-                              }
-                              const raw = textChange.replace(/\./g, '');
-                              const num = Number(raw);
-                              setPrice(isNaN(num) ? 0 : num);
-                            }}
-                            placeholder={t(text.enter_price)}
-                          />
+                          <Text
+                            style={[styles.text, { flex: 1, color: '#666666' }]}
+                          >
+                            {currency.label || t(text.enter_currency)}
+                          </Text>
 
-                          {area.length > 0 && (
-                            <TouchableOpacity onPress={() => setPrice(0)}>
-                              <Image
-                                source={ICONS.clear}
-                                style={[
-                                  AppStyles.icon,
-                                  { marginLeft: Spacing.small },
-                                ]}
-                              />
-                            </TouchableOpacity>
-                          )}
-                        </View>
+                          <Image
+                            source={ICONS.down}
+                            style={[
+                              AppStyles.icon,
+                              { marginLeft: Spacing.small },
+                            ]}
+                          />
+                        </TouchableOpacity>
                       </View>
-                      <View style={{ flex: 0.45, marginLeft: Spacing.small }}>
+                      <View style={{ flex: 0.6, marginLeft: Spacing.small }}>
                         <Text
                           style={[
                             AppStyles.text_bold,
@@ -1003,17 +1057,15 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
                     </View>
                     <Text style={AppStyles.text}>
                       {unit.value == 1 && price
-                        ? `${t(text.value)}: ${formatPriceToTy(price)}`
+                        ? `${t(text.value)}: ${formatPriceToTy(price)} ${
+                            currency.label
+                          }`
                         : unit.value == 2 && price
-                        ? `${price.toLocaleString(
-                            i18n.language === 'lo-LA'
-                              ? 'lo-LA'
-                              : i18n.language === 'en-US'
-                              ? 'en-US'
-                              : 'vi-VN',
-                          )}/m²\n${t(text.total_value)}: ${(
-                            price * Number(area)
-                          ).toLocaleString('vi-VN')}`
+                        ? `${formatPriceToTy(price)} ${currency.label}/m²\n${t(
+                            text.total_value,
+                          )}: ${formatPriceToTy(price * Number(area))} ${
+                            currency.label
+                          }`
                         : null}
                     </Text>
                   </View>
@@ -1329,8 +1381,8 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
                         </Text>
                         <View style={{ flexDirection: 'row' }}>
                           <TouchableOpacity
-                            disabled={floor === 0}
-                            onPress={() => handleDecrease('floor')}
+                            disabled={floors === 0}
+                            onPress={() => handleDecrease('floors')}
                           >
                             <Image
                               source={ICONS.minus}
@@ -1338,14 +1390,16 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
                                 AppStyles.icon,
                                 {
                                   tintColor:
-                                    floor === 0 ? Colors.Gray : Colors.darkGray,
+                                    floors === 0
+                                      ? Colors.Gray
+                                      : Colors.darkGray,
                                 },
                               ]}
                             />
                           </TouchableOpacity>
-                          <Text style={styles.quantity}>{floor}</Text>
+                          <Text style={styles.quantity}>{floors}</Text>
                           <TouchableOpacity
-                            onPress={() => handleIncrease('floor')}
+                            onPress={() => handleIncrease('floors')}
                           >
                             <Image
                               source={ICONS.plus}
@@ -1840,7 +1894,7 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
                           ]}
                         />
                         <Text style={[styles.text, { color: Colors.white }]}>
-                          Chọn ảnh từ thư viện
+                          {t(text.upload_image)}
                         </Text>
                       </TouchableOpacity>
                       <TouchableOpacity
@@ -1866,7 +1920,7 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
                           ]}
                         />
                         <Text style={[styles.text, { color: Colors.white }]}>
-                          Chụp ảnh mới
+                          {t(text.create_image)}
                         </Text>
                       </TouchableOpacity>
                     </View>
@@ -1936,7 +1990,9 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
         onClose={() => setUnitModalVisible(false)} // Close modal
         onSelect={handleSelect} // Use handleSelect to update state
         selectedValue={
-          selectedField === 'unit'
+          selectedField === 'currency'
+            ? currency
+            : selectedField === 'unit'
             ? unit
             : selectedField === 'legal'
             ? legal

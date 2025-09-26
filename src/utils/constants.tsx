@@ -75,6 +75,7 @@ export const caseType = {
 export const text = {
   uploaded: 'uploaded',
   web: 'web',
+  currency_label: 'currency_label',
   unit_label: 'unit_label',
   country: 'country',
   total_value: 'total_value',
@@ -139,6 +140,7 @@ export const text = {
   created: 'created',
   create_post: 'create_post',
   upload_image: 'upload_image',
+  create_image: 'create_image',
   exit: 'exit',
   step: 'step',
   demand: 'demand',
@@ -151,10 +153,12 @@ export const text = {
   enter_price: 'enter_price',
   enter_sort: 'enter_sort',
   enter_unit: 'enter_unit',
+  enter_currency: 'enter_currency',
   enter_otp: 'enter_otp',
   pick_location: 'pick_location',
   main_info: 'main_info',
   price: 'price',
+  currency: 'currency',
   unit: 'unit',
   price_m2: 'price/m²',
   deal: 'deal',
@@ -216,6 +220,7 @@ export const text = {
     houseDirection: 'modal.houseDirection',
     balconyDirection: 'modal.balconyDirection',
     chooseUnit: 'modal.chooseUnit',
+    chooseCurrency: 'modal.chooseCurrency',
 
     houseType: {
       apartment: 'modal.houseType.apartment',

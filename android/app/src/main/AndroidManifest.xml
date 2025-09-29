@@ -36,6 +36,11 @@
         </intent-filter>
       </activity>
 
+      <!-- Maps activities -->
+      <meta-data
+        android:name="com.google.android.geo.API_KEY"
+        android:value="AIzaSyD5GLF-0zusfOJlJqHDEuujDJvdXYWniNA"/>
+
       <!-- App entry -->
       <activity
           android:name=".MainActivity"

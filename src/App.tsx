@@ -14,7 +14,7 @@ import AppNavigator from './navigation/AppNavigator';
 import Toast from 'react-native-toast-message';
 import { useEffect } from 'react';
 import { Settings } from 'react-native-fbsdk-next';
-
+import Geocoding from 'react-native-geocoding';
 enableScreens();
 
 GoogleSignin.configure({
@@ -28,6 +28,7 @@ export default function App() {
     Settings.setAutoLogAppEventsEnabled(true);
     Settings.initializeSDK();
   }, []);
+  Geocoding.init('AIzaSyD5GLF-0zusfOJlJqHDEuujDJvdXYWniNA');
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

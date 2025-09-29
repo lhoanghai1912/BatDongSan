@@ -15,11 +15,14 @@ import AppButton from '../AppButton';
 import AppStyles from '../AppStyle';
 import { useTranslation } from 'react-i18next';
 import PropertyLocationModal from './PropertyLocationModal';
+import MapView, { Marker } from 'react-native-maps';
+import MapModal from './MapModal';
 
 interface Props {
   visible: boolean;
   onClose: () => void;
   onSearch: (location: any) => void;
+  post?: any;
 }
 
 type FieldType = 'province' | 'district' | 'commune';
@@ -28,19 +31,21 @@ const SearchLocationModal: React.FC<Props> = ({
   visible,
   onClose,
   onSearch,
+  post,
 }) => {
   const { t } = useTranslation();
+  console.log('post', post);
 
   const [locationModalVisible, setLocationModalVisible] = useState(false);
   const [locationModalField, setLocationModalField] =
     useState<FieldType | null>(null);
+  const [showMap, setShowMap] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<{
     province: any;
     district: any;
     commune: any;
     street: string;
   }>({ province: null, district: null, commune: '', street: '' });
-
   const handleSubmit = () => {
     onSearch(selectedLocation);
     console.log(selectedLocation);
@@ -98,9 +103,9 @@ const SearchLocationModal: React.FC<Props> = ({
               <TouchableOpacity
                 onPress={() => {
                   setSelectedLocation({
-                    province: null,
-                    district: null,
-                    commune: null,
+                    province: post?.province || null,
+                    district: post?.distric || null,
+                    commune: post?.commnue || null,
                     street: '',
                   }),
                     onClose();
@@ -197,6 +202,7 @@ const SearchLocationModal: React.FC<Props> = ({
                   placeholder={t(message.enter_street)}
                 />
               </View>
+              <AppButton title="Map" onPress={() => setShowMap(true)} />
             </View>
           </View>
 
@@ -221,6 +227,13 @@ const SearchLocationModal: React.FC<Props> = ({
             field={locationModalField}
             selected={selectedLocation}
           />
+          <MapModal
+            visible={showMap}
+            onClose={() => setShowMap(false)}
+            latitude={post?.latitude || 21.0278}
+            longitude={post?.longitude || 105.8342}
+            title="Hà Nội"
+          />
         </View>
       </View>
     </Modal>
@@ -237,7 +250,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modal: {
-    maxHeight: '80%',
+    maxHeight: '85%',
     width: '100%',
     backgroundColor: 'white',
     paddingVertical: Spacing.medium,

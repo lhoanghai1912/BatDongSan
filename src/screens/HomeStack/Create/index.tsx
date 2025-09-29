@@ -836,6 +836,7 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
                       flexDirection: 'row',
                       alignItems: 'center',
                       width: '100%',
+                      backgroundColor: 'red',
                       justifyContent: 'space-between',
                     }}
                   >
@@ -1993,6 +1994,7 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
         visible={searchLocationModalVisible}
         onClose={() => setSearchLocationModalVisible(false)}
         onSearch={handleSearchLocation}
+        post={editPost}
       />
       <PropertyTypeModal
         visible={propertyTypeVisible}

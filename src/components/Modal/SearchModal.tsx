@@ -14,6 +14,7 @@ import AppButton from '../AppButton';
 import AppStyles from '../AppStyle';
 import { useTranslation } from 'react-i18next';
 import SearchLocationModal from './SearchLocationModal';
+import MapModal from './MapModal';
 
 interface Props {
   visible: boolean;
@@ -32,6 +33,7 @@ const SearchModal: React.FC<Props> = ({ visible, onClose, onSearch }) => {
     setLocationText('');
     setLocation([]);
   };
+  const [showMap, setShowMap] = useState(false);
 
   const handleSubmit = () => {
     const result = selected === 'forSale' ? 1 : 2;
@@ -146,6 +148,7 @@ const SearchModal: React.FC<Props> = ({ visible, onClose, onSearch }) => {
                 </Text>
                 <Image source={ICONS.edit} style={AppStyles.icon} />
               </TouchableOpacity>
+              <AppButton title="Map" onPress={() => setShowMap(true)} />
             </View>
           </View>
 
@@ -167,10 +170,12 @@ const SearchModal: React.FC<Props> = ({ visible, onClose, onSearch }) => {
           </View>
         </View>
       </View>
-      <SearchLocationModal
-        visible={modalLocationSearchVisible}
-        onClose={() => setModalLocationSearchVisible(false)}
-        onSearch={handleSearchLocation}
+      <MapModal
+        visible={showMap}
+        onClose={() => setShowMap(false)}
+        latitude={21.0278}
+        longitude={105.8342}
+        title="Hà Nội"
       />
     </Modal>
   );
@@ -199,6 +204,8 @@ const styles = StyleSheet.create({
     marginVertical: Spacing.medium,
     justifyContent: 'space-between',
   },
+  map: { flex: 1, width: '100%', height: '100%' },
+
   icon: {
     width: 24,
     height: 24,

@@ -137,6 +137,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload, edit }) => {
       onPress={() => {
         navigate(Screen_Name.Detail_Screen, {
           post,
+          edit,
         });
       }}
     >

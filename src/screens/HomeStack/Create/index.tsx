@@ -22,12 +22,11 @@ import PropertyTypeModal from '../../../components/Modal/PropertyTypeModal';
 import UnitSelectionModal from '../../../components/Modal/UnitModal';
 import styles from './style';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import { createPost } from '../../../service';
+import { createPost, updatePost } from '../../../service';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import i18n from '../../../i18n/i18n';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
@@ -594,7 +593,7 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
         if (isEditMode) {
           // ✅ Update existing post
           console.log('Updating post:', editingPostId);
-          // res = await updatePost(editingPostId, formData); // ✅ You'll need to create this API function
+          res = await updatePost(editingPostId, formData); // ✅ You'll need to create this API function
           Toast.show({
             type: 'success',
             text1: 'Success',

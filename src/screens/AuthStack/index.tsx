@@ -156,7 +156,7 @@ const LoginScreen = () => {
 
       const result = await LoginManager.logInWithPermissions(
         ['public_profile', 'email'],
-        'enabled',
+        // 'enabled',
       );
       if (result.isCancelled) return;
 

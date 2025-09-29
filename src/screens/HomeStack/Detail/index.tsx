@@ -30,6 +30,8 @@ import { likePost } from '../../../service/likeService';
 import { Item } from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
 import { deletePost } from '../../../service';
 import { setLoading } from '../../../store/reducers/loadingSlice';
+import CreateScreen from '../Create';
+import UserScreen from '../User';
 
 const { width } = Dimensions.get('window');
 interface Props {
@@ -101,6 +103,13 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
     } catch (error) {}
   };
 
+  const handleEdit = async () => {
+    navigation.navigate(Screen_Name.BottomTab_Navigator, {
+      screen: Screen_Name.Create_Screen,
+      params: { post },
+    });
+  };
+
   const handleDeletePost = async (postId: any) => {
     try {
       setLoading(true);
@@ -146,8 +155,16 @@ const DetailScreen: React.FC<Props> = ({ route, navigation }) => {
         onPress={() => navigation.goBack()}
         icon1={ICONS.share}
         onRightPress1={() => navigate(Screen_Name.Home_Screen)}
-        icon2={liked ? ICONS.heart_like : ICONS.heart}
-        onRightPress2={() => handleLike()}
+        icon2={
+          route.params.edit
+            ? ICONS.edit
+            : liked
+            ? ICONS.heart_like
+            : ICONS.heart
+        }
+        onRightPress2={() => {
+          route.params.edit ? handleEdit() : handleLike();
+        }}
       />
       <ScrollView style={{ marginVertical: Spacing.medium }}>
         <View style={styles.header}>

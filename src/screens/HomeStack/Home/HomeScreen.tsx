@@ -370,6 +370,8 @@ const HomeScreen: React.FC = ({}) => {
             justifyContent: 'space-between',
             alignItems: 'center',
             paddingHorizontal: Spacing.medium,
+            // backgroundColor: 'red',
+            marginBottom: Spacing.medium,
           }}
         >
           <View style={{ flexDirection: 'row' }}>

@@ -28,7 +28,24 @@ export const createPost = async (formData: FormData) => {
     throw error;
   }
 };
+export const updatePost = async (id: number, formData: FormData) => {
+  try {
+    console.log('form data', formData);
+    const response = await apiClient.put(`/posts/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data', // Đặt Content-Type cho formData
+        // Authorization: 'Bearer your_token_here', // Đảm bảo nếu cần, có thể để thêm token
+      },
+    });
+    console.log('ressssssssssssssssssssssssssssssssssssssssApi', response);
 
+    console.log('Post Updated: ', response.data);
+    return response;
+  } catch (error) {
+    console.log('API error', error);
+    throw error;
+  }
+};
 export const getAllPosts = async (
   filterString?: string,
   orderbyString?: string,

@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "933795750129-d88s33cmp5cf4gst16ai96up2a2abvn8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.homesapp",
+            "certificate_hash": "346ec05b90e70d4825ca1ed2a2476751c17a48f9"
+          }
+        },
+        {
           "client_id": "933795750129-pph1jp581lfbhe5s6vdphdssc2ssdp1g.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

@@ -96,6 +96,7 @@ const styles = StyleSheet.create({
     color: Colors.black,
   },
   text: { color: Colors.black, fontSize: Fonts.normal },
+  errorText: { color: 'red', marginBottom: Spacing.small },
   imageContainer: {
     marginTop: 20,
     alignItems: 'center',

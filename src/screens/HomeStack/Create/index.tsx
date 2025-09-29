@@ -86,7 +86,7 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
     value: 1,
   });
   const [unit, setUnit] = useState<{ label: string; value: number }>({
-    label: 'USD',
+    label: 'VND',
     value: 1,
   });
   const [bedrooms, setBedroom] = useState(0);
@@ -150,6 +150,7 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
   const [contactEmail, setContactEmail] = useState(userData?.email);
   const [contactPhone, setContactPhone] = useState(userData?.phoneNumber);
   const [imageUpload, setImageUpload] = useState<any[]>([]);
+  const [error, setError] = useState(false);
   console.log(userData);
   console.log('currency', currency, 'unit', unit);
 
@@ -374,7 +375,7 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
         setArea(0);
         setPrice(0);
         setCurrency({
-          label: 'USD',
+          label: 'VND',
           value: 1,
         });
         setUnit({ label: t(text.unit_label), value: 1 });
@@ -522,89 +523,99 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
   const handleCreatePost = async () => {
     setLoading(true);
     try {
-      // ✅ Prepare form data (same as before)
-      const formData = new FormData();
-      const data = {
-        type,
-        categoryType: propertyType.value,
-        provinceId: location?.province?.id,
-        provinceName: location?.province?.name,
-        districtId: location?.district?.id,
-        districtName: location?.district?.name,
-        communeId: location?.commune?.id,
-        communeName: location?.commune?.name,
-        street: location?.street,
-        area,
-        price,
-        currency: currency.value,
-        unit: unit.value,
-        legalDocument: legal.value,
-        furnishing: furniture.value,
-        bedrooms,
-        bathrooms,
-        floors,
-        houseOrientation: housedirection.value,
-        balconyDirection: balconydirection.value,
-        acccessRoad: accessRoad,
-        frontage,
-        availableFrom: availableFrom.value,
-        electricityPrice: electricityPrice.value,
-        waterPrice: waterPrice.value,
-        internetPrice: internetPrice.value,
-        title,
-        description,
-        menities: 1,
-        contactName,
-        contactPhone,
-        contactEmail,
-        videoUrl: 'http://youtu.be/xyz',
-        isExpired: false,
-        images: imageUpload.map((item: any, index: number) => {
-          return {
-            description: item?.fileName,
-            displayOrder: index,
-            ...(item.isExisting && { id: item.id }), // ✅ Include ID for existing images
-          };
-        }),
-      };
-
-      // ✅ Handle image uploads (only new images)
-      const newImages = imageUpload.filter(item => !item.isExisting);
-      newImages.forEach((item: any) => {
-        formData.append('images', {
-          uri: item?.uri,
-          type: item?.type,
-          name: item?.fileName,
-        } as any);
-      });
-
-      formData.append('jsonPostData', JSON.stringify(data));
-
-      let res;
-      if (isEditMode) {
-        // ✅ Update existing post
-        console.log('Updating post:', editingPostId);
-        // res = await updatePost(editingPostId, formData); // ✅ You'll need to create this API function
+      if (contactPhone.trim() === '') {
+        setError(true);
         Toast.show({
-          type: 'success',
-          text1: 'Success',
-          text2: 'Post updated successfully',
+          type: 'error',
+          text1: 'Error',
+          text2: 'Contact phone cannot be empty',
         });
       } else {
-        // ✅ Create new post
-        console.log('Creating new post', formData);
-        res = await createPost(formData);
-        Toast.show({
-          type: 'success',
-          text1: 'Success',
-          text2: 'Post created successfully',
+        setError(false);
+        // ✅ Prepare form data (same as before)
+        const formData = new FormData();
+        const data = {
+          type,
+          categoryType: propertyType.value,
+          provinceId: location?.province?.id,
+          provinceName: location?.province?.name,
+          districtId: location?.district?.id || '',
+          districtName: location?.district?.name || '',
+          communeId: location?.commune?.id || '',
+          communeName: location?.commune?.name || '',
+          street: location?.street || '',
+          area,
+          price,
+          currency: currency.value,
+          unit: unit.value,
+          legalDocument: legal.value,
+          furnishing: furniture.value,
+          bedrooms,
+          bathrooms,
+          floors,
+          houseOrientation: housedirection.value,
+          balconyDirection: balconydirection.value,
+          acccessRoad: accessRoad,
+          frontage,
+          availableFrom: availableFrom.value,
+          electricityPrice: electricityPrice.value,
+          waterPrice: waterPrice.value,
+          internetPrice: internetPrice.value,
+          title,
+          description,
+          menities: 1,
+          contactName,
+          contactPhone,
+          contactEmail,
+          videoUrl: 'http://youtu.be/xyz',
+          isExpired: false,
+          images: imageUpload.map((item: any, index: number) => {
+            return {
+              description: item?.fileName,
+              displayOrder: index,
+              ...(item.isExisting && { id: item.id }), // ✅ Include ID for existing images
+            };
+          }),
+        };
+
+        // ✅ Handle image uploads (only new images)
+        const newImages = imageUpload.filter(item => !item.isExisting);
+        newImages.forEach((item: any) => {
+          formData.append('images', {
+            uri: item?.uri,
+            type: item?.type,
+            name: item?.fileName,
+          } as any);
         });
-      }
 
-      console.log('Operation result:', res);
+        formData.append('jsonPostData', JSON.stringify(data));
 
-      if (res.status === 200) {
-        navigate(Screen_Name.Post_Screen); // ✅ Navigate back to posts list
+        let res;
+        if (isEditMode) {
+          // ✅ Update existing post
+          console.log('Updating post:', editingPostId);
+          // res = await updatePost(editingPostId, formData); // ✅ You'll need to create this API function
+          Toast.show({
+            type: 'success',
+            text1: 'Success',
+            text2: 'Post updated successfully',
+          });
+        } else {
+          // ✅ Create new post
+          console.log('Creating new post', formData);
+          res = await createPost(formData);
+          Toast.show({
+            type: 'success',
+            text1: 'Success',
+            text2: 'Post created successfully',
+          });
+        }
+
+        console.log('Operation result:', res);
+
+        if (res.status === 200) {
+          navigate(Screen_Name.Post_Screen); // ✅ Navigate back to posts list
+        }
       }
     } catch (error) {
       console.log('Error:', error);
@@ -1174,6 +1185,11 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
                           onChangeText={text => setContactPhone(text)}
                           placeholder={t(text.phone)}
                         />
+                        {error && (
+                          <Text style={styles.errorText}>
+                            Vui lòng nhập số điện thoại
+                          </Text>
+                        )}
                       </View>
                     </View>
                   </View>

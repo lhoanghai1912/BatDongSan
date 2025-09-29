@@ -250,6 +250,7 @@ export const text = {
 };
 export const ICONS = {
   web: require('../assets/icons/desktop.png'),
+  facebook: require('../assets/icons/facebook.png'),
   search: require('../assets/icons/search.png'),
   search_focus: require('../assets/icons/search_focus.png'),
   heart: require('../assets/icons/heart.png'),

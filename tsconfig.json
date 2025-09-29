@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "jsx": "react-native",  // Đảm bảo rằng cấu hình jsx được set là react-native
+    "jsx": "react-native", // Đảm bảo rằng cấu hình jsx được set là react-native
     "moduleResolution": "node",
     "allowJs": true,
     "strict": true,
@@ -13,6 +13,6 @@
     "target": "es5",
     "lib": ["es6", "dom"]
   },
-  "include": ["src/**/*", "node_modules/@types"],
+  "include": ["src/**/*", "node_modules/@types", "App.tsx"],
   "exclude": ["node_modules"]
 }

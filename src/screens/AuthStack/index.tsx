@@ -19,7 +19,7 @@ import AppButton from '../../components/AppButton';
 import { Screen_Name } from '../../navigation/ScreenName';
 import { navigate } from '../../navigation/RootNavigator';
 import Toast from 'react-native-toast-message';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setToken, setUserData } from '../../store/reducers/userSlice';
 import { login, loginFirebase } from '../../service';
 
@@ -28,6 +28,8 @@ import { useTranslation } from 'react-i18next';
 import { likePost } from '../../service/likeService';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
+import CookieManager from '@react-native-cookies/cookies';
+import { AccessToken, LoginManager } from 'react-native-fbsdk-next';
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
@@ -141,6 +143,69 @@ const LoginScreen = () => {
       type: 'info',
       text1: t(message.notyet),
     });
+  };
+
+  const handleLoginWithFacebook = async () => {
+    try {
+      console.log('handleLoginWithFacebook');
+
+      setLoading(true);
+      // await CookieManager.clearAll(true); // Clear all cookies (Android/iOS)
+      LoginManager.setLoginBehavior('web_only');
+      console.log('handleLoginWithFacebook');
+
+      const result = await LoginManager.logInWithPermissions(
+        ['public_profile', 'email'],
+        'enabled',
+      );
+      if (result.isCancelled) return;
+
+      const data = await AccessToken.getCurrentAccessToken();
+      if (!data) {
+        console.log('[FB-LOGIN] Không lấy được access token');
+        return;
+      }
+      const token = data.accessToken.toString();
+
+      // Test nhanh: token dùng được với Graph API?
+      const me = await fetch(
+        `https://graph.facebook.com/me?fields=id,name,email,picture.type(large)&access_token=${token}`,
+      ).then(r => r.json());
+      console.log('[FB-LOGIN] Graph /me =', me);
+
+      // Firebase
+      const facebookCredential = auth.FacebookAuthProvider.credential(token);
+      const userCredential = await auth().signInWithCredential(
+        facebookCredential,
+      );
+      console.log('[FB-LOGIN] Firebase user =', userCredential.user.uid);
+
+      const firebaseIdToken = await userCredential.user.getIdToken();
+      const res = await loginFirebase(firebaseIdToken);
+      console.log('[FB-LOGIN] backend res =', res);
+
+      dispatch(setToken({ token: res.token }));
+      dispatch(
+        setUserData({
+          userData: {
+            address: '',
+            avatarUrl: me?.picture?.data?.url,
+            dateOfBirth: '',
+            email: me?.email,
+            fullName: me?.name,
+            gender: '',
+            phoneNumber: '',
+            taxCode: '',
+          },
+        }),
+      );
+      navigate(Screen_Name.BottomTab_Navigator);
+    } catch (e: any) {
+      console.log('[FB-LOGIN] error code:', e?.code);
+      console.log('[FB-LOGIN] error message:', e?.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -266,6 +331,16 @@ const LoginScreen = () => {
             source={ICONS.apple}
             style={{
               display: Platform.OS === 'ios' ? 'flex' : 'none',
+              width: 40,
+              height: 40,
+              marginLeft: Spacing.medium,
+            }}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => handleLoginWithFacebook()}>
+          <Image
+            source={ICONS.facebook}
+            style={{
               width: 40,
               height: 40,
               marginLeft: Spacing.medium,

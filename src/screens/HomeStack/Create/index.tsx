@@ -262,17 +262,28 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
           province: {
             id: editPost.provinceId,
             name: editPost.provinceName,
+            type: 'Province', // ✅ Add type
           },
-          district: {
-            id: editPost.districtId,
-            name: editPost.districtName,
-          },
-          commune: {
-            id: editPost.communeId,
-            name: editPost.communeName,
-          },
+          district: editPost.districtId
+            ? {
+                id: editPost.districtId,
+                name: editPost.districtName,
+                type: 'District', // ✅ Add type
+                parentId: editPost.provinceId,
+              }
+            : null,
+          commune: editPost.communeId
+            ? {
+                id: editPost.communeId,
+                name: editPost.communeName,
+                type: 'Commune', // ✅ Add type
+                parentId: editPost.districtId,
+              }
+            : null,
           street: editPost.street || '',
         };
+
+        console.log('📍 Setting location from editPost:', locationData);
         setLocation(locationData);
 
         // ✅ Build location text
@@ -287,7 +298,6 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
         console.log('📍 Setting locationText:', fullAddress);
         setLocationText(fullAddress);
       }
-
       // ✅ Fill property type
       if (editPost.categoryType) {
         setPropertyType({
@@ -628,7 +638,7 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
         }),
       };
 
-      console.log('📦 Final data to submit:', data); // ✅ Debug log
+      console.log('📦 Final data to submit:', JSON.stringify(data, null, 2));
 
       // ✅ Validate location before submit
       if (!location?.province?.id) {
@@ -656,8 +666,10 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
       formData.append('jsonPostData', JSON.stringify(data));
 
       let res;
-      if (isEditMode) {
+      if (isEditMode === true) {
         console.log('🔄 Updating post:', editingPostId);
+        console.log('formData', formData);
+
         res = await updatePost(editingPostId, formData);
         Toast.show({
           type: 'success',

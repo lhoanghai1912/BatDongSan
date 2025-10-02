@@ -40,12 +40,13 @@ const SearchLocationModal: React.FC<Props> = ({
     useState<FieldType | null>(null);
   const [showMap, setShowMap] = useState(false);
 
-  // ✅ Khởi tạo selectedLocation từ post (nếu có)
   const [selectedLocation, setSelectedLocation] = useState<{
     province: any;
     district: any;
     commune: any;
     street: string;
+    latitude?: number;
+    longitude?: number;
   }>({
     province: post?.provinceId
       ? {
@@ -64,19 +65,154 @@ const SearchLocationModal: React.FC<Props> = ({
       : null,
     commune: post?.communeId
       ? {
-          type: 'Commune', // ✅ Chú ý: API trả về 'Ward' chứ không phải 'Commune'
+          type: 'Commune',
           name: post.communeName,
           id: post.communeId,
           parentId: post.districtId,
         }
       : null,
     street: post?.street || '',
+    latitude: post?.latitude || null,
+    longitude: post?.longitude || null,
   });
 
-  // ✅ Sync selectedLocation khi post thay đổi
   useEffect(() => {
     if (post) {
-      console.log('🔄 Syncing location from post:', post);
+      console.log('🔄 Resetting selectedLocation from post:', post);
+      setSelectedLocation({
+        province: post?.provinceId
+          ? {
+              type: 'Province',
+              name: post.provinceName,
+              id: post.provinceId,
+            }
+          : null,
+        district: post?.districtId
+          ? {
+              type: 'District',
+              name: post.districtName,
+              id: post.districtId,
+              parentId: post.provinceId,
+            }
+          : null,
+        commune: post?.communeId
+          ? {
+              type: 'Commune',
+              name: post.communeName,
+              id: post.communeId,
+              parentId: post.districtId,
+            }
+          : null,
+        street: post?.street || '',
+        latitude: post?.latitude || null,
+        longitude: post?.longitude || null,
+      });
+    }
+  }, [post?.provinceId, post?.districtId, post?.communeId, post?.street]);
+
+  const handleSubmit = () => {
+    console.log('📤 Submitting location:', selectedLocation);
+    onSearch(selectedLocation);
+    onClose();
+  };
+
+  const openLocationModal = (field: FieldType) => {
+    if (field === 'district' && !selectedLocation.province) {
+      alert(t(message.province_first));
+      return;
+    }
+    if (field === 'commune' && !selectedLocation.district) {
+      alert(t(message.district_first));
+      return;
+    }
+    setLocationModalField(field);
+    setLocationModalVisible(true);
+  };
+
+  console.log('📍 Current selectedLocation:', selectedLocation);
+
+  useEffect(() => {
+    if (selectedLocation.province?.name) {
+      const cleanProvinceName = selectedLocation.province.name
+        .split(' ')
+        .slice(1)
+        .join(' ')
+        .trim();
+
+      const cleanDistrictName = selectedLocation.district?.name
+        ? selectedLocation.district.name.split(' ').slice(1).join(' ').trim()
+        : '';
+
+      const fullAddress = cleanDistrictName
+        ? `${cleanDistrictName}, ${cleanProvinceName}`
+        : `${cleanProvinceName}`;
+
+      console.log('Fetching coordinates for:', fullAddress);
+
+      const fetchCoordinates = async () => {
+        try {
+          const response = await fetch(
+            `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
+              fullAddress,
+            )}&key=e1f61213bb954ca99c29b59384ccaac9`,
+          );
+          const data = await response.json();
+          console.log('data map', data);
+
+          if (data.results && data.results.length > 0) {
+            const lat = data.results[0].geometry.lat;
+            const lng = data.results[0].geometry.lng;
+            console.log('Coordinates fetched:', lat, lng);
+
+            setSelectedLocation(prev => ({
+              ...prev,
+              latitude: lat,
+              longitude: lng,
+            }));
+          } else {
+            console.log('No coordinates found for the location.');
+          }
+        } catch (error) {
+          console.error('Error fetching coordinates:', error);
+        }
+      };
+
+      fetchCoordinates();
+    }
+  }, [selectedLocation.province?.name, selectedLocation.district?.name]);
+
+  const handleLocationSelect = async (location: any) => {
+    if (locationModalField === 'province') {
+      const isProvinceChanged = selectedLocation.province?.id !== location.id;
+
+      setSelectedLocation({
+        province: location,
+        district: isProvinceChanged ? null : selectedLocation.district,
+        commune: isProvinceChanged ? null : selectedLocation.commune,
+        street: isProvinceChanged ? '' : selectedLocation.street,
+      });
+    } else if (locationModalField === 'district') {
+      const isDistrictChanged = selectedLocation.district?.id !== location.id;
+
+      setSelectedLocation(prev => ({
+        ...prev,
+        district: location,
+        commune: isDistrictChanged ? null : prev.commune,
+        street: isDistrictChanged ? '' : prev.street,
+      }));
+    } else if (locationModalField === 'commune') {
+      setSelectedLocation(prev => ({
+        ...prev,
+        commune: location,
+        street: '',
+      }));
+    }
+
+    setLocationModalVisible(false);
+  };
+
+  const handleClose = () => {
+    if (post) {
       setSelectedLocation({
         province: post.provinceId
           ? {
@@ -102,93 +238,8 @@ const SearchLocationModal: React.FC<Props> = ({
             }
           : null,
         street: post.street || '',
-      });
-    }
-  }, [post?.id]); // ✅ Depend on post.id để detect thay đổi
-
-  const handleSubmit = () => {
-    console.log('📤 Submitting location:', selectedLocation);
-    onSearch(selectedLocation);
-    onClose();
-    // ❌ KHÔNG reset selectedLocation ở đây nữa!
-    // setSelectedLocation({ province: null, district: null, commune: '', street: '' });
-  };
-
-  const openLocationModal = (field: FieldType) => {
-    if (field === 'district' && !selectedLocation.province) {
-      alert(t(message.province_first));
-      return;
-    }
-    if (field === 'commune' && !selectedLocation.district) {
-      alert(t(message.district_first));
-      return;
-    }
-    setLocationModalField(field);
-    setLocationModalVisible(true);
-  };
-
-  console.log('📍 Current selectedLocation:', selectedLocation);
-
-  const handleLocationSelect = (location: any) => {
-    console.log('✅ Location selected:', location);
-
-    if (locationModalField === 'province') {
-      // ✅ Chỉ reset district/commune nếu province thay đổi
-      const isProvinceChanged = selectedLocation.province?.id !== location.id;
-
-      setSelectedLocation({
-        province: location,
-        district: isProvinceChanged ? null : selectedLocation.district, // ✅ Giữ district nếu province không đổi
-        commune: isProvinceChanged ? null : selectedLocation.commune, // ✅ Giữ commune nếu province không đổi
-        street: selectedLocation.street,
-      });
-    } else if (locationModalField === 'district') {
-      // ✅ Chỉ reset commune nếu district thay đổi
-      const isDistrictChanged = selectedLocation.district?.id !== location.id;
-
-      setSelectedLocation(prev => ({
-        ...prev,
-        district: location,
-        commune: isDistrictChanged ? null : prev.commune, // ✅ Giữ commune nếu district không đổi
-      }));
-    } else if (locationModalField === 'commune') {
-      setSelectedLocation(prev => ({
-        ...prev,
-        commune: location,
-      }));
-    }
-
-    setLocationModalVisible(false);
-  };
-
-  const handleClose = () => {
-    // ✅ Khi đóng modal, reset về giá trị ban đầu từ post
-    if (post) {
-      setSelectedLocation({
-        province: post.provinceId
-          ? {
-              type: 'Province',
-              name: post.provinceName,
-              id: post.provinceId,
-            }
-          : null,
-        district: post.districtId
-          ? {
-              type: 'District',
-              name: post.districtName,
-              id: post.districtId,
-              parentId: post.provinceId,
-            }
-          : null,
-        commune: post.communeId
-          ? {
-              type: 'Ward',
-              name: post.communeName,
-              id: post.communeId,
-              parentId: post.districtId,
-            }
-          : null,
-        street: post.street || '',
+        latitude: post?.latitude || null,
+        longitude: post?.longitude || null,
       });
     }
     onClose();
@@ -325,9 +376,9 @@ const SearchLocationModal: React.FC<Props> = ({
           <MapModal
             visible={showMap}
             onClose={() => setShowMap(false)}
-            latitude={post?.latitude || 21.0278}
-            longitude={post?.longitude || 105.8342}
-            title="Hà Nội"
+            latitude={selectedLocation?.latitude || 21.0278}
+            longitude={selectedLocation?.longitude || 105.8342}
+            title={selectedLocation.province?.name || 'Hà Nội'}
           />
         </View>
       </View>
@@ -409,7 +460,6 @@ const styles = StyleSheet.create({
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    // width: '100%',
     borderRadius: 30,
     paddingVertical: Spacing.small,
     paddingHorizontal: Spacing.medium,

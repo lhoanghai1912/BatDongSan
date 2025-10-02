@@ -105,7 +105,7 @@ export const text = {
   find: 'find',
   find_project: 'find_project',
   find_district: 'find_district',
-  find_ward: 'find_ward',
+  find_commune: 'find_commune',
   find_street: 'find_street',
   find_location: 'find_location',
   property_type: 'property_type',

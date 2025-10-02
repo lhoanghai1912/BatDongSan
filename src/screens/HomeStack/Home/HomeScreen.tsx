@@ -87,7 +87,7 @@ const HomeScreen: React.FC = ({}) => {
   const placeholderTexts = [
     t(text.find_project),
     t(text.find_district),
-    t(text.find_ward),
+    t(text.find_commune),
     t(text.find_street),
   ];
   // Removed useFocusEffect to prevent duplicate API call on mount

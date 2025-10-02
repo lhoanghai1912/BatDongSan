@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import MapView, { MapPressEvent, Marker } from 'react-native-maps';
 
@@ -22,10 +22,16 @@ const MapModal: React.FC<MapModalProps> = ({
     lng: longitude,
   });
 
+  useEffect(() => {
+    setMarker({
+      lat: latitude,
+      lng: longitude,
+    });
+  }, [latitude, longitude]); // Chạy khi latitude hoặc longitude thay đổi
+
   const handleMapPress = (e: MapPressEvent) => {
     const { latitude, longitude } = e.nativeEvent.coordinate;
     setMarker({ lat: latitude, lng: longitude });
-    console.log('Selected Location:', { latitude, longitude });
   };
 
   return (

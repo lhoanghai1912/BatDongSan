@@ -216,10 +216,10 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload, edit }) => {
             <Text style={[AppStyles.text, { color: Colors.red }]}>{` ${t(
               text.deal,
             )}`}</Text>
-          ) : (
+          ) : post.unit === 2 ? (
             <>
               <Text style={[AppStyles.text, { color: Colors.red }]}>
-                {formatPriceToTy(post.price)}
+                {formatPriceToTy(post.price * post.area)}
               </Text>
               <Text
                 style={{
@@ -244,19 +244,20 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload, edit }) => {
                 {`${formatPriceToTy(post.price / post.area)}/m²`}
               </Text>
             </>
+          ) : (
+            <></>
           )}
+        </View>
+        <View style={styles.descriptionRow}>
           {post.bathrooms === 0 || post.bathrooms === null ? (
             <></>
           ) : (
             <>
               <Text
                 style={{
-                  marginHorizontal: Spacing.small,
                   fontSize: Fonts.normal,
                 }}
-              >
-                •
-              </Text>
+              ></Text>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Text style={[AppStyles.text, { color: Colors.darkGray }]}>
                   {`${post.bedrooms === 0 ? '' : post.bedrooms} `}
@@ -265,7 +266,9 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload, edit }) => {
                   source={ICONS.bed}
                   style={[
                     styles.icon,
-                    { display: post.bedrooms === 0 ? 'none' : 'flex' },
+                    {
+                      display: post.bedrooms === 0 ? 'none' : 'flex',
+                    },
                   ]}
                 />
               </View>
@@ -277,8 +280,8 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload, edit }) => {
             <>
               <Text
                 style={{
-                  marginHorizontal: Spacing.small,
                   fontSize: Fonts.normal,
+                  marginHorizontal: Spacing.small,
                 }}
               >
                 •
@@ -312,7 +315,6 @@ const ImageCard: React.FC<ImageCardProps> = ({ post, onReload, edit }) => {
         style={[
           styles.descriptionRow,
           {
-            marginBottom: 0,
             justifyContent: 'space-between',
             height: 50,
             flexDirection: 'row', // Đảm bảo các phần tử ngang nhau

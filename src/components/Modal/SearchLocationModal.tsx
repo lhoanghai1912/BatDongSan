@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Modal,
   View,
@@ -34,29 +34,84 @@ const SearchLocationModal: React.FC<Props> = ({
   post,
 }) => {
   const { t } = useTranslation();
-  console.log('post', post);
 
   const [locationModalVisible, setLocationModalVisible] = useState(false);
   const [locationModalField, setLocationModalField] =
     useState<FieldType | null>(null);
   const [showMap, setShowMap] = useState(false);
+
+  // ✅ Khởi tạo selectedLocation từ post (nếu có)
   const [selectedLocation, setSelectedLocation] = useState<{
     province: any;
     district: any;
     commune: any;
     street: string;
-  }>({ province: null, district: null, commune: '', street: '' });
-  const handleSubmit = () => {
-    onSearch(selectedLocation);
-    console.log(selectedLocation);
+  }>({
+    province: post?.provinceId
+      ? {
+          type: 'Province',
+          name: post.provinceName,
+          id: post.provinceId,
+        }
+      : null,
+    district: post?.districtId
+      ? {
+          type: 'District',
+          name: post.districtName,
+          id: post.districtId,
+          parentId: post.provinceId,
+        }
+      : null,
+    commune: post?.communeId
+      ? {
+          type: 'Commune', // ✅ Chú ý: API trả về 'Ward' chứ không phải 'Commune'
+          name: post.communeName,
+          id: post.communeId,
+          parentId: post.districtId,
+        }
+      : null,
+    street: post?.street || '',
+  });
 
+  // ✅ Sync selectedLocation khi post thay đổi
+  useEffect(() => {
+    if (post) {
+      console.log('🔄 Syncing location from post:', post);
+      setSelectedLocation({
+        province: post.provinceId
+          ? {
+              type: 'Province',
+              name: post.provinceName,
+              id: post.provinceId,
+            }
+          : null,
+        district: post.districtId
+          ? {
+              type: 'District',
+              name: post.districtName,
+              id: post.districtId,
+              parentId: post.provinceId,
+            }
+          : null,
+        commune: post.communeId
+          ? {
+              type: 'Commune',
+              name: post.communeName,
+              id: post.communeId,
+              parentId: post.districtId,
+            }
+          : null,
+        street: post.street || '',
+      });
+    }
+  }, [post?.id]); // ✅ Depend on post.id để detect thay đổi
+
+  const handleSubmit = () => {
+    console.log('📤 Submitting location:', selectedLocation);
+    onSearch(selectedLocation);
     onClose();
-    setSelectedLocation({
-      province: null,
-      district: null,
-      commune: '',
-      street: '',
-    });
+    // ❌ KHÔNG reset selectedLocation ở đây nữa!
+    // setSelectedLocation({ province: null, district: null, commune: '', street: '' });
   };
 
   const openLocationModal = (field: FieldType) => {
@@ -71,26 +126,72 @@ const SearchLocationModal: React.FC<Props> = ({
     setLocationModalField(field);
     setLocationModalVisible(true);
   };
-  console.log('abcvaswawdwad', selectedLocation);
+
+  console.log('📍 Current selectedLocation:', selectedLocation);
 
   const handleLocationSelect = (location: any) => {
+    console.log('✅ Location selected:', location);
+
     if (locationModalField === 'province') {
+      // ✅ Chỉ reset district/commune nếu province thay đổi
+      const isProvinceChanged = selectedLocation.province?.id !== location.id;
+
       setSelectedLocation({
         province: location,
-        district: null,
-        commune: '',
-        street: '',
+        district: isProvinceChanged ? null : selectedLocation.district, // ✅ Giữ district nếu province không đổi
+        commune: isProvinceChanged ? null : selectedLocation.commune, // ✅ Giữ commune nếu province không đổi
+        street: selectedLocation.street,
       });
     } else if (locationModalField === 'district') {
+      // ✅ Chỉ reset commune nếu district thay đổi
+      const isDistrictChanged = selectedLocation.district?.id !== location.id;
+
       setSelectedLocation(prev => ({
         ...prev,
         district: location,
-        commune: '',
+        commune: isDistrictChanged ? null : prev.commune, // ✅ Giữ commune nếu district không đổi
       }));
     } else if (locationModalField === 'commune') {
-      setSelectedLocation(prev => ({ ...prev, commune: location }));
+      setSelectedLocation(prev => ({
+        ...prev,
+        commune: location,
+      }));
     }
+
     setLocationModalVisible(false);
+  };
+
+  const handleClose = () => {
+    // ✅ Khi đóng modal, reset về giá trị ban đầu từ post
+    if (post) {
+      setSelectedLocation({
+        province: post.provinceId
+          ? {
+              type: 'Province',
+              name: post.provinceName,
+              id: post.provinceId,
+            }
+          : null,
+        district: post.districtId
+          ? {
+              type: 'District',
+              name: post.districtName,
+              id: post.districtId,
+              parentId: post.provinceId,
+            }
+          : null,
+        commune: post.communeId
+          ? {
+              type: 'Ward',
+              name: post.communeName,
+              id: post.communeId,
+              parentId: post.districtId,
+            }
+          : null,
+        street: post.street || '',
+      });
+    }
+    onClose();
   };
 
   return (
@@ -100,17 +201,7 @@ const SearchLocationModal: React.FC<Props> = ({
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerItem}>
-              <TouchableOpacity
-                onPress={() => {
-                  setSelectedLocation({
-                    province: post?.province || null,
-                    district: post?.distric || null,
-                    commune: post?.commnue || null,
-                    street: '',
-                  }),
-                    onClose();
-                }}
-              >
+              <TouchableOpacity onPress={handleClose}>
                 <Image source={ICONS.back} style={styles.clearIcon} />
               </TouchableOpacity>
               <Text style={[AppStyles.title, { marginBottom: 0 }]}>
@@ -126,6 +217,8 @@ const SearchLocationModal: React.FC<Props> = ({
             <Text style={[AppStyles.label, { marginBottom: Spacing.medium }]}>
               {t(text.pick_location)}
             </Text>
+
+            {/* Province */}
             <View style={{ width: '90%' }}>
               <Text
                 style={[AppStyles.text_bold, { marginBottom: Spacing.medium }]}
@@ -143,6 +236,7 @@ const SearchLocationModal: React.FC<Props> = ({
               </TouchableOpacity>
             </View>
 
+            {/* District */}
             <View style={{ width: '90%' }}>
               <Text
                 style={[AppStyles.text_bold, { marginBottom: Spacing.medium }]}
@@ -160,6 +254,7 @@ const SearchLocationModal: React.FC<Props> = ({
               </TouchableOpacity>
             </View>
 
+            {/* Commune */}
             <View style={{ width: '90%' }}>
               <Text
                 style={[AppStyles.text_bold, { marginBottom: Spacing.medium }]}
@@ -176,6 +271,7 @@ const SearchLocationModal: React.FC<Props> = ({
               </TouchableOpacity>
             </View>
 
+            {/* Street */}
             <View>
               <Text
                 style={[AppStyles.text_bold, { marginBottom: Spacing.medium }]}
@@ -194,7 +290,6 @@ const SearchLocationModal: React.FC<Props> = ({
                   editable={
                     !!selectedLocation.province?.name &&
                     !!selectedLocation.district?.name
-                    // &&                    !!selectedLocation.commune?.name
                   }
                   onChangeText={text =>
                     setSelectedLocation(prev => ({ ...prev, street: text }))
@@ -211,7 +306,7 @@ const SearchLocationModal: React.FC<Props> = ({
             <AppButton
               customStyle={[{ width: '40%' }]}
               title={t(text.cancel)}
-              onPress={onClose}
+              onPress={handleClose}
             />
             <AppButton
               customStyle={[{ width: '40%' }]}

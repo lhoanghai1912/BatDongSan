@@ -53,7 +53,8 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
   const [isShowTitDes, setIshowTitDes] = useState(true);
   const [isShowImageUpload, setIsShowImagesUpdaload] = useState(true);
   const [loading, setLoading] = useState(false);
-
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
   const [demandLabel, setDemanLabel] = useState(`${t(text.more_info)}`);
   const [imageUris, setImageUris] = useState<string[]>([]); // State để lưu các URI của ảnh đã chọn
 
@@ -191,16 +192,48 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   const handleSearchLocation = (location: any) => {
+    console.log('🔍 Received location:', location); // ✅ Debug log
+
     setLocation(location);
+
     const parts = [
       location?.street,
       location?.commune?.name || '',
       location?.district?.name,
       location?.province?.name,
-    ].filter(Boolean); // lọc null/undefined
-    setLocationText(parts.join(', ')); // Ví dụ: "Phường Bến Nghé, Quận 1, TP.HCM"
-  };
+    ].filter(Boolean);
 
+    const fullAddress = parts.join(', ');
+    setLocationText(fullAddress);
+
+    console.log('✅ Location saved:', {
+      province: location?.province,
+      district: location?.district,
+      commune: location?.commune,
+      street: location?.street,
+    });
+  };
+  const fetchCoordinates = async (locationName: string) => {
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+          locationName,
+        )}&key=AIzaSyD5GLF-0zusfOJlJqHDEuujDJvdXYWniNA`,
+      );
+      const data = await response.json();
+
+      if (data.results && data.results.length > 0) {
+        const { lat, lng } = data.results[0].geometry.location;
+        setLatitude(lat);
+        setLongitude(lng);
+        console.log('Coordinates:', lat, lng);
+      } else {
+        console.log('No coordinates found for the location.');
+      }
+    } catch (error) {
+      console.error('Error fetching coordinates:', error);
+    }
+  };
   // ✅ Auto-fill form with edit data
   useEffect(() => {
     if (isEditMode && editPost) {
@@ -249,7 +282,10 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
           editPost.districtName,
           editPost.provinceName,
         ].filter(Boolean);
-        setLocationText(parts.join(', '));
+
+        const fullAddress = parts.join(', ');
+        console.log('📍 Setting locationText:', fullAddress);
+        setLocationText(fullAddress);
       }
 
       // ✅ Fill property type
@@ -358,7 +394,7 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
 
       console.log('Form auto-filled successfully for edit mode');
     }
-  }, [isEditMode, editPost, userData, t]);
+  }, [isEditMode, editPost?.id, userData, t]);
 
   // ✅ Modify useFocusEffect to only reset for new posts
   useFocusEffect(
@@ -529,95 +565,126 @@ const CreateScreen: React.FC<Props> = ({ navigation, route }) => {
           text1: 'Error',
           text2: 'Contact phone cannot be empty',
         });
-      } else {
-        setError(false);
-        // ✅ Prepare form data (same as before)
-        const formData = new FormData();
-        const data = {
-          type,
-          categoryType: propertyType.value,
-          provinceId: location?.province?.id,
-          provinceName: location?.province?.name,
-          districtId: location?.district?.id || '',
-          districtName: location?.district?.name || '',
-          communeId: location?.commune?.id || '',
-          communeName: location?.commune?.name || '',
-          street: location?.street || '',
-          area,
-          price,
-          currency: currency.value,
-          unit: unit.value,
-          legalDocument: legal.value,
-          furnishing: furniture.value,
-          bedrooms,
-          bathrooms,
-          floors,
-          houseOrientation: housedirection.value,
-          balconyDirection: balconydirection.value,
-          acccessRoad: accessRoad,
-          frontage,
-          availableFrom: availableFrom.value,
-          electricityPrice: electricityPrice.value,
-          waterPrice: waterPrice.value,
-          internetPrice: internetPrice.value,
-          title,
-          description,
-          menities: 1,
-          contactName,
-          contactPhone,
-          contactEmail,
-          videoUrl: 'http://youtu.be/xyz',
-          isExpired: false,
-          images: imageUpload.map((item: any, index: number) => {
-            return {
-              description: item?.fileName,
-              displayOrder: index,
-              ...(item.isExisting && { id: item.id }), // ✅ Include ID for existing images
-            };
-          }),
-        };
+        return; // ✅ Early return
+      }
 
-        // ✅ Handle image uploads (only new images)
-        const newImages = imageUpload.filter(item => !item.isExisting);
-        newImages.forEach((item: any) => {
-          formData.append('images', {
-            uri: item?.uri,
-            type: item?.type,
-            name: item?.fileName,
-          } as any);
+      setError(false);
+
+      // ✅ Log location data before sending
+      console.log('📍 Location data before submit:', location);
+      console.log('🏛️ Province:', location?.province);
+      console.log('🏙️ District:', location?.district);
+      console.log('🏘️ Commune:', location?.commune);
+
+      // ✅ Prepare form data with proper null handling
+      const data = {
+        type,
+        categoryType: propertyType.value,
+
+        // ✅ Province (required)
+        provinceId: location?.province?.id || null,
+        provinceName: location?.province?.name || '',
+
+        // ✅ District (optional but send null if not exists)
+        districtId: location?.district?.id || null, // ✅ null thay vì ''
+        districtName: location?.district?.name || '',
+
+        // ✅ Commune (optional but send null if not exists)
+        communeId: location?.commune?.id || null, // ✅ null thay vì ''
+        communeName: location?.commune?.name || '',
+
+        street: location?.street || '',
+        area,
+        price,
+        currency: currency.value,
+        unit: unit.value,
+        legalDocument: legal.value,
+        furnishing: furniture.value,
+        bedrooms,
+        bathrooms,
+        floors,
+        houseOrientation: housedirection.value,
+        balconyDirection: balconydirection.value,
+        acccessRoad: accessRoad,
+        frontage,
+        availableFrom: availableFrom.value,
+        electricityPrice: electricityPrice.value,
+        waterPrice: waterPrice.value,
+        internetPrice: internetPrice.value,
+        title,
+        description,
+        menities: 1,
+        contactName,
+        contactPhone,
+        contactEmail,
+        videoUrl: 'http://youtu.be/xyz',
+        isExpired: false,
+        images: imageUpload.map((item: any, index: number) => {
+          return {
+            description: item?.fileName,
+            displayOrder: index,
+            ...(item.isExisting && { id: item.id }),
+          };
+        }),
+      };
+
+      console.log('📦 Final data to submit:', data); // ✅ Debug log
+
+      // ✅ Validate location before submit
+      if (!location?.province?.id) {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Please select a province',
         });
+        setLoading(false);
+        return;
+      }
 
-        formData.append('jsonPostData', JSON.stringify(data));
+      // ✅ Handle image uploads (only new images)
+      const newImages = imageUpload.filter(item => !item.isExisting);
+      const formData = new FormData();
 
-        let res;
-        if (isEditMode) {
-          // ✅ Update existing post
-          console.log('Updating post:', editingPostId);
-          res = await updatePost(editingPostId, formData); // ✅ You'll need to create this API function
-          Toast.show({
-            type: 'success',
-            text1: 'Success',
-            text2: 'Post updated successfully',
-          });
-        } else {
-          // ✅ Create new post
-          console.log('Creating new post', formData);
-          res = await createPost(formData);
-          Toast.show({
-            type: 'success',
-            text1: 'Success',
-            text2: 'Post created successfully',
-          });
-        }
+      newImages.forEach((item: any) => {
+        formData.append('images', {
+          uri: item?.uri,
+          type: item?.type,
+          name: item?.fileName,
+        } as any);
+      });
 
-        console.log('Operation result:', res);
+      formData.append('jsonPostData', JSON.stringify(data));
 
-        if (res.status === 200) {
-          navigate(Screen_Name.Post_Screen); // ✅ Navigate back to posts list
-        }
+      let res;
+      if (isEditMode) {
+        console.log('🔄 Updating post:', editingPostId);
+        res = await updatePost(editingPostId, formData);
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Post updated successfully',
+        });
+      } else {
+        console.log('➕ Creating new post');
+        res = await createPost(formData);
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Post created successfully',
+        });
+      }
+
+      console.log('✅ Operation result:', res);
+
+      if (res.status === 200) {
+        // ✅ Reset navigation stack để clear params
+        navigation.reset({
+          index: 0,
+          routes: [{ name: Screen_Name.Post_Screen }],
+        });
       }
     } catch (error) {
-      console.log('Error:', error);
+      console.log('❌ Error:', error);
       Toast.show({
         type: 'error',
         text1: 'Error',

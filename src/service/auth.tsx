@@ -123,3 +123,14 @@ export const reset_password = async (
     throw error;
   }
 };
+export const otp_forgotPassword = async (contact: string, otp: string) => {
+  try {
+    const res = await apiClient.post('Account/verify-otp-for-password-reset', {
+      contact,
+      otp,
+    });
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -18,9 +18,11 @@ import Toast from 'react-native-toast-message';
 
 import NavBar from '../../../components/Navbar';
 import { useDispatch, useSelector } from 'react-redux';
-import { setToken } from '../../../store/reducers/userSlice';
-import { create_password, reset_password } from '../../../service';
+import { setToken, setUserData } from '../../../store/reducers/userSlice';
+import { create_password, login, reset_password } from '../../../service';
 import { useTranslation } from 'react-i18next';
+import { navigate } from '../../../navigation/RootNavigator';
+import { Screen_Name } from '../../../navigation/ScreenName';
 interface Props {
   navigation: any;
   route?: any;
@@ -91,6 +93,13 @@ const SetPasswordScreen: React.FC<Props> = ({ navigation, route }) => {
           text2: `${t(message.change_password)}`,
         });
       }
+      const loginData = await login(route.params.contact, password);
+      console.log('loginRes', loginData);
+      dispatch(setToken({ token: loginData.token }));
+      dispatch(setUserData({ userData: loginData.profile }));
+      navigate(Screen_Name.BottomTab_Navigator, {
+        screen: Screen_Name.Home_Screen,
+      });
     } catch (error) {
     } finally {
       setLoading(false);

@@ -11,7 +11,11 @@ import {
   View,
 } from 'react-native';
 import AppButton from '../AppButton';
-import { enterOtp, otp_ResetPassword_Verify } from '../../service';
+import {
+  enterOtp,
+  otp_forgotPassword,
+  otp_ResetPassword_Verify,
+} from '../../service';
 import { useDispatch } from 'react-redux';
 import { setVerificationToken } from '../../store/reducers/userSlice';
 import { message, text } from '../../utils/constants';
@@ -90,7 +94,7 @@ const EnterOtpModal: React.FC<EnterOtpProp> = ({
             contact,
             otp: otpString,
           });
-          const otpRes = await otp_ResetPassword_Verify(contact, otpString);
+          const otpRes = await otp_forgotPassword(contact, otpString);
           console.log('otpRes', otpRes);
         }
 
@@ -154,12 +158,12 @@ const EnterOtpModal: React.FC<EnterOtpProp> = ({
             <AppButton
               title="Hủy bỏ"
               onPress={onClose}
-              customStyle={[{ width: '30%' }]}
+              customStyle={[{ width: '40%' }]}
             />
             <AppButton
               title="Xác nhận"
               onPress={handleSubmit}
-              customStyle={[{ width: '30%' }]}
+              customStyle={[{ width: '40%' }]}
             />
           </View>
         </View>

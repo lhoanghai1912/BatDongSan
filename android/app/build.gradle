@@ -82,8 +82,8 @@ android {
         applicationId "com.homesapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 9
-        versionName "1.0.9"
+        versionCode 10
+        versionName "1.0.10"
     }
     signingConfigs {
         debug {
@@ -94,9 +94,9 @@ android {
         }
         release {
             if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
-                storeFile file(MYAPP_RELEASE_STORE_FILE)
+                storeFile file('/home/foxai13/Code/BatDongSan/android/app/homes-app-release-key.keystore')
                 storePassword MYAPP_RELEASE_STORE_PASSWORD
-                keyAlias MYAPP_RELEASE_KEY_ALIAS
+                keyAlias MYAPP_RELEASE_KEY_ALIAS //mykey
                 keyPassword MYAPP_RELEASE_KEY_PASSWORD
             }
         }
